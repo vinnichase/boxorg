@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Image, NativeModules, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import * as ImagePicker from 'expo-image-picker';
-import { AssetRecord, useObjectDetectionModels } from '@infinitered/react-native-mlkit-object-detection';
+import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 
 type ObjectDetectionResult = {
     labels: {
@@ -19,16 +19,32 @@ type ObjectDetectionResult = {
 
 function App(): JSX.Element {
     const [image, setImage] = useState<ImagePicker.ImagePickerResult | null>();
-    const [result, setResult] = useState<ObjectDetectionResult | null>(null);
+    const [result, setResult] = useState<RNMLKitObjectDetectionObject[]>([]);
     const [imageLayout, setImageLayout] = useState({ width: 0, height: 0 });
-    const { ObjectDetectionModelContextProvider } = useObjectDetectionModels({
-        loadDefaultModel: true,
-        defaultModelOptions: {
-            shouldEnableMultipleObjects: true,
-            shouldEnableClassification: true,
-            detectorMode: 'singleImage',
-        },
-    });
+
+    const model = useObjectDetector('myModel');
+
+    const [modelLoaded, setModelLoaded] = useState(model?.isLoaded() ?? false);
+
+    React.useEffect(() => {
+        // Loading models is done asynchronously, so in a useEffect we need to wrap it in an async function
+        async function loadModel() {
+            if (!model || modelLoaded) return;
+            // load the model
+            await model.load();
+            // set the model loaded state to true
+            setModelLoaded(true);
+        }
+
+        loadModel();
+    }, [model, modelLoaded]);
+
+    async function detectObjects(img: ImagePicker.ImagePickerResult) {
+        if (!img.assets?.[0].uri) return;
+        const result = await model?.detectObjects(img.assets?.[0].uri);
+        console.log(result);
+        result && setResult(result);
+    }
 
     const chooseFile = async () => {
         console.log('Choose file');
@@ -43,6 +59,8 @@ function App(): JSX.Element {
         } else {
             alert('You did not select any image.');
         }
+
+        detectObjects(result);
         // if (!response.didCancel) {
         //     if (response.assets && response.assets.length > 0) {
         //         try {
@@ -65,37 +83,36 @@ function App(): JSX.Element {
         // });
     };
 
-    console.log(imageLayout.width, imageLayout.height);
-    console.log(image?.assets?.[0]);
+    console.log(imageLayout);
+    console.log(modelLoaded);
 
     return (
-        <ObjectDetectionModelContextProvider>
-            <SafeAreaView style={styles.container}>
-                <Text style={styles.textStyle}>Object Detection</Text>
-                {true && (
-                    <View style={styles.imageContainer}>
-                        <Image
-                            style={styles.imageStyle}
-                            source={{
-                                uri: image?.assets?.[0].uri,
-                            }}
-                            onLayout={(event) => {
-                                const { width, height } = event.nativeEvent.layout;
-                                console.log(width, height);
-                                setImageLayout({ width, height });
-                            }}
-                        />
-                        {/* {result && imageLayout.width > 0 && imageLayout.height > 0 && (
+        <SafeAreaView style={styles.container}>
+            <Text style={styles.textStyle}>Object Detection</Text>
+            {true && (
+                <View style={styles.imageContainer}>
+                    <Image
+                        style={styles.imageStyle}
+                        source={{
+                            uri: image?.assets?.[0].uri,
+                        }}
+                        onLayout={(event) => {
+                            const { width, height } = event.nativeEvent.layout;
+                            console.log(width, height);
+                            setImageLayout({ width, height });
+                        }}
+                    />
+                    {result && imageLayout.width > 0 && imageLayout.height > 0 && (
                         <Svg style={StyleSheet.absoluteFill} viewBox={`0 0 ${imageLayout.width} ${imageLayout.height}`}>
                             {result.map((obj, index) => {
                                 console.log(obj, index);
                                 return (
                                     <Rect
                                         key={index}
-                                        x={obj.rect.x * imageLayout.width} // Scale to true dimensions
-                                        y={obj.rect.y * imageLayout.height} // Scale to true dimensions
-                                        width={obj.rect.w * imageLayout.width} // Scale to true dimensions
-                                        height={obj.rect.h * imageLayout.height} // Scale to true dimensions
+                                        x={obj.frame.origin.x * imageLayout.width} // Scale to true dimensions
+                                        y={obj.frame.origin.y * imageLayout.height} // Scale to true dimensions
+                                        width={obj.frame.size.x * imageLayout.width} // Scale to true dimensions
+                                        height={obj.frame.size.y * imageLayout.height} // Scale to true dimensions
                                         stroke="red"
                                         strokeWidth="2"
                                         fill="none"
@@ -103,16 +120,15 @@ function App(): JSX.Element {
                                 );
                             })}
                         </Svg>
-                    )} */}
-                    </View>
-                )}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.buttonStyle} onPress={chooseFile}>
-                        <Text style={styles.buttonLabelStyle}>Launch gallery</Text>
-                    </TouchableOpacity>
+                    )}
                 </View>
-            </SafeAreaView>
-        </ObjectDetectionModelContextProvider>
+            )}
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.buttonStyle} onPress={chooseFile}>
+                    <Text style={styles.buttonLabelStyle}>Launch gallery</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     );
 }
 
