@@ -7,28 +7,36 @@ type CropImageProps = {
     rect: [number, number, number, number];
 };
 
-const CropImage = ({ base64, rect: [x, y, w, h] }: CropImageProps) => {
+const CropImage = ({ base64, rect }: CropImageProps) => {
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
 
     const cropImage = async () => {
         const uri = `data:image/png;base64,${base64}`;
+
+        const [x, y, w, h] = getSquareDimensions(...rect);
+
         const croppedUri = await ImageEditor.cropImage(uri, {
             offset: { x, y },
             size: { width: w, height: h },
-            // displaySize: { width: 200, height: 200 },
-            // resizeMode: 'cover',
+            displaySize: { width: 1000, height: 1000 },
+            resizeMode: 'contain',
             // format: 'png',
             quality: 0.3,
         });
-        console.log(croppedUri.uri);
+        console.log(croppedUri.size);
         setCroppedImage(croppedUri.uri);
     };
 
     useEffect(() => {
         cropImage();
-    }, [base64, x, y, w, h]);
+    }, [base64, rect]);
 
     return croppedImage && <Image source={{ uri: croppedImage }} style={{ width: 200, height: 200 }} />;
+};
+
+const getSquareDimensions = (x: number, y: number, w: number, h: number) => {
+    const size = Math.max(w, h);
+    return [x + (w - size) / 2, y + (h - size) / 2, size, size];
 };
 
 export default CropImage;
