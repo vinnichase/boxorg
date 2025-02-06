@@ -1,26 +1,12 @@
 import React, { useState } from 'react';
-import { Alert, Image, NativeModules, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
-
-type ObjectDetectionResult = {
-    labels: {
-        label: string;
-        confidence: number;
-    }[];
-    rect: {
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-    };
-}[];
+import CropImage from './CropImage';
 
 function App(): JSX.Element {
-    const [image, setImage] = useState<ImagePicker.ImagePickerResult | null>();
+    const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();
     const [result, setResult] = useState<RNMLKitObjectDetectionObject[]>([]);
-    const [imageLayout, setImageLayout] = useState({ width: 0, height: 0 });
 
     const model = useObjectDetector('myModel');
 
@@ -47,85 +33,52 @@ function App(): JSX.Element {
     }
 
     const chooseFile = async () => {
-        console.log('Choose file');
-        const result = await ImagePicker.launchImageLibraryAsync({
+        const { status } = await ImagePicker.getCameraPermissionsAsync();
+        if (status !== 'granted') {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Sorry, we need camera permissions to make this work!');
+                return;
+            }
+        }
+        const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
+            allowsEditing: false,
             quality: 1,
+            base64: true,
         });
 
         if (!result.canceled) {
-            setImage(result);
+            setImage(result.assets[0]);
         } else {
             alert('You did not select any image.');
         }
 
         detectObjects(result);
-        // if (!response.didCancel) {
-        //     if (response.assets && response.assets.length > 0) {
-        //         try {
-        //             const res = await CustomObjectDetectionModule.startCustomObjectDetection(
-        //                 response.assets[0].uri,
-        //             );
-        //             const result = JSON.parse(res) as ObjectDetectionResult;
-        //             setImage(response);
-        //             setResult(result);
-        //         } catch (error) {
-        //             console.log(error);
-        //             Alert.alert('Error', 'No Object Detected', [{ text: 'OK' }]);
-        //             setImage(null);
-        //             setResult(null);
-        //         }
-        //     }
-        // } else {
-        //     console.log(response.errorMessage);
-        // }
-        // });
     };
 
-    console.log(imageLayout);
+    console.log(image?.fileSize);
     console.log(modelLoaded);
 
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.textStyle}>Object Detection</Text>
-            {true && (
-                <View style={styles.imageContainer}>
-                    <Image
-                        style={styles.imageStyle}
-                        source={{
-                            uri: image?.assets?.[0].uri,
-                        }}
-                        onLayout={(event) => {
-                            const { width, height } = event.nativeEvent.layout;
-                            console.log(width, height);
-                            setImageLayout({ width, height });
-                        }}
-                    />
-                    {result && imageLayout.width > 0 && imageLayout.height > 0 && (
-                        <Svg style={StyleSheet.absoluteFill} viewBox={`0 0 ${imageLayout.width} ${imageLayout.height}`}>
-                            {result.map((obj, index) => {
-                                console.log(obj, index);
-                                return (
-                                    <Rect
-                                        key={index}
-                                        x={obj.frame.origin.x * imageLayout.width} // Scale to true dimensions
-                                        y={obj.frame.origin.y * imageLayout.height} // Scale to true dimensions
-                                        width={obj.frame.size.x * imageLayout.width} // Scale to true dimensions
-                                        height={obj.frame.size.y * imageLayout.height} // Scale to true dimensions
-                                        stroke="red"
-                                        strokeWidth="2"
-                                        fill="none"
-                                    />
-                                );
-                            })}
-                        </Svg>
-                    )}
-                </View>
-            )}
+            <ScrollView>
+                {image &&
+                    result.map((obj, index) => (
+                        <View key={index}>
+                            <CropImage
+                                key={index}
+                                base64={image.base64 ?? ''}
+                                rect={[obj.frame.origin.x, obj.frame.origin.y, obj.frame.size.x, obj.frame.size.y]}
+                            />
+                            <Text>{obj.labels.map((l) => l.text).join(',')}</Text>
+                        </View>
+                    ))}
+            </ScrollView>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.buttonStyle} onPress={chooseFile}>
-                    <Text style={styles.buttonLabelStyle}>Launch gallery</Text>
+                    <Text style={styles.buttonLabelStyle}>Camera</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
