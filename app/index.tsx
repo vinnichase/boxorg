@@ -28,7 +28,6 @@ function App(): JSX.Element {
     async function detectObjects(img: ImagePicker.ImagePickerResult) {
         if (!img.assets?.[0].uri) return;
         const result = await model?.detectObjects(img.assets?.[0].uri);
-        console.log(result);
         result && setResult(result);
     }
 
@@ -57,9 +56,6 @@ function App(): JSX.Element {
         detectObjects(result);
     };
 
-    console.log(image?.fileSize);
-    console.log(modelLoaded);
-
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.textStyle}>Object Detection</Text>
@@ -69,7 +65,7 @@ function App(): JSX.Element {
                         <View key={index}>
                             <CropImage
                                 key={index}
-                                base64={image.base64 ?? ''}
+                                image={image}
                                 rect={[obj.frame.origin.x, obj.frame.origin.y, obj.frame.size.x, obj.frame.size.y]}
                             />
                             <Text>{obj.labels.map((l) => l.text).join(',')}</Text>
