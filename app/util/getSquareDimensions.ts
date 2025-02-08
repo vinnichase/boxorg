@@ -1,7 +1,7 @@
 /**
  * Get square dimensions with 5% padding but without moving the crop area outside the image
  */
-export const getSquareDimensions = (x: number, y: number, w: number, h: number, maxw: number, maxh: number) => {
+const getSquareDimensions = (x: number, y: number, w: number, h: number, maxw: number, maxh: number) => {
     // 1. Determine the base side using the larger of the rectangle's dimensions.
     const baseSide = Math.max(w, h);
 
@@ -21,3 +21,5 @@ export const getSquareDimensions = (x: number, y: number, w: number, h: number, 
 
     return [newX, newY, side, side];
 };
+
+export default getSquareDimensions;
