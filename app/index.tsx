@@ -3,25 +3,10 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from './CropImage';
-import {
-    assignTagToObject,
-    createObject,
-    createTag,
-    db,
-    deleteObject,
-    getObjects,
-    getTags,
-    getTagsForObject,
-} from '../db/setup';
-import { sql } from '../util/sql';
-
-// get all tables
-const seq = db.getAllSync(sql`SELECT * FROM sqlite_sequence`);
-console.log('SEQ', seq);
+import { assignTagToObject, getObjects, getTags, getTagsForObject } from '../db/accessLayer';
 
 // createObject('test', 'test');
 // deleteObject(3);
-createTag('test tag');
 const objects = getObjects();
 console.log('OBJECTS', getObjects());
 console.log('TAGS', getTags());
