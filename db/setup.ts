@@ -2,8 +2,8 @@ import * as SQLite from 'expo-sqlite';
 
 export const db = SQLite.openDatabaseSync('boxorg.db');
 
-const createRecordsTable = `
-      CREATE TABLE IF NOT EXISTS records (
+const createObjectsTable = `
+      CREATE TABLE IF NOT EXISTS objects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
       )
@@ -15,70 +15,70 @@ const createTagsTable = `
         tag TEXT UNIQUE NOT NULL
       )
     `;
-// Create the "record_tags" junction table.
-const createRecordTagsTable = `
-      CREATE TABLE IF NOT EXISTS record_tags (
-        record_id INTEGER NOT NULL,
+// Create the "object_tags" junction table.
+const createObjectTagsTable = `
+      CREATE TABLE IF NOT EXISTS object_tags (
+        object_id INTEGER NOT NULL,
         tag_id INTEGER NOT NULL,
-        PRIMARY KEY (record_id, tag_id),
-        FOREIGN KEY (record_id) REFERENCES records(id) ON DELETE CASCADE,
+        PRIMARY KEY (object_id, tag_id),
+        FOREIGN KEY (object_id) REFERENCES objects(id) ON DELETE CASCADE,
         FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
       )
     `;
 
 // Execute table creation.
-db.execSync(createRecordsTable);
+db.execSync(createObjectsTable);
 db.execSync(createTagsTable);
-db.execSync(createRecordTagsTable);
+db.execSync(createObjectTagsTable);
 
 // Create indexes for fast lookups.
-db.execSync(`CREATE INDEX IF NOT EXISTS idx_record_tags_record ON record_tags(record_id)`);
-db.execSync(`CREATE INDEX IF NOT EXISTS idx_record_tags_tag ON record_tags(tag_id)`);
+db.execSync(`CREATE INDEX IF NOT EXISTS idx_object_tags_object ON object_tags(object_id)`);
+db.execSync(`CREATE INDEX IF NOT EXISTS idx_object_tags_tag ON object_tags(tag_id)`);
 
 // ===========================================================================
-// Records CRUD
+// Objects CRUD
 // ===========================================================================
 
 /**
- * Creates a new record.
- * @param name The name for the record.
- * @returns The ID of the newly created record.
+ * Creates a new object.
+ * @param name The name for the object.
+ * @returns The ID of the newly created object.
  */
-export function createRecord(name: string): number {
-    const stmt = db.prepareSync(`INSERT INTO records (name) VALUES (?)`);
+export function createObject(name: string): number {
+    const stmt = db.prepareSync(`INSERT INTO objects (name) VALUES (?)`);
     const info = stmt.executeSync(name);
     return info.lastInsertRowId as number;
 }
 
 /**
- * Retrieves a record by its ID.
- * @param id The record ID.
- * @returns The record object or undefined if not found.
+ * Retrieves a object by its ID.
+ * @param id The object ID.
+ * @returns The object object or undefined if not found.
  */
-export function getRecordById(id: number) {
-    const stmt = db.prepareSync(`SELECT * FROM records WHERE id = ?`);
+export function getObjectById(id: number) {
+    const stmt = db.prepareSync(`SELECT * FROM objects WHERE id = ?`);
     return stmt.executeSync(id);
 }
 
 /**
- * Updates a record's name.
- * @param id The record ID.
+ * Updates a object's name.
+ * @param id The object ID.
  * @param name The new name.
- * @returns True if a record was updated; otherwise, false.
+ * @returns True if a object was updated; otherwise, false.
  */
-export function updateRecord(id: number, name: string): boolean {
-    const stmt = db.prepareSync(`UPDATE records SET name = ? WHERE id = ?`);
+export function updateObject(id: number, name: string): boolean {
+    const stmt = db.prepareSync(`UPDATE objects SET name = ? WHERE id = ?`);
     const info = stmt.executeSync(name, id);
     return info.changes > 0;
 }
 
 /**
- * Deletes a record.
- * @param id The record ID.
- * @returns True if a record was deleted; otherwise, false.
+ * Deletes a object.
+ * @param id The object ID.
+ * @returns True if a object was deleted; otherwise, false.
  */
-export function deleteRecord(id: number) {
-    const stmt = db.prepareSync(`DELETE FROM records WHERE id = ?`);
+export function deleteObject(id: number) {
+    const stmt = db.prepareSync(`DELETE FROM objects WHERE id = ?`);
     const info = stmt.executeSync(id);
     return info.changes > 0;
 }
@@ -150,58 +150,58 @@ export function deleteTag(id: number): boolean {
 // ===========================================================================
 
 /**
- * Assigns a tag to a record. Creates the tag if it does not exist.
- * @param recordId The ID of the record.
+ * Assigns a tag to a object. Creates the tag if it does not exist.
+ * @param objectId The ID of the object.
  * @param tag The tag text.
  */
-export function assignTagToRecord(recordId: number, tag: string): void {
+export function assignTagToObject(objectId: number, tag: string): void {
     // Ensure the tag exists (or create it).
     const tagId = createTag(tag);
     // Insert into the junction table. INSERT OR IGNORE prevents duplicate assignments.
-    const stmt = db.prepareSync(`INSERT OR IGNORE INTO record_tags (record_id, tag_id) VALUES (?, ?)`);
-    stmt.executeSync(recordId, tagId);
+    const stmt = db.prepareSync(`INSERT OR IGNORE INTO object_tags (object_id, tag_id) VALUES (?, ?)`);
+    stmt.executeSync(objectId, tagId);
 }
 
 /**
- * Removes a tag assignment from a record.
- * @param recordId The ID of the record.
+ * Removes a tag assignment from a object.
+ * @param objectId The ID of the object.
  * @param tag The tag text.
  */
-export function removeTagFromRecord(recordId: number, tag: string): void {
+export function removeTagFromObject(objectId: number, tag: string): void {
     const tagRow = getTagByName(tag);
     if (!tagRow) {
         // The tag does not exist; nothing to remove.
         return;
     }
-    const stmt = db.prepareSync(`DELETE FROM record_tags WHERE record_id = ? AND tag_id = ?`);
-    stmt.executeSync(recordId, tagRow.id);
+    const stmt = db.prepareSync(`DELETE FROM object_tags WHERE object_id = ? AND tag_id = ?`);
+    stmt.executeSync(objectId, tagRow.id);
 }
 
 /**
- * Retrieves all tags assigned to a record.
- * @param recordId The record ID.
+ * Retrieves all tags assigned to a object.
+ * @param objectId The object ID.
  * @returns An array of tag objects.
  */
-export function getTagsForRecord(recordId: number) {
+export function getTagsForObject(objectId: number) {
     const stmt = db.prepareSync(`
       SELECT t.id, t.tag
       FROM tags t
-      INNER JOIN record_tags rt ON t.id = rt.tag_id
-      WHERE rt.record_id = ?
+      INNER JOIN object_tags rt ON t.id = rt.tag_id
+      WHERE rt.object_id = ?
     `);
-    return stmt.executeSync<{ id: number; tag: string }[]>(recordId);
+    return stmt.executeSync<{ id: number; tag: string }[]>(objectId);
 }
 
 /**
- * Retrieves all records that have been assigned a specific tag.
+ * Retrieves all objects that have been assigned a specific tag.
  * @param tag The tag text.
- * @returns An array of record objects.
+ * @returns An array of object objects.
  */
-export function getRecordsForTag(tag: string) {
+export function getObjectsForTag(tag: string) {
     const stmt = db.prepareSync(`
       SELECT r.id, r.name
-      FROM records r
-      INNER JOIN record_tags rt ON r.id = rt.record_id
+      FROM objects r
+      INNER JOIN object_tags rt ON r.id = rt.object_id
       INNER JOIN tags t ON rt.tag_id = t.id
       WHERE t.tag = ?
     `);
