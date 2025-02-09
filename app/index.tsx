@@ -3,12 +3,31 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from './CropImage';
-import { db } from '../db/setup';
+import {
+    assignTagToObject,
+    createObject,
+    createTag,
+    db,
+    deleteObject,
+    getObjects,
+    getTags,
+    getTagsForObject,
+} from '../db/setup';
 import { sql } from '../util/sql';
 
-// fetch all objects
-const objects = db.getAllSync(sql`SELECT * FROM objects`);
-console.log(objects);
+// get all tables
+const seq = db.getAllSync(sql`SELECT * FROM sqlite_sequence`);
+console.log('SEQ', seq);
+
+// createObject('test', 'test');
+// deleteObject(3);
+createTag('test tag');
+const objects = getObjects();
+console.log('OBJECTS', getObjects());
+console.log('TAGS', getTags());
+assignTagToObject(4, 'test tag');
+assignTagToObject(4, 'asd');
+console.log('TAGS OF', 4, getTagsForObject(4));
 
 function App(): JSX.Element {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();
