@@ -5,7 +5,8 @@ export const db = SQLite.openDatabaseSync('boxorg.db');
 const createObjectsTable = `
       CREATE TABLE IF NOT EXISTS objects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL
+        img_path TEXT,
+        thumb_path TEXT
       )
     `;
 // Create the "tags" table.
