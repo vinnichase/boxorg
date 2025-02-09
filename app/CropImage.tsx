@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 import { ImagePickerAsset } from 'expo-image-picker';
-import getSquareDimensions from './util/getSquareDimensions';
+import getSquareDimensions from '../util/getSquareDimensions';
 
 type CropImageProps = {
     image: ImagePickerAsset;

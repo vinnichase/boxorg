@@ -3,6 +3,24 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from './CropImage';
+import { db } from '../db/setup';
+import { sql } from '../util/sql';
+
+db.execSync(sql`
+    CREATE TABLE IF NOT EXISTS objects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        img_path TEXT,
+        thumb_path TEXT
+    );
+`);
+
+// db.execSync(sql`
+//     INSERT INTO objects (img_path, thumb_path) VALUES ('/path/to/image.jpg', '/path/to/thumb.jpg');
+// `);
+
+// fetch all objects
+const objects = db.getAllSync(sql`SELECT * FROM objects`);
+console.log(objects);
 
 function App(): JSX.Element {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();

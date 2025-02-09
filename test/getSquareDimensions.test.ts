@@ -1,4 +1,4 @@
-import getSquareDimensions from '../app/util/getSquareDimensions';
+import getSquareDimensions from '../util/getSquareDimensions';
 
 // top {"maxh": 4032, "maxw": 3024, "h": 539, "w": 2781, "x": 162, "y": 128}
 const top = getSquareDimensions(162, 128, 2781, 539, 3024, 4032);
