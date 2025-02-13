@@ -36,7 +36,11 @@ export default function RootLayout() {
     });
     return (
         <ObjectDetectionModelContextProvider>
-            <Stack />
+            <Stack
+                screenOptions={{
+                    headerShown: false,
+                }}
+            />
         </ObjectDetectionModelContextProvider>
     );
 }

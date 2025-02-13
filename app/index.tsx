@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { AppRegistry, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
-import CropImage from './CropImage';
+import CropImage from '../components/CropImage';
 
 function App(): JSX.Element {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();
@@ -57,71 +57,60 @@ function App(): JSX.Element {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.textStyle}>Object Detection</Text>
-            <ScrollView>
-                {image &&
-                    result.map((obj, index) => (
-                        <View key={index}>
-                            <CropImage
-                                key={index}
-                                image={image}
-                                rect={[obj.frame.origin.x, obj.frame.origin.y, obj.frame.size.x, obj.frame.size.y]}
-                            />
-                            <Text>{obj.labels.map((l) => l.text).join(',')}</Text>
-                        </View>
-                    ))}
-            </ScrollView>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.buttonStyle} onPress={chooseFile}>
-                    <Text style={styles.buttonLabelStyle}>Camera</Text>
+        <ImageBackground
+            source={require('../assets/images/background.png')} // Replace with your image
+            style={{
+                flex: 1,
+                backgroundColor: '#23153a',
+            }}
+            resizeMode="cover"
+        >
+            <SafeAreaView
+                style={{
+                    flex: 1,
+                    alignContent: 'center',
+                    padding: 20,
+                    justifyContent: 'space-between',
+                }}
+            >
+                <ScrollView>
+                    {image &&
+                        result.map((obj, index) => (
+                            <View key={index}>
+                                <CropImage
+                                    key={index}
+                                    image={image}
+                                    rect={[obj.frame.origin.x, obj.frame.origin.y, obj.frame.size.x, obj.frame.size.y]}
+                                />
+                                <Text>{obj.labels.map((l) => l.text).join(',')}</Text>
+                            </View>
+                        ))}
+                </ScrollView>
+                <TouchableOpacity
+                    style={{
+                        height: 75,
+                        backgroundColor: '#442871',
+                        margin: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingHorizontal: 20,
+                        borderRadius: 20,
+                    }}
+                    onPress={chooseFile}
+                >
+                    <Text
+                        style={{
+                            fontSize: 20,
+                            fontWeight: '500',
+                            color: '#FFFFFF',
+                        }}
+                    >
+                        Camera
+                    </Text>
                 </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </ImageBackground>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-        alignContent: 'center',
-        padding: 20,
-        justifyContent: 'space-between',
-    },
-    buttonStyle: {
-        height: '35%',
-        backgroundColor: '#D15060',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 20,
-        borderRadius: 7,
-    },
-    textStyle: {
-        color: 'black',
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: '600',
-    },
-    imageStyle: {
-        height: '100%',
-        width: '100%',
-        resizeMode: 'contain',
-        alignSelf: 'center',
-    },
-    imageContainer: {
-        position: 'relative',
-        height: '70%',
-        width: '80%',
-        alignSelf: 'center',
-    },
-    buttonContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-    },
-    buttonLabelStyle: { fontSize: 15, fontWeight: '500', color: '#FFFFFF' },
-});
 
 export default App;
