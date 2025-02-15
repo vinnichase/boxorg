@@ -49,8 +49,6 @@ function App(): JSX.Element {
 
         if (!result.canceled) {
             setImage(result.assets[0]);
-        } else {
-            alert('You did not select any image.');
         }
 
         detectObjects(result);
@@ -100,9 +98,9 @@ function App(): JSX.Element {
                         style={{
                             width: '100%',
                             height: '100%',
-                            backgroundColor: '#00000033',
                             borderRadius: '100%',
                             borderColor: 'red',
+                            borderWidth: 1,
                         }}
                     ></View>
                 </TouchableOpacity>
