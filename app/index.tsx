@@ -68,9 +68,6 @@ function App(): JSX.Element {
             <SafeAreaView
                 style={{
                     flex: 1,
-                    alignContent: 'center',
-                    padding: 20,
-                    justifyContent: 'space-between',
                 }}
             >
                 <ScrollView>
@@ -88,25 +85,26 @@ function App(): JSX.Element {
                 </ScrollView>
                 <TouchableOpacity
                     style={{
-                        height: 75,
-                        backgroundColor: '#442871',
+                        width: 100,
+                        height: 100,
                         margin: 20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingHorizontal: 20,
-                        borderRadius: 20,
+                        padding: 5,
+                        backgroundColor: 'white',
+                        alignSelf: 'center',
+                        borderRadius: '100%',
+                        overflow: 'hidden',
                     }}
                     onPress={chooseFile}
                 >
-                    <Text
+                    <View
                         style={{
-                            fontSize: 20,
-                            fontWeight: '500',
-                            color: '#FFFFFF',
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#00000033',
+                            borderRadius: '100%',
+                            borderColor: 'red',
                         }}
-                    >
-                        Camera
-                    </Text>
+                    ></View>
                 </TouchableOpacity>
             </SafeAreaView>
         </ImageBackground>
