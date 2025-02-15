@@ -68,9 +68,10 @@ function App(): JSX.Element {
             <SafeAreaView
                 style={{
                     flex: 1,
+                    gap: 50,
                 }}
             >
-                <ScrollView>
+                {/* <ScrollView>
                     {image &&
                         result.map((obj, index) => (
                             <View key={index}>
@@ -82,18 +83,39 @@ function App(): JSX.Element {
                                 <Text>{obj.labels.map((l) => l.text).join(',')}</Text>
                             </View>
                         ))}
-                </ScrollView>
+                </ScrollView> */}
+                <View style={{ flex: 2 }}></View>
+                <View
+                    style={{
+                        height: 80,
+                        marginHorizontal: 30,
+                        backgroundColor: WHITE,
+                        opacity: 0.9,
+                        boxShadow: `0 0 100px 10px ${BLACK}44`,
+                        borderRadius: 20,
+                    }}
+                ></View>
+                <View
+                    style={{
+                        height: 80,
+                        marginHorizontal: 30,
+                        backgroundColor: WHITE,
+                        opacity: 0.9,
+                        boxShadow: `0 0 100px 10px ${BLACK}44`,
+                        borderRadius: 20,
+                    }}
+                ></View>
                 <TouchableOpacity
                     style={{
                         width: 110,
                         height: 110,
-                        margin: 20,
+                        marginBottom: 20,
                         padding: 4,
                         backgroundColor: WHITE,
-                        boxShadow: `0 0 80px 10px ${BLACK}bb`,
+                        boxShadow: `0 0 80px 10px ${BLACK}44`,
+                        borderRadius: '100%',
                         opacity: 0.9,
                         alignSelf: 'center',
-                        borderRadius: '100%',
                         overflow: 'hidden',
                     }}
                     onPress={chooseFile}
