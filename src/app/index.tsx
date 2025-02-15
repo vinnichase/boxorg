@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Keyboard, SafeAreaView, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from '../components/CropImage';
@@ -70,6 +70,7 @@ function App(): JSX.Element {
                     flex: 1,
                     gap: 50,
                 }}
+                onTouchEnd={() => Keyboard.dismiss()}
             >
                 {/* <ScrollView>
                     {image &&
@@ -100,11 +101,21 @@ function App(): JSX.Element {
                         style={{
                             width: '100%',
                             height: '100%',
+                            padding: 10,
                             borderRadius: 16,
                             borderColor: `${PURPLE_MID}dd`,
                             borderWidth: 1,
                         }}
-                    ></View>
+                    >
+                        <TextInput
+                            style={{
+                                height: '100%',
+                                fontSize: 25,
+                                color: PURPLE_DARK,
+                            }}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                        />
+                    </View>
                 </View>
                 <View
                     style={{
@@ -121,11 +132,21 @@ function App(): JSX.Element {
                         style={{
                             width: '100%',
                             height: '100%',
+                            padding: 10,
                             borderRadius: 16,
                             borderColor: `${PURPLE_MID}dd`,
                             borderWidth: 1,
                         }}
-                    ></View>
+                    >
+                        <TextInput
+                            style={{
+                                height: '100%',
+                                fontSize: 25,
+                                color: PURPLE_DARK,
+                            }}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                        />
+                    </View>
                 </View>
                 <TouchableOpacity
                     style={{
