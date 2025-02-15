@@ -87,24 +87,46 @@ function App(): JSX.Element {
                 <View style={{ flex: 2 }}></View>
                 <View
                     style={{
-                        height: 80,
+                        height: 65,
                         marginHorizontal: 30,
+                        padding: 4,
                         backgroundColor: WHITE,
                         opacity: 0.9,
                         boxShadow: `0 0 100px 10px ${BLACK}44`,
                         borderRadius: 20,
                     }}
-                ></View>
+                >
+                    <View
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: 16,
+                            borderColor: `${PURPLE_MID}dd`,
+                            borderWidth: 1,
+                        }}
+                    ></View>
+                </View>
                 <View
                     style={{
-                        height: 80,
+                        height: 65,
                         marginHorizontal: 30,
+                        padding: 4,
                         backgroundColor: WHITE,
                         opacity: 0.9,
                         boxShadow: `0 0 100px 10px ${BLACK}44`,
                         borderRadius: 20,
                     }}
-                ></View>
+                >
+                    <View
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: 16,
+                            borderColor: `${PURPLE_MID}dd`,
+                            borderWidth: 1,
+                        }}
+                    ></View>
+                </View>
                 <TouchableOpacity
                     style={{
                         width: 110,
