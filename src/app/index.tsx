@@ -58,7 +58,7 @@ function App(): JSX.Element {
 
     return (
         <ImageBackground
-            source={require('../assets/images/background.png')} // Replace with your image
+            source={require('../../assets/images/background.png')} // Replace with your image
             style={{
                 flex: 1,
                 backgroundColor: '#23153a',

@@ -14,7 +14,7 @@ const MODELS: AssetRecord = {
     // the name you'll use to refer to the model
     myModel: {
         // the relative path to the model file
-        model: require('../assets/models/model.tflite'),
+        model: require('../../assets/models/model.tflite'),
         options: {
             // the options you want to use for this model
             shouldEnableMultipleObjects: true,
