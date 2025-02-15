@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from '../components/CropImage';
 import { BLACK, NONE, PURPLE_DARK, PURPLE_MID, RED, WHITE } from '../util/constants';
-import Svg, { Circle, Line, Polygon } from 'react-native-svg';
+import Svg, { Circle, Line, Path, Polygon, Rect } from 'react-native-svg';
 
 function App(): JSX.Element {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();
@@ -99,16 +99,45 @@ function App(): JSX.Element {
                 >
                     <View
                         style={{
+                            flexDirection: 'row',
                             width: '100%',
                             height: '100%',
                             padding: 10,
                             borderRadius: 16,
                             borderColor: `${PURPLE_MID}dd`,
                             borderWidth: 1,
+                            gap: 10,
                         }}
                     >
+                        <View>
+                            <Svg
+                                style={{
+                                    opacity: 0.9,
+                                    aspectRatio: 1,
+                                    // borderWidth: 1,
+                                }}
+                                viewBox="-1 -1 31.71 31.71"
+                            >
+                                <Path fill={NONE} strokeWidth={2} stroke={PURPLE_DARK} d="M30.21,30.21l-9.47-9.47" />
+                                <Circle
+                                    fill={NONE}
+                                    strokeWidth={2}
+                                    stroke={PURPLE_DARK}
+                                    cx="12.85"
+                                    cy="12.85"
+                                    r="11.35"
+                                />
+                                <Path
+                                    fill={NONE}
+                                    strokeWidth={1}
+                                    stroke={PURPLE_DARK}
+                                    d="M12.85,20.21c-4.05,0-7.35-3.3-7.35-7.35s3.3-7.35,7.35-7.35,7.35,3.3,7.35,7.35-3.3,7.35-7.35,7.35Z"
+                                />
+                            </Svg>
+                        </View>
                         <TextInput
                             style={{
+                                flex: 1,
                                 height: '100%',
                                 fontSize: 25,
                                 color: PURPLE_DARK,
@@ -130,16 +159,68 @@ function App(): JSX.Element {
                 >
                     <View
                         style={{
+                            flexDirection: 'row',
                             width: '100%',
                             height: '100%',
                             padding: 10,
                             borderRadius: 16,
                             borderColor: `${PURPLE_MID}dd`,
                             borderWidth: 1,
+                            gap: 10,
                         }}
                     >
+                        <View>
+                            <Svg
+                                style={{
+                                    opacity: 0.9,
+                                    aspectRatio: 1,
+                                }}
+                                viewBox="-3 -3 73.32 73.32"
+                            >
+                                <Rect
+                                    fill={NONE}
+                                    stroke={PURPLE_DARK}
+                                    strokeWidth={3.8}
+                                    x="7.21"
+                                    y="43.18"
+                                    width="24.14"
+                                    height="24.14"
+                                    rx="6.09"
+                                    ry="6.09"
+                                />
+                                <Rect
+                                    fill={NONE}
+                                    stroke={PURPLE_DARK}
+                                    strokeWidth={3.8}
+                                    x="7.21"
+                                    y="14.43"
+                                    width="24.14"
+                                    height="24.14"
+                                    rx="6.09"
+                                    ry="6.09"
+                                />
+                                <Rect
+                                    fill={NONE}
+                                    stroke={PURPLE_DARK}
+                                    strokeWidth={3.8}
+                                    x="35.96"
+                                    y="14.43"
+                                    width="24.14"
+                                    height="52.89"
+                                    rx="6.09"
+                                    ry="6.09"
+                                />
+                                <Path
+                                    fill={NONE}
+                                    stroke={PURPLE_DARK}
+                                    strokeWidth={3.8}
+                                    d="M58.86,0H8.46C3.79,0,0,3.79,0,8.46v4.25s0,.04,0,.06c.02,2.09,2.82,2.79,3.94,1.02,1.52-2.39,4.19-3.98,7.23-3.98h16.22c1.88,0,3.61.61,5.02,1.63.74.54,1.74.54,2.48,0,1.41-1.03,3.15-1.63,5.02-1.63h16.23c3.04,0,5.71,1.59,7.23,3.98,1.12,1.76,3.92,1.07,3.94-1.02,0-.02,0-.04,0-.06v-4.25c0-4.67-3.79-8.46-8.46-8.46Z"
+                                />
+                            </Svg>
+                        </View>
                         <TextInput
                             style={{
+                                flex: 1,
                                 height: '100%',
                                 fontSize: 25,
                                 color: PURPLE_DARK,
