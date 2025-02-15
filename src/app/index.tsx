@@ -3,6 +3,7 @@ import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableO
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from '../components/CropImage';
+import { PURPLE_DARK, RED, WHITE } from '../util/constants';
 
 function App(): JSX.Element {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();
@@ -59,7 +60,7 @@ function App(): JSX.Element {
             source={require('../../assets/images/background.png')} // Replace with your image
             style={{
                 flex: 1,
-                backgroundColor: '#23153a',
+                backgroundColor: PURPLE_DARK,
             }}
             resizeMode="cover"
         >
@@ -87,7 +88,7 @@ function App(): JSX.Element {
                         height: 100,
                         margin: 20,
                         padding: 5,
-                        backgroundColor: 'white',
+                        backgroundColor: WHITE,
                         alignSelf: 'center',
                         borderRadius: '100%',
                         overflow: 'hidden',
@@ -99,7 +100,7 @@ function App(): JSX.Element {
                             width: '100%',
                             height: '100%',
                             borderRadius: '100%',
-                            borderColor: 'red',
+                            borderColor: RED,
                             borderWidth: 1,
                         }}
                     ></View>
