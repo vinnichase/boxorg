@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { ImageBackground, Keyboard, SafeAreaView, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Animated,
+    ImageBackground,
+    Keyboard,
+    SafeAreaView,
+    ScrollView,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import CropImage from '../components/CropImage';
@@ -56,6 +65,20 @@ function App(): JSX.Element {
         detectObjects(result);
     };
 
+    const [animation] = useState(new Animated.Value(0));
+    const onShift = () => {
+        Animated.spring(animation, {
+            toValue: -300,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onUnshift = () => {
+        Animated.spring(animation, {
+            toValue: 0,
+            useNativeDriver: true,
+        }).start();
+    };
+
     return (
         <ImageBackground
             source={require('../../assets/images/background.png')}
@@ -70,7 +93,10 @@ function App(): JSX.Element {
                     flex: 1,
                     gap: 50,
                 }}
-                onTouchEnd={() => Keyboard.dismiss()}
+                onTouchEnd={() => {
+                    Keyboard.dismiss();
+                    onUnshift();
+                }}
             >
                 {/* <ScrollView>
                     {image &&
@@ -86,7 +112,7 @@ function App(): JSX.Element {
                         ))}
                 </ScrollView> */}
                 <View style={{ flex: 2 }}></View>
-                <View
+                <Animated.View
                     style={{
                         height: 65,
                         marginHorizontal: 30,
@@ -95,6 +121,7 @@ function App(): JSX.Element {
                         opacity: 0.9,
                         boxShadow: `0 0 100px 10px ${BLACK}44`,
                         borderRadius: 20,
+                        transform: [{ translateY: animation }],
                     }}
                 >
                     <View
@@ -142,10 +169,13 @@ function App(): JSX.Element {
                                 fontSize: 25,
                                 color: PURPLE_DARK,
                             }}
-                            onTouchEnd={(e) => e.stopPropagation()}
+                            onTouchEnd={(e) => {
+                                e.stopPropagation();
+                                onShift();
+                            }}
                         />
                     </View>
-                </View>
+                </Animated.View>
                 <View
                     style={{
                         height: 65,
