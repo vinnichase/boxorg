@@ -13,15 +13,12 @@ type AnimatedBlurViewProps = BlurViewProps & {
 };
 
 const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({ children, style, intensity, ...rest }) => {
-    // Create a shared value for intensity
     const sharedIntensity = useSharedValue(intensity);
 
-    // Animate intensity from 0 to 100 over 2 seconds on mount
     useEffect(() => {
         sharedIntensity.value = withTiming(intensity, { duration: 300 });
     }, [intensity]);
 
-    // Define animated props that update the intensity prop of BlurView
     const animatedProps = useAnimatedProps(() => {
         console.log('sharedIntensity.value', sharedIntensity.value);
         return {
