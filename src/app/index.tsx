@@ -45,8 +45,6 @@ function App(): JSX.Element {
                     }}
                     onTouchEnd={() => {
                         Keyboard.dismiss();
-                        unshiftSearch();
-                        unshiftBox();
                         setBlur(0);
                     }}
                 >
@@ -67,10 +65,9 @@ function App(): JSX.Element {
                                 setBlur(30);
                                 shiftSearch();
                             }}
-                            // onBlur={() => {
-                            //     setBlur(0);
-                            //     unshiftSearch();
-                            // }}
+                            onBlur={() => {
+                                unshiftSearch();
+                            }}
                         />
                     </MainInputBox>
                     <MainInputBox style={{ transform: [{ translateY: animatedBoxShift }] }}>
@@ -89,10 +86,9 @@ function App(): JSX.Element {
                                 setBlur(30);
                                 shiftBox();
                             }}
-                            // onBlur={() => {
-                            //     setBlur(0);
-                            //     unshiftBox();
-                            // }}
+                            onBlur={() => {
+                                unshiftBox();
+                            }}
                         />
                     </MainInputBox>
                     <TouchableOpacity
