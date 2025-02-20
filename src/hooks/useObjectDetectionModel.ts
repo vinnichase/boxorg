@@ -1,5 +1,4 @@
 import { type RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
-import type { ImagePickerResult } from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 
 export const useObjectDetectionModel = (name: string) => {

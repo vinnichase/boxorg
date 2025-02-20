@@ -1,4 +1,3 @@
-import { type RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
 import {
     getCameraPermissionsAsync,
     launchCameraAsync,
