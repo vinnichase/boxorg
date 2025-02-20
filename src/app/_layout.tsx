@@ -4,6 +4,7 @@ import {
     RNMLKitCustomObjectDetectorOptions,
     useObjectDetectionModels,
 } from '@infinitered/react-native-mlkit-object-detection';
+import { PURPLE_DARK } from '../util/constants';
 
 type ModelInfo = {
     model: number;
