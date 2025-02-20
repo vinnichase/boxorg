@@ -19,14 +19,9 @@ const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({ children, style, in
         sharedIntensity.value = withTiming(intensity, { duration: 300 });
     }, [intensity]);
 
-    const animatedProps = useAnimatedProps(() => {
-        console.log('sharedIntensity.value', sharedIntensity.value);
-        return {
-            intensity: sharedIntensity.value,
-        };
-    });
-
-    console.log(animatedProps);
+    const animatedProps = useAnimatedProps(() => ({
+        intensity: sharedIntensity.value,
+    }));
 
     return (
         <AnimatedBlurViewComponent animatedProps={animatedProps} tint="prominent" style={style} {...rest}>

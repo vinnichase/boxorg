@@ -1,61 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated, ImageBackground, Keyboard, SafeAreaView, TextInput, TouchableOpacity, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { RNMLKitObjectDetectionObject, useObjectDetector } from '@infinitered/react-native-mlkit-object-detection';
-import { BLACK, NONE, PURPLE_DARK, PURPLE_MID, RED, WHITE } from '../util/constants';
-import Svg, { Circle, Line, Path, Polygon, Rect } from 'react-native-svg';
+import { BLACK, PURPLE_DARK, PURPLE_MID, RED, WHITE } from '../util/constants';
 import AnimatedBlurView from '../components/AnimatedBlurView';
 import { ApertureIcon, BoxIcon, LoopIcon } from '../components/Icons';
+import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
+import { useImage } from '../hooks/useImage';
 
 function App(): JSX.Element {
-    const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>();
-    const [result, setResult] = useState<RNMLKitObjectDetectionObject[]>([]);
+    const { image, launchCamera } = useImage();
+    const { result, detectObjects } = useObjectDetectionModel('myModel');
 
-    const model = useObjectDetector('myModel');
+    console.log('RESULT', result);
 
-    const [modelLoaded, setModelLoaded] = useState(model?.isLoaded() ?? false);
-
-    React.useEffect(() => {
-        // Loading models is done asynchronously, so in a useEffect we need to wrap it in an async function
-        async function loadModel() {
-            if (!model || modelLoaded) return;
-            // load the model
-            await model.load();
-            // set the model loaded state to true
-            setModelLoaded(true);
-        }
-
-        loadModel();
-    }, [model, modelLoaded]);
-
-    async function detectObjects(img: ImagePicker.ImagePickerResult) {
-        if (!img.assets?.[0].uri) return;
-        const result = await model?.detectObjects(img.assets?.[0].uri);
-        result && setResult(result);
-    }
-
-    const chooseFile = async () => {
-        const { status } = await ImagePicker.getCameraPermissionsAsync();
-        if (status !== 'granted') {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Sorry, we need camera permissions to make this work!');
-                return;
-            }
-        }
-        const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ['images'],
-            allowsEditing: false,
-            quality: 1,
-            base64: true,
-        });
-
-        if (!result.canceled) {
-            setImage(result.assets[0]);
-        }
-
-        detectObjects(result);
-    };
+    useEffect(() => {
+        image && detectObjects(image.uri);
+    }, [image]);
 
     const [blur, setBlur] = useState(0);
 
@@ -74,7 +33,7 @@ function App(): JSX.Element {
             useNativeDriver: true,
         }).start();
     };
-    console.log('BLUR', blur);
+
     return (
         <ImageBackground
             source={require('../../assets/images/background.png')}
@@ -188,7 +147,7 @@ function App(): JSX.Element {
                             alignSelf: 'center',
                             overflow: 'hidden',
                         }}
-                        onPress={chooseFile}
+                        onPress={launchCamera}
                     >
                         <View
                             style={{
