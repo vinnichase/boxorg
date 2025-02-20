@@ -6,7 +6,7 @@ type IconProps = {
     color1: string;
 };
 
-export const LoopIcon = ({ color1 }: IconProps) => (
+export const SearchIcon = ({ color1 }: IconProps) => (
     <View>
         <Svg
             style={{

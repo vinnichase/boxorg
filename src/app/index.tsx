@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Animated, ImageBackground, Keyboard, SafeAreaView, TextInput, TouchableOpacity, View } from 'react-native';
 import { BLACK, PURPLE_DARK, PURPLE_MID, RED, WHITE } from '../util/constants';
 import AnimatedBlurView from '../components/AnimatedBlurView';
-import { ApertureIcon, BoxIcon, LoopIcon } from '../components/Icons';
+import { ApertureIcon, BoxIcon, SearchIcon } from '../components/Icons';
 import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
 import { useImage } from '../hooks/useImage';
+import { MainInputBox } from '../components/MainInputBox';
+import { useSpringSpan } from '../hooks/useSpringSpan';
 
 function App(): JSX.Element {
     const { image, launchCamera } = useImage();
-    const { result, detectObjects } = useObjectDetectionModel('myModel');
-
-    console.log('RESULT', result);
+    const { detectObjects } = useObjectDetectionModel('myModel');
 
     useEffect(() => {
         image && detectObjects(image.uri);
@@ -18,21 +18,10 @@ function App(): JSX.Element {
 
     const [blur, setBlur] = useState(0);
 
-    const [animation] = useState(new Animated.Value(0));
-    const onShift = () => {
-        setBlur(30);
-        Animated.spring(animation, {
-            toValue: -350,
-            useNativeDriver: true,
-        }).start();
-    };
-    const onUnshift = () => {
-        setBlur(0);
-        Animated.spring(animation, {
-            toValue: 0,
-            useNativeDriver: true,
-        }).start();
-    };
+    const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0, -350);
+    const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -350);
+
+    console.log('App rendered');
 
     return (
         <ImageBackground
@@ -56,84 +45,56 @@ function App(): JSX.Element {
                     }}
                     onTouchEnd={() => {
                         Keyboard.dismiss();
-                        onUnshift();
+                        unshiftSearch();
+                        unshiftBox();
+                        setBlur(0);
                     }}
                 >
                     <View style={{ flex: 2 }}></View>
-                    <Animated.View
-                        style={{
-                            height: 65,
-                            marginHorizontal: 30,
-                            padding: 4,
-                            backgroundColor: WHITE,
-                            opacity: 0.9,
-                            boxShadow: `0 0 100px 10px ${BLACK}44`,
-                            borderRadius: 20,
-                            transform: [{ translateY: animation }],
-                        }}
-                    >
-                        <View
+                    <MainInputBox style={{ transform: [{ translateY: animatedSearchShift }] }}>
+                        <SearchIcon color1={PURPLE_DARK} />
+                        <TextInput
                             style={{
-                                flexDirection: 'row',
-                                width: '100%',
+                                flex: 1,
                                 height: '100%',
-                                padding: 10,
-                                borderRadius: 16,
-                                borderColor: `${PURPLE_MID}dd`,
-                                borderWidth: 1,
-                                gap: 10,
+                                fontSize: 25,
+                                color: PURPLE_DARK,
                             }}
-                        >
-                            <LoopIcon color1={PURPLE_DARK} />
-                            <TextInput
-                                style={{
-                                    flex: 1,
-                                    height: '100%',
-                                    fontSize: 25,
-                                    color: PURPLE_DARK,
-                                }}
-                                onTouchEnd={(e) => {
-                                    e.stopPropagation();
-                                    onShift();
-                                }}
-                            />
-                        </View>
-                    </Animated.View>
-                    <View
-                        style={{
-                            height: 65,
-                            marginHorizontal: 30,
-                            padding: 4,
-                            backgroundColor: WHITE,
-                            opacity: 0.9,
-                            boxShadow: `0 0 100px 10px ${BLACK}44`,
-                            borderRadius: 20,
-                        }}
-                    >
-                        <View
+                            onTouchEnd={(e) => {
+                                e.stopPropagation();
+                            }}
+                            onFocus={() => {
+                                setBlur(30);
+                                shiftSearch();
+                            }}
+                            // onBlur={() => {
+                            //     setBlur(0);
+                            //     unshiftSearch();
+                            // }}
+                        />
+                    </MainInputBox>
+                    <MainInputBox style={{ transform: [{ translateY: animatedBoxShift }] }}>
+                        <BoxIcon color1={PURPLE_DARK} />
+                        <TextInput
                             style={{
-                                flexDirection: 'row',
-                                width: '100%',
+                                flex: 1,
                                 height: '100%',
-                                padding: 10,
-                                borderRadius: 16,
-                                borderColor: `${PURPLE_MID}dd`,
-                                borderWidth: 1,
-                                gap: 10,
+                                fontSize: 25,
+                                color: PURPLE_DARK,
                             }}
-                        >
-                            <BoxIcon color1={PURPLE_DARK} />
-                            <TextInput
-                                style={{
-                                    flex: 1,
-                                    height: '100%',
-                                    fontSize: 25,
-                                    color: PURPLE_DARK,
-                                }}
-                                onTouchEnd={(e) => e.stopPropagation()}
-                            />
-                        </View>
-                    </View>
+                            onTouchEnd={(e) => {
+                                e.stopPropagation();
+                            }}
+                            onFocus={() => {
+                                setBlur(30);
+                                shiftBox();
+                            }}
+                            // onBlur={() => {
+                            //     setBlur(0);
+                            //     unshiftBox();
+                            // }}
+                        />
+                    </MainInputBox>
                     <TouchableOpacity
                         style={{
                             width: 110,
