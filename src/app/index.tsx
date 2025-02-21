@@ -7,7 +7,6 @@ import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
-import { useTimingSpan } from '../hooks/useTimingSpan';
 
 function App(): JSX.Element {
     const { image, launchCamera } = useImage();
