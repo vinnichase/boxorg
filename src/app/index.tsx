@@ -21,7 +21,31 @@ function App(): JSX.Element {
     const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0, -350);
     const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -350);
 
-    console.log('App rendered');
+    const [focus, setFocus] = useState<'search' | 'box' | 'none'>('none');
+    const searchTextInput = React.useRef<TextInput>(null);
+    const boxTextInput = React.useRef<TextInput>(null);
+
+    useEffect(() => {
+        switch (focus) {
+            case 'search':
+                shiftSearch();
+                unshiftBox();
+                searchTextInput.current?.focus();
+                blur !== 30 && setBlur(30);
+                break;
+            case 'box':
+                shiftBox();
+                unshiftSearch();
+                boxTextInput.current?.focus();
+                blur !== 30 && setBlur(30);
+                break;
+            case 'none':
+                unshiftSearch();
+                unshiftBox();
+                blur !== 0 && setBlur(0);
+                break;
+        }
+    }, [focus]);
 
     return (
         <ImageBackground
@@ -45,50 +69,36 @@ function App(): JSX.Element {
                     }}
                     onTouchEnd={() => {
                         Keyboard.dismiss();
-                        setBlur(0);
+                        setFocus('none');
                     }}
                 >
                     <View style={{ flex: 2 }}></View>
                     <MainInputBox style={{ transform: [{ translateY: animatedSearchShift }] }}>
                         <SearchIcon color1={PURPLE_DARK} />
                         <TextInput
+                            ref={searchTextInput}
                             style={{
                                 flex: 1,
                                 height: '100%',
                                 fontSize: 25,
                                 color: PURPLE_DARK,
                             }}
-                            onTouchEnd={(e) => {
-                                e.stopPropagation();
-                            }}
-                            onFocus={() => {
-                                setBlur(30);
-                                shiftSearch();
-                            }}
-                            onBlur={() => {
-                                unshiftSearch();
-                            }}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                            onFocus={() => setFocus('search')}
                         />
                     </MainInputBox>
                     <MainInputBox style={{ transform: [{ translateY: animatedBoxShift }] }}>
                         <BoxIcon color1={PURPLE_DARK} />
                         <TextInput
+                            ref={boxTextInput}
                             style={{
                                 flex: 1,
                                 height: '100%',
                                 fontSize: 25,
                                 color: PURPLE_DARK,
                             }}
-                            onTouchEnd={(e) => {
-                                e.stopPropagation();
-                            }}
-                            onFocus={() => {
-                                setBlur(30);
-                                shiftBox();
-                            }}
-                            onBlur={() => {
-                                unshiftBox();
-                            }}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                            onFocus={() => setFocus('box')}
                         />
                     </MainInputBox>
                     <TouchableOpacity

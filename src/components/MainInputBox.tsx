@@ -2,12 +2,11 @@ import { BLACK, PURPLE_MID, WHITE } from '../util/constants';
 import { Animated, View } from 'react-native';
 import { useState } from 'react';
 
-type AnimatedStyle = Parameters<typeof Animated.View>[0]['style'];
+type AnimatedViewProps = Parameters<typeof Animated.View>[0];
 type MainInputBoxProps = {
     children?: React.ReactNode;
-    style?: AnimatedStyle;
-};
-export const MainInputBox = ({ children, style }: MainInputBoxProps) => (
+} & AnimatedViewProps;
+export const MainInputBox = ({ children, style, ...props }: MainInputBoxProps) => (
     <Animated.View
         style={{
             height: 65,
@@ -19,6 +18,7 @@ export const MainInputBox = ({ children, style }: MainInputBoxProps) => (
             borderRadius: 20,
             ...(typeof style === 'object' ? style : {}),
         }}
+        {...props}
     >
         <View
             style={{
