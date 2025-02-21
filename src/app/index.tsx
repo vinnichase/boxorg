@@ -47,7 +47,7 @@ function App(): JSX.Element {
                 hideSearch();
                 hideAperture();
                 boxTextInput.current?.focus();
-                blur !== 30 && setBlur(30);
+                blur !== 0 && setBlur(0);
                 break;
             case 'none':
                 unshiftSearch();
