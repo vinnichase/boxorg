@@ -19,9 +19,12 @@ function App(): JSX.Element {
     const [blur, setBlur] = useState(0);
 
     const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0, -350);
-    const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -110);
     const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(0.9, 0);
+
+    const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -270);
     const [animatedBoxHide, hideBox, showBox] = useSpringSpan(0.9, 0);
+
+    const [animatedApertureShift, shiftAperture, unshiftAperture] = useSpringSpan(0, -270);
     const [animatedApertureHide, hideAperture, showAperture] = useSpringSpan(0.9, 0);
 
     const [focus, setFocus] = useState<'search' | 'box' | 'none'>('none');
@@ -37,16 +40,16 @@ function App(): JSX.Element {
                 hideBox();
                 hideAperture();
                 searchTextInput.current?.focus();
-                blur !== 30 && setBlur(30);
+                blur !== 70 && setBlur(70);
                 break;
             case 'box':
                 showBox();
                 shiftBox();
+                shiftAperture();
                 unshiftSearch();
                 hideSearch();
-                hideAperture();
                 boxTextInput.current?.focus();
-                blur !== 0 && setBlur(0);
+                blur !== 70 && setBlur(70);
                 break;
             case 'none':
                 unshiftSearch();
@@ -54,6 +57,7 @@ function App(): JSX.Element {
                 showSearch();
                 showBox();
                 showAperture();
+                unshiftAperture();
                 blur !== 0 && setBlur(0);
                 break;
         }
@@ -116,7 +120,12 @@ function App(): JSX.Element {
                             onFocus={() => setFocus('box')}
                         />
                     </MainInputBox>
-                    <TouchableOpacity onPress={launchCamera}>
+                    <TouchableOpacity
+                        onPressOut={() => {
+                            launchCamera();
+                            setFocus('none');
+                        }}
+                    >
                         <Animated.View
                             style={{
                                 width: 110,
@@ -126,10 +135,12 @@ function App(): JSX.Element {
                                 backgroundColor: WHITE,
                                 boxShadow: `0 0 80px 10px ${BLACK}44`,
                                 borderRadius: 55,
-                                opacity: animatedApertureHide,
                                 alignSelf: 'center',
                                 overflow: 'hidden',
+                                transform: [{ translateY: animatedApertureShift }],
+                                opacity: animatedApertureHide,
                             }}
+                            onTouchEnd={(e) => e.stopPropagation()}
                         >
                             <View
                                 style={{

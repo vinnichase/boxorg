@@ -24,7 +24,7 @@ const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({ children, style, in
     }));
 
     return (
-        <AnimatedBlurViewComponent animatedProps={animatedProps} tint="prominent" style={style} {...rest}>
+        <AnimatedBlurViewComponent animatedProps={animatedProps} style={style} {...rest}>
             {children}
         </AnimatedBlurViewComponent>
     );
