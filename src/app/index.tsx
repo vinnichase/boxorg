@@ -7,14 +7,21 @@ import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
+import { useRouter } from 'expo-router';
 
 function App(): JSX.Element {
+    const router = useRouter();
+
     const { image, launchCamera } = useImage();
-    const { detectObjects } = useObjectDetectionModel('myModel');
+    const { result, detectObjects } = useObjectDetectionModel('myModel');
 
     useEffect(() => {
         image && detectObjects(image.uri);
     }, [image]);
+
+    useEffect(() => {
+        result && result.length > 0 && router.push('/collect');
+    }, [result]);
 
     const [blur, setBlur] = useState(0);
 

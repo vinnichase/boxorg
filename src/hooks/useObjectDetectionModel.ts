@@ -2,7 +2,7 @@ import { type RNMLKitObjectDetectionObject, useObjectDetector } from '@infiniter
 import { useEffect, useState } from 'react';
 
 export const useObjectDetectionModel = (name: string) => {
-    const [result, setResult] = useState<RNMLKitObjectDetectionObject[]>([]);
+    const [result, setResult] = useState<RNMLKitObjectDetectionObject[] | null>(null);
 
     const model = useObjectDetector(name);
 
