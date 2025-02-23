@@ -39,10 +39,11 @@ function App(): JSX.Element {
                             No Results. Get Back!
                         </Text>
                     ) : (
-                        objects.map(({ frame }, i) => (
+                        objects.map(({ frame, labels }, i) => (
                             <ObjectTile
                                 key={i}
                                 image={image}
+                                tags={labels.slice(0, 3).map((l) => l.text)}
                                 width={TILE_WIDTH}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
                             />
