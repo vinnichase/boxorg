@@ -46,6 +46,12 @@ function App(): JSX.Element {
                                 tags={labels.slice(0, 3).map((l) => l.text)}
                                 width={TILE_WIDTH}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
+                                // onPress={() =>
+                                //     ObjectDetectionResultAtom.set((r) => ({
+                                //         image: r.image,
+                                //         objects: objects.splice(i, 1),
+                                //     }))
+                                // }
                             />
                         ))
                     )}

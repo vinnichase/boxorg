@@ -12,10 +12,12 @@ type ObjectTileProps = {
     rect: [number, number, number, number];
     width: number;
     tags: string[];
+    onPress?: () => void;
 };
 
-export const ObjectTile = ({ image, tags, rect, width }: ObjectTileProps) => {
+export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: ObjectTileProps) => {
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
+    const [deleted, setDeleted] = useState(false);
 
     useEffect(() => {
         const crop = async () => {
@@ -27,7 +29,13 @@ export const ObjectTile = ({ image, tags, rect, width }: ObjectTileProps) => {
 
     return (
         croppedImage && (
-            <View style={{ gap: 9 }}>
+            <View
+                style={{ gap: 9, opacity: deleted ? 0.2 : 1 }}
+                onTouchEnd={() => {
+                    setDeleted((d) => !d);
+                    onPress();
+                }}
+            >
                 <View
                     style={{
                         width,
@@ -44,7 +52,10 @@ export const ObjectTile = ({ image, tags, rect, width }: ObjectTileProps) => {
                     ></Image>
                 </View>
                 {tags.map((tag) => (
-                    <Text key={tag} style={{ color: WHITE, fontWeight: 500, paddingHorizontal: 9, opacity: 0.8 }}>
+                    <Text
+                        key={tag}
+                        style={{ width, color: WHITE, fontWeight: 500, paddingHorizontal: 9, opacity: 0.8 }}
+                    >
                         {tag.toUpperCase()}
                     </Text>
                 ))}
