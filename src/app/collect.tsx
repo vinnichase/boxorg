@@ -21,6 +21,7 @@ function App(): JSX.Element {
                 <View
                     style={{
                         gap: 50,
+                        padding: 50,
                     }}
                 >
                     {!objects || !image || objects.length === 0 ? (
@@ -28,8 +29,9 @@ function App(): JSX.Element {
                             No Results. Get Back!
                         </Text>
                     ) : (
-                        objects.map(({ frame }) => (
+                        objects.map(({ frame }, i) => (
                             <ObjectTile
+                                key={i}
                                 image={image}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
                             ></ObjectTile>
@@ -39,6 +41,8 @@ function App(): JSX.Element {
             </ScrollView>
             <SafeAreaView />
             <BlurView
+                intensity={80}
+                tint="regular"
                 style={{
                     position: 'absolute',
                     width: '100%',
@@ -48,7 +52,7 @@ function App(): JSX.Element {
                     borderBottomWidth: 1,
                 }}
             >
-                <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}44` }}>
+                <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}33` }}>
                     <View style={{ height: 100 }}></View>
                 </SafeAreaView>
             </BlurView>
