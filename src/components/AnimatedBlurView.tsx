@@ -12,7 +12,7 @@ type AnimatedBlurViewProps = BlurViewProps & {
     intensity: number;
 };
 
-const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({ children, style, intensity, ...rest }) => {
+export const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({ children, style, intensity, ...rest }) => {
     const sharedIntensity = useSharedValue(intensity);
 
     useEffect(() => {
@@ -29,5 +29,3 @@ const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({ children, style, in
         </AnimatedBlurViewComponent>
     );
 };
-
-export default AnimatedBlurView;

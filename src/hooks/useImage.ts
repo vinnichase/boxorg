@@ -1,6 +1,7 @@
 import {
     getCameraPermissionsAsync,
     launchCameraAsync,
+    launchImageLibraryAsync,
     requestCameraPermissionsAsync,
     type ImagePickerAsset,
 } from 'expo-image-picker';
@@ -18,7 +19,7 @@ export const useImage = () => {
                 return;
             }
         }
-        const result = await launchCameraAsync({
+        const result = await launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
             quality: 1,

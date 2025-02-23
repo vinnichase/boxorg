@@ -17,6 +17,7 @@
     "dependencies": {
         "@babel/runtime": "^7.26.7",
         "@expo/vector-icons": "^14.0.2",
+        "@gothub-team/got-atom": "^0.24.4",
         "@infinitered/react-native-mlkit-object-detection": "^2.0.1",
         "@react-native-community/image-editor": "^4.3.0",
         "@react-navigation/bottom-tabs": "^7.2.0",

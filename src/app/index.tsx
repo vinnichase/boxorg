@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Animated, ImageBackground, Keyboard, SafeAreaView, TextInput, TouchableOpacity, View } from 'react-native';
-import { BLACK, PURPLE_DARK, PURPLE_MID, RED, WHITE } from '../util/constants';
-import AnimatedBlurView from '../components/AnimatedBlurView';
+import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
+import { AnimatedBlurView } from '../components/AnimatedBlurView';
 import { ApertureIcon, BoxIcon, SearchIcon } from '../components/Icons';
 import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
 import { useRouter } from 'expo-router';
+import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -20,7 +21,9 @@ function App(): JSX.Element {
     }, [image]);
 
     useEffect(() => {
-        result && result.length > 0 && router.push('/collect');
+        if (!result || !image) return;
+        ObjectDetectionResultAtom.set({ image, objects: result });
+        router.push('/collect');
     }, [result]);
 
     const [blur, setBlur] = useState(0);

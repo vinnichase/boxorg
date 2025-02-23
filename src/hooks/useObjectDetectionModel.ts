@@ -20,7 +20,7 @@ export const useObjectDetectionModel = (name: string) => {
 
     async function detectObjects(uri: string) {
         const result = await model?.detectObjects(uri);
-        result && setResult(result);
+        result ? setResult(result) : setResult(null);
     }
 
     return { result, detectObjects };
