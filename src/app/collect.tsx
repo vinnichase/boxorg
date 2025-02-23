@@ -5,6 +5,7 @@ import { useAtom } from '@gothub-team/got-atom';
 import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
+import { BoxIcon } from '../components/Icons';
 
 function App(): JSX.Element {
     const { image, objects } = useAtom(ObjectDetectionResultAtom);
@@ -17,11 +18,11 @@ function App(): JSX.Element {
             }}
         >
             <SafeAreaView />
-            <ScrollView style={{ marginTop: 100, overflow: 'visible' }}>
+            <ScrollView style={{ marginTop: 90, overflow: 'visible' }}>
                 <View
                     style={{
-                        gap: 50,
-                        padding: 50,
+                        gap: 20,
+                        padding: 20,
                     }}
                 >
                     {!objects || !image || objects.length === 0 ? (
@@ -34,7 +35,7 @@ function App(): JSX.Element {
                                 key={i}
                                 image={image}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
-                            ></ObjectTile>
+                            />
                         ))
                     )}
                 </View>
@@ -53,7 +54,10 @@ function App(): JSX.Element {
                 }}
             >
                 <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}33` }}>
-                    <View style={{ height: 100 }}></View>
+                    <View style={{ height: 90, flexDirection: 'row', alignItems: 'center', gap: 20, padding: 20 }}>
+                        <BoxIcon color2={`${WHITE}44`} />
+                        <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box 12</Text>
+                    </View>
                 </SafeAreaView>
             </BlurView>
         </View>

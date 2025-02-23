@@ -27,7 +27,11 @@ export const SearchIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
-export const BoxIcon = ({ color1 }: IconProps) => (
+type BoxIconProps = {
+    color1?: string;
+    color2?: string;
+};
+export const BoxIcon = ({ color1, color2 }: BoxIconProps) => (
     <View>
         <Svg
             style={{
@@ -37,8 +41,8 @@ export const BoxIcon = ({ color1 }: IconProps) => (
             viewBox="-3 -3 73.32 73.32"
         >
             <Rect
-                fill={NONE}
-                stroke={color1}
+                fill={color2 ?? NONE}
+                stroke={color1 ?? NONE}
                 strokeWidth={3.8}
                 x="7.21"
                 y="43.18"
@@ -48,8 +52,8 @@ export const BoxIcon = ({ color1 }: IconProps) => (
                 ry="6.09"
             />
             <Rect
-                fill={NONE}
-                stroke={color1}
+                fill={color2 ?? NONE}
+                stroke={color1 ?? NONE}
                 strokeWidth={3.8}
                 x="7.21"
                 y="14.43"
@@ -59,8 +63,8 @@ export const BoxIcon = ({ color1 }: IconProps) => (
                 ry="6.09"
             />
             <Rect
-                fill={NONE}
-                stroke={color1}
+                fill={color2 ?? NONE}
+                stroke={color1 ?? NONE}
                 strokeWidth={3.8}
                 x="35.96"
                 y="14.43"
@@ -70,8 +74,8 @@ export const BoxIcon = ({ color1 }: IconProps) => (
                 ry="6.09"
             />
             <Path
-                fill={NONE}
-                stroke={color1}
+                fill={color2 ?? NONE}
+                stroke={color1 ?? NONE}
                 strokeWidth={3.8}
                 d="M58.86,0H8.46C3.79,0,0,3.79,0,8.46v4.25s0,.04,0,.06c.02,2.09,2.82,2.79,3.94,1.02,1.52-2.39,4.19-3.98,7.23-3.98h16.22c1.88,0,3.61.61,5.02,1.63.74.54,1.74.54,2.48,0,1.41-1.03,3.15-1.63,5.02-1.63h16.23c3.04,0,5.71,1.59,7.23,3.98,1.12,1.76,3.92,1.07,3.94-1.02,0-.02,0-.04,0-.06v-4.25c0-4.67-3.79-8.46-8.46-8.46Z"
             />
