@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { PURPLE_DARK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
@@ -7,7 +7,14 @@ import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
 import { BoxIcon } from '../components/Icons';
 
+const HEADER_HEIGHT = 90;
+const TILE_GAP = 18;
+const TILE_COLUMNS = 2;
+
 function App(): JSX.Element {
+    const { width } = useWindowDimensions();
+    const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
+
     const { image, objects } = useAtom(ObjectDetectionResultAtom);
 
     return (
@@ -18,11 +25,13 @@ function App(): JSX.Element {
             }}
         >
             <SafeAreaView />
-            <ScrollView style={{ marginTop: 90, overflow: 'visible' }}>
+            <ScrollView style={{ marginTop: HEADER_HEIGHT, overflow: 'visible' }}>
                 <View
                     style={{
-                        gap: 20,
-                        padding: 20,
+                        gap: TILE_GAP,
+                        padding: TILE_GAP,
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
                     }}
                 >
                     {!objects || !image || objects.length === 0 ? (
@@ -34,6 +43,7 @@ function App(): JSX.Element {
                             <ObjectTile
                                 key={i}
                                 image={image}
+                                width={TILE_WIDTH}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
                             />
                         ))
@@ -54,7 +64,15 @@ function App(): JSX.Element {
                 }}
             >
                 <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}33` }}>
-                    <View style={{ height: 90, flexDirection: 'row', alignItems: 'center', gap: 20, padding: 20 }}>
+                    <View
+                        style={{
+                            height: HEADER_HEIGHT,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 20,
+                            padding: 20,
+                        }}
+                    >
                         <BoxIcon color2={`${WHITE}44`} />
                         <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box 12</Text>
                     </View>

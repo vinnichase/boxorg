@@ -7,9 +7,10 @@ type ObjectTileProps = {
     image: ImagePickerAsset;
     // x, y, width, height
     rect: [number, number, number, number];
+    width: number;
 };
 
-export const ObjectTile = ({ image, rect }: ObjectTileProps) => {
+export const ObjectTile = ({ image, rect, width }: ObjectTileProps) => {
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
 
     useEffect(() => {
@@ -20,5 +21,5 @@ export const ObjectTile = ({ image, rect }: ObjectTileProps) => {
         crop();
     }, [image, rect]);
 
-    return croppedImage && <Image source={{ uri: croppedImage }} style={{ width: 200, height: 200 }} />;
+    return croppedImage && <Image source={{ uri: croppedImage }} style={{ width, height: width }} />;
 };
