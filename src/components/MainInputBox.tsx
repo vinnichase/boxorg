@@ -14,7 +14,10 @@ export const MainInputBox = ({ children, style, ...props }: MainInputBoxProps) =
             padding: 4,
             backgroundColor: WHITE,
             opacity: 0.9,
-            boxShadow: `0 0 100px 10px ${BLACK}44`,
+            shadowColor: `${BLACK}`,
+            shadowOpacity: 1,
+            shadowRadius: 30,
+            elevation: 5,
             borderRadius: 20,
             ...(typeof style === 'object' ? style : {}),
         }}
