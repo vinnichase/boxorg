@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { cropImage } from '../util/cropImage';
-import { WHITE } from '../util/constants';
+import { PURPLE_LIGHT, WHITE } from '../util/constants';
 
 const BORDER_WIDTH = 3;
 
@@ -30,7 +30,13 @@ export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: Obj
     return (
         croppedImage && (
             <View
-                style={{ gap: 9, opacity: deleted ? 0.2 : 1 }}
+                style={{
+                    gap: 9,
+                    shadowColor: `${PURPLE_LIGHT}`,
+                    shadowOpacity: 1,
+                    shadowRadius: 50,
+                    opacity: deleted ? 0.2 : 1,
+                }}
                 onTouchEnd={() => {
                     setDeleted((d) => !d);
                     onPress();

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, Text, useWindowDimensions, View } from 'react-native';
-import { PURPLE_DARK, WHITE } from '../util/constants';
+import { BLACK, PURPLE_DARK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
 import { ObjectTile } from '../components/ObjectTile';
@@ -22,6 +22,9 @@ function App(): JSX.Element {
             style={{
                 flex: 1,
                 backgroundColor: PURPLE_DARK,
+                shadowColor: `${BLACK}aa`,
+                shadowOpacity: 1,
+                shadowRadius: 50,
             }}
         >
             <SafeAreaView />
