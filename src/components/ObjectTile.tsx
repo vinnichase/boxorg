@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { cropImage } from '../util/cropImage';
-import { PURPLE_LIGHT, PURPLE_MID, RED, WHITE } from '../util/constants';
+import { PURPLE_MID, RED, WHITE } from '../util/constants';
 import { BackIcon, CrossIcon } from './Icons';
 
 const BORDER_WIDTH = 3;
