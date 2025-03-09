@@ -13,10 +13,11 @@ type ObjectTileProps = {
     rect: [number, number, number, number];
     width: number;
     tags: string[];
-    onPress?: () => void;
+    onEdit?: () => void;
+    onDelete?: () => void;
 };
 
-export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: ObjectTileProps) => {
+export const ObjectTile = ({ image, tags, rect, width, onEdit = () => {}, onDelete = () => {} }: ObjectTileProps) => {
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
     const [deleted, setDeleted] = useState(false);
 
@@ -31,7 +32,7 @@ export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: Obj
     return (
         croppedImage && (
             <View>
-                <View style={{ gap: 9, opacity: deleted ? 0.35 : 1 }}>
+                <TouchableOpacity style={{ gap: 9, opacity: deleted ? 0.35 : 1 }} onPress={onEdit}>
                     <View
                         style={{
                             width,
@@ -55,7 +56,7 @@ export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: Obj
                             {tag.toUpperCase()}
                         </Text>
                     ))}
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={{
                         position: 'absolute',
@@ -65,7 +66,7 @@ export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: Obj
                     }}
                     onPress={() => {
                         setDeleted((d) => !d);
-                        onPress();
+                        onDelete();
                     }}
                 >
                     <View
