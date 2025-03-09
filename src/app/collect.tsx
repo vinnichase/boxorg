@@ -6,12 +6,20 @@ import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
 import { BoxIcon } from '../components/Icons';
+import { EditObject, EditObjectsAtom } from '../atoms/EditObjectsAtom';
+import { setPath } from '../util/setPath';
+import { getPath } from '../util/getPath';
+import { useRouter } from 'expo-router';
+
+EditObjectsAtom.subscribe({ next: console.log });
 
 const HEADER_HEIGHT = 90;
 const TILE_GAP = 18;
 const TILE_COLUMNS = 2;
 
 function App(): JSX.Element {
+    const router = useRouter();
+
     const { width } = useWindowDimensions();
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
 
@@ -52,6 +60,29 @@ function App(): JSX.Element {
                                 tags={labels.slice(0, 3).map((l) => l.text)}
                                 width={TILE_WIDTH}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
+                                onDeleted={(deleted) =>
+                                    EditObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
+                                }
+                                onEdit={(imageUri) => {
+                                    EditObjectsAtom.set((a) => setPath(['index'], i, a));
+                                    const currentObject = getPath(
+                                        undefined as EditObject | undefined,
+                                        ['objects', i],
+                                        EditObjectsAtom.get(),
+                                    );
+                                    EditObjectsAtom.set((a) =>
+                                        setPath(
+                                            ['objects', i],
+                                            {
+                                                deleted: currentObject?.deleted ?? false,
+                                                uri: imageUri,
+                                                tags: currentObject?.tags ?? labels.slice(0, 3).map((l) => l.text),
+                                            },
+                                            a,
+                                        ),
+                                    );
+                                    router.push('/categorize');
+                                }}
                             />
                         ))
                     )}
