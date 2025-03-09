@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, Text, useWindowDimensions, View } from 'react-native';
-import { BLACK, PURPLE_DARK, WHITE } from '../util/constants';
+import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
 import { ObjectTile } from '../components/ObjectTile';
@@ -35,6 +35,9 @@ function App(): JSX.Element {
                         padding: TILE_GAP,
                         flexDirection: 'row',
                         flexWrap: 'wrap',
+                        shadowColor: `${PURPLE_LIGHT}`,
+                        shadowOpacity: 1,
+                        shadowRadius: 50,
                     }}
                 >
                     {!objects || !image || objects.length === 0 ? (
