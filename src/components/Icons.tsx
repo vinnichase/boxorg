@@ -108,3 +108,10 @@ export const CrossIcon = ({ color1 }: IconProps) => (
         />
     </Svg>
 );
+
+export const BackIcon = ({ color1 }: IconProps) => (
+    <Svg style={{}} strokeWidth="3" viewBox="3.5 3.5 18 18">
+        <Path stroke={color1} strokeLinecap="round" fill="none" d="M9 14l-4 -4l4 -4" />
+        <Path stroke={color1} strokeLinecap="round" fill="none" d="M5 10h11a4 4 0 1 1 0 8h-1" />
+    </Svg>
+);
