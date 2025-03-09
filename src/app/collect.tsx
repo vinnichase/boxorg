@@ -31,7 +31,7 @@ function App(): JSX.Element {
                 flex: 1,
                 backgroundColor: PURPLE_DARK,
                 shadowColor: `${BLACK}aa`,
-                shadowOpacity: 1,
+                shadowOpacity: 0.5,
                 shadowRadius: 50,
             }}
         >
