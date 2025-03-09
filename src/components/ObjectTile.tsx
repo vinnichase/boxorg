@@ -59,21 +59,27 @@ export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: Obj
                 <TouchableOpacity
                     style={{
                         position: 'absolute',
-                        top: 7 + BORDER_WIDTH,
-                        right: 7 + BORDER_WIDTH,
-                        width: 23,
-                        height: 23,
-                        padding: 4,
-                        borderRadius: 7,
-                        backgroundColor: WHITE,
-                        opacity: deleted ? 0.5 : 0.9,
+                        top: 0,
+                        right: 0,
+                        padding: 7 + BORDER_WIDTH,
                     }}
                     onPress={() => {
                         setDeleted((d) => !d);
                         onPress();
                     }}
                 >
-                    {deleted ? <BackIcon color1={PURPLE_MID} /> : <CrossIcon color1={RED} />}
+                    <View
+                        style={{
+                            width: 23,
+                            height: 23,
+                            padding: 4,
+                            borderRadius: 7,
+                            backgroundColor: WHITE,
+                            opacity: deleted ? 0.5 : 0.9,
+                        }}
+                    >
+                        {deleted ? <BackIcon color1={PURPLE_MID} /> : <CrossIcon color1={RED} />}
+                    </View>
                 </TouchableOpacity>
             </View>
         )
