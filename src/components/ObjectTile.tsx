@@ -59,8 +59,8 @@ export const ObjectTile = ({ image, tags, rect, width, onPress = () => {} }: Obj
                 <TouchableOpacity
                     style={{
                         position: 'absolute',
-                        top: 6 + BORDER_WIDTH,
-                        right: 6 + BORDER_WIDTH,
+                        top: 7 + BORDER_WIDTH,
+                        right: 7 + BORDER_WIDTH,
                         width: 23,
                         height: 23,
                         padding: 4,
