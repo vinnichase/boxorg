@@ -76,7 +76,7 @@ function App(): JSX.Element {
                                             {
                                                 deleted: currentObject?.deleted ?? false,
                                                 uri: imageUri,
-                                                tags: currentObject?.tags ?? labels.slice(0, 6).map((l) => l.text),
+                                                tags: currentObject?.tags ?? labels.slice(0, 3).map((l) => l.text),
                                             },
                                             a,
                                         ),
