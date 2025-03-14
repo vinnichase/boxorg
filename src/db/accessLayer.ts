@@ -8,12 +8,14 @@ export type ObjectRecord = {
     id: number;
     img_path: string;
     thumb_path: string;
+    box_id: number;
 };
 const createObjectsTable = sql`
     CREATE TABLE IF NOT EXISTS objects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         img_path TEXT,
-        thumb_path TEXT
+        thumb_path TEXT,
+        box_id INTEGER,
     )
 `;
 

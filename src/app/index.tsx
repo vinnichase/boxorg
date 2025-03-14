@@ -9,6 +9,7 @@ import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
 import { useRouter } from 'expo-router';
 import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
+import { CollectBoxAtom } from '../atoms/CollectBoxAtom';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -120,6 +121,7 @@ function App(): JSX.Element {
                         <BoxIcon color1={PURPLE_DARK} />
                         <TextInput
                             ref={boxTextInput}
+                            keyboardType="number-pad"
                             style={{
                                 flex: 1,
                                 height: '100%',
@@ -128,12 +130,16 @@ function App(): JSX.Element {
                             }}
                             onTouchEnd={(e) => e.stopPropagation()}
                             onFocus={() => setFocus('box')}
+                            onChange={(e) => CollectBoxAtom.set({ boxId: parseInt(e.nativeEvent.text) })}
                         />
                     </MainInputBox>
                     <TouchableOpacity
                         onPressOut={() => {
-                            launchCamera();
-                            setFocus('none');
+                            if (CollectBoxAtom.get().boxId) {
+                                setFocus('none');
+                                Keyboard.dismiss();
+                                launchCamera();
+                            }
                         }}
                     >
                         <Animated.View

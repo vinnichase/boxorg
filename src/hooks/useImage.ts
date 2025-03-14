@@ -6,6 +6,7 @@ import {
     type ImagePickerAsset,
 } from 'expo-image-picker';
 import { useState } from 'react';
+import { Keyboard } from 'react-native';
 
 export const useImage = () => {
     const [image, setImage] = useState<ImagePickerAsset | null>();
