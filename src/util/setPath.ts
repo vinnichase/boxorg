@@ -7,22 +7,21 @@ export const setPath = <TInput extends Record<string, unknown>, TVal, TPath exte
         return val as TPath['length'] extends 0 ? TVal : TInput;
     }
 
-    let current: any = input;
+    let current: any = JSON.parse(JSON.stringify(input));
 
+    let obj = current;
     for (let i = 0; i < path.length - 1; i += 1) {
-        const key = path[i];
-        const nextKey = path[i + 1];
-
-        // If there is no value at the current key, create one.
-        if (current[key] === undefined) {
-            // If the next key is a number, we want an array; otherwise, an object.
-            current[key] = typeof nextKey === 'number' ? [] : {};
+        const prop = path[i];
+        if (prop in obj) {
+            obj = obj[prop];
+        } else {
+            obj[prop] = {};
+            obj = obj[prop];
         }
-        current = current[key];
     }
 
-    // Set the value at the last key (which might be a string or a number).
-    current[path[path.length - 1]] = val;
+    const lastProp = path[path.length - 1];
+    obj[lastProp] = val;
 
-    return input as TPath['length'] extends 0 ? TVal : TInput;
+    return current as TPath['length'] extends 0 ? TVal : TInput;
 };

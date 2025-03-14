@@ -11,8 +11,6 @@ import { setPath } from '../util/setPath';
 import { getPath } from '../util/getPath';
 import { useRouter } from 'expo-router';
 
-EditObjectsAtom.subscribe({ next: console.log });
-
 const HEADER_HEIGHT = 90;
 const TILE_GAP = 18;
 const TILE_COLUMNS = 2;
@@ -24,6 +22,7 @@ function App(): JSX.Element {
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
 
     const { image, objects } = useAtom(ObjectDetectionResultAtom);
+    const { index, objects: editObjects } = useAtom(EditObjectsAtom);
 
     return (
         <View
@@ -57,7 +56,13 @@ function App(): JSX.Element {
                             <ObjectTile
                                 key={i}
                                 image={image}
-                                tags={labels.slice(0, 3).map((l) => l.text)}
+                                tags={
+                                    getPath(
+                                        labels.slice(0, 3).map((l) => l.text),
+                                        ['tags'],
+                                        editObjects[i],
+                                    ) ?? []
+                                }
                                 width={TILE_WIDTH}
                                 rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
                                 onDeleted={(deleted) =>
