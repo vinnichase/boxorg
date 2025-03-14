@@ -21,8 +21,6 @@ function App(): JSX.Element {
     const [, forceUpdate] = useReducer(() => ({}), {});
     const object = objects[index];
 
-    console.log(object?.tags);
-
     return (
         <View
             style={{

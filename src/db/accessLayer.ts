@@ -1,9 +1,9 @@
 import * as SqLite from 'expo-sqlite';
 import { sql } from '../util/sql';
-export const db = SqLite.openDatabaseSync('boxorg.db');
-// db.closeSync();
 // SqLite.deleteDatabaseSync('boxorg.db');
+export const openDb = () => SqLite.openDatabaseSync('boxorg.db');
 
+const db = openDb();
 export type ObjectRecord = {
     id: number;
     img_path: string;
@@ -15,7 +15,7 @@ const createObjectsTable = sql`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         img_path TEXT,
         thumb_path TEXT,
-        box_id INTEGER,
+        box_id INTEGER
     )
 `;
 
@@ -56,27 +56,36 @@ db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_object_tags_object ON object_tags
 db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_object_tags_tag ON object_tags(tag_id)`);
 db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_tags_tag ON tags(tag)`);
 
+db.closeSync();
 // ===========================================================================
 // Objects CRUD
 // ===========================================================================
 
 /**
  * Creates a new object.
- * @param name The name for the object.
+ * @param box_id The box ID.
  */
-export function createObject(img_path: string, thumb_path: string) {
-    const stmt = db.prepareSync(sql`INSERT INTO objects (img_path, thumb_path) VALUES (?, ?)`);
-    const info = stmt.executeSync(img_path, thumb_path);
-    return info.lastInsertRowId;
+export function createObject(db: SqLite.SQLiteDatabase, box_id: number) {
+    try {
+        const stmt = db.prepareSync(sql`INSERT INTO objects (box_id) VALUES (?)`);
+        const info = stmt.executeSync(box_id);
+        return info.lastInsertRowId;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves a object by its ID.
  * @param id The object ID.
  */
-export function getObjectById(id: number) {
-    const stmt = db.prepareSync(sql`SELECT * FROM objects WHERE id = ?`);
-    return stmt.executeSync<ObjectRecord[]>(id).getFirstSync();
+export function getObjectById(db: SqLite.SQLiteDatabase, id: number) {
+    try {
+        const stmt = db.prepareSync(sql`SELECT * FROM objects WHERE id = ?`);
+        return stmt.executeSync<ObjectRecord[]>(id).getFirstSync();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
@@ -84,20 +93,35 @@ export function getObjectById(id: number) {
  * @param id The object ID.
  * @param name The new name.
  */
-export function updateObject(id: number, img_path: string, thumb_path: string): boolean {
-    const stmt = db.prepareSync(sql`UPDATE objects SET img_path = ?, thumb_path = ? WHERE id = ?`);
-    const info = stmt.executeSync(img_path, thumb_path, id);
-    return info.changes > 0;
+export function updateObject(
+    db: SqLite.SQLiteDatabase,
+    id: number,
+    img_path: string,
+    thumb_path: string,
+    box_id: number,
+): boolean {
+    try {
+        const stmt = db.prepareSync(sql`UPDATE objects SET img_path = ?, thumb_path = ?, box_id = ? WHERE id = ?`);
+        const info = stmt.executeSync(img_path, thumb_path, box_id, id);
+        return info.changes > 0;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 }
 
 /**
  * Deletes a object.
  * @param id The object ID.
  */
-export function deleteObject(id: number) {
-    const stmt = db.prepareSync(sql`DELETE FROM objects WHERE id = ?`);
-    const info = stmt.executeSync(id);
-    return info.changes > 0;
+export function deleteObject(db: SqLite.SQLiteDatabase, id: number) {
+    try {
+        const stmt = db.prepareSync(sql`DELETE FROM objects WHERE id = ?`);
+        const info = stmt.executeSync(id);
+        return info.changes > 0;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 // ===========================================================================
@@ -108,7 +132,7 @@ export function deleteObject(id: number) {
  * Creates a new tag. If the tag already exists, it returns the existing tag's ID.
  * @param tag The tag text.
  */
-export function createTag(tag: string) {
+export function createTag(db: SqLite.SQLiteDatabase, tag: string) {
     // Using INSERT OR IGNORE ensures duplicates are not created.
     try {
         const stmt = db.prepareSync(sql`INSERT INTO tags (tag) VALUES (?)`);
@@ -116,27 +140,39 @@ export function createTag(tag: string) {
     } catch {
         // The tag already exists.  Nothing to do.
     }
-    // Fetch the tag's id (whether newly inserted or pre-existing).
-    const getStmt = db.prepareSync(sql`SELECT id FROM tags WHERE tag = ?`);
-    return getStmt.executeSync<TagRecord>(tag).getFirstSync()?.id;
+    try {
+        // Fetch the tag's id (whether newly inserted or pre-existing).
+        const getStmt = db.prepareSync(sql`SELECT id FROM tags WHERE tag = ?`);
+        return getStmt.executeSync<TagRecord>(tag).getFirstSync()?.id;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves a tag by its ID.
  * @param id The tag ID.
  */
-export function getTagById(id: number) {
-    const stmt = db.prepareSync(sql`SELECT * FROM tags WHERE id = ?`);
-    return stmt.executeSync<TagRecord>(id).getFirstSync();
+export function getTagById(db: SqLite.SQLiteDatabase, id: number) {
+    try {
+        const stmt = db.prepareSync(sql`SELECT * FROM tags WHERE id = ?`);
+        return stmt.executeSync<TagRecord>(id).getFirstSync();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves a tag by its text.
  * @param tag The tag text.
  */
-export function getTagByName(tag: string) {
-    const stmt = db.prepareSync(sql`SELECT * FROM tags WHERE tag = ?`);
-    return stmt.executeSync<TagRecord>(tag).getFirstSync();
+export function getTagByName(db: SqLite.SQLiteDatabase, tag: string) {
+    try {
+        const stmt = db.prepareSync(sql`SELECT * FROM tags WHERE tag = ?`);
+        return stmt.executeSync<TagRecord>(tag).getFirstSync();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
@@ -144,20 +180,30 @@ export function getTagByName(tag: string) {
  * @param id The tag ID.
  * @param newTag The new tag text.
  */
-export function updateTag(id: number, newTag: string): boolean {
-    const stmt = db.prepareSync(sql`UPDATE tags SET tag = ? WHERE id = ?`);
-    const info = stmt.executeSync(newTag, id);
-    return info.changes > 0;
+export function updateTag(db: SqLite.SQLiteDatabase, id: number, newTag: string): boolean {
+    try {
+        const stmt = db.prepareSync(sql`UPDATE tags SET tag = ? WHERE id = ?`);
+        const info = stmt.executeSync(newTag, id);
+        return info.changes > 0;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 }
 
 /**
  * Deletes a tag.
  * @param id The tag ID.
  */
-export function deleteTag(id: number): boolean {
-    const stmt = db.prepareSync(sql`DELETE FROM tags WHERE id = ?`);
-    const info = stmt.executeSync(id);
-    return info.changes > 0;
+export function deleteTag(db: SqLite.SQLiteDatabase, id: number): boolean {
+    try {
+        const stmt = db.prepareSync(sql`DELETE FROM tags WHERE id = ?`);
+        const info = stmt.executeSync(id);
+        return info.changes > 0;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 }
 
 // ===========================================================================
@@ -169,15 +215,19 @@ export function deleteTag(id: number): boolean {
  * @param objectId The ID of the object.
  * @param tag The tag text.
  */
-export function assignTagToObject(objectId: number, tag: string) {
+export function assignTagToObject(db: SqLite.SQLiteDatabase, objectId: number, tag: string) {
     // Ensure the tag exists (or create it).
-    const tagId = createTag(tag);
+    const tagId = createTag(db, tag);
     if (!tagId) {
         return;
     }
-    // Insert into the junction table. INSERT OR IGNORE prevents duplicate assignments.
-    const stmt = db.prepareSync(sql`INSERT OR IGNORE INTO object_tags (object_id, tag_id) VALUES (?, ?)`);
-    stmt.executeSync(objectId, tagId);
+    try {
+        // Insert into the junction table. INSERT OR IGNORE prevents duplicate assignments.
+        const stmt = db.prepareSync(sql`INSERT OR IGNORE INTO object_tags (object_id, tag_id) VALUES (?, ?)`);
+        stmt.executeSync(objectId, tagId);
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
@@ -185,57 +235,77 @@ export function assignTagToObject(objectId: number, tag: string) {
  * @param objectId The ID of the object.
  * @param tag The tag text.
  */
-export function removeTagFromObject(objectId: number, tag: string): void {
-    const tagRow = getTagByName(tag);
+export function removeTagFromObject(db: SqLite.SQLiteDatabase, objectId: number, tag: string): void {
+    const tagRow = getTagByName(db, tag);
     if (!tagRow) {
         // The tag does not exist; nothing to remove.
         return;
     }
-    const stmt = db.prepareSync(sql`DELETE FROM object_tags WHERE object_id = ? AND tag_id = ?`);
-    stmt.executeSync(objectId, tagRow.id);
+    try {
+        const stmt = db.prepareSync(sql`DELETE FROM object_tags WHERE object_id = ? AND tag_id = ?`);
+        stmt.executeSync(objectId, tagRow.id);
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves all objects.
  */
-export function getObjects() {
-    const stmt = db.prepareSync(sql`SELECT * FROM objects`);
-    return stmt.executeSync<ObjectRecord>().getAllSync();
+export function getObjects(db: SqLite.SQLiteDatabase) {
+    try {
+        const stmt = db.prepareSync(sql`SELECT * FROM objects`);
+        return stmt.executeSync<ObjectRecord>().getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves all tags.
  */
-export function getTags() {
-    const stmt = db.prepareSync(sql`SELECT * FROM tags`);
-    return stmt.executeSync<TagRecord>().getAllSync();
+export function getTags(db: SqLite.SQLiteDatabase) {
+    try {
+        const stmt = db.prepareSync(sql`SELECT * FROM tags`);
+        return stmt.executeSync<TagRecord>().getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves all tags assigned to a object.
  * @param objectId The object ID.
  */
-export function getTagsForObject(objectId: number) {
-    const stmt = db.prepareSync(sql`
+export function getTagsForObject(db: SqLite.SQLiteDatabase, objectId: number) {
+    try {
+        const stmt = db.prepareSync(sql`
         SELECT t.id, t.tag
         FROM tags t
         INNER JOIN object_tags rt ON t.id = rt.tag_id
         WHERE rt.object_id = ?
     `);
-    return stmt.executeSync<TagRecord>(objectId).getAllSync();
+        return stmt.executeSync<TagRecord>(objectId).getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Retrieves all objects that have been assigned a specific tag.
  * @param tag The tag text.
  */
-export function getObjectsForTag(tag: string) {
-    const stmt = db.prepareSync(sql`
+export function getObjectsForTag(db: SqLite.SQLiteDatabase, tag: string) {
+    try {
+        const stmt = db.prepareSync(sql`
         SELECT r.id, r.name
         FROM objects r
         INNER JOIN object_tags rt ON r.id = rt.object_id
         INNER JOIN tags t ON rt.tag_id = t.id
         WHERE t.tag = ?
     `);
-    return stmt.executeSync<ObjectRecord>(tag).getAllSync();
+        return stmt.executeSync<ObjectRecord>(tag).getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
 }

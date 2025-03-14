@@ -22,8 +22,6 @@ function App(): JSX.Element {
 
     const { boxId, objects } = useAtom(CollectObjectsAtom);
 
-    console.log(boxId);
-
     return (
         <View
             style={{
@@ -105,7 +103,6 @@ function App(): JSX.Element {
                         </View>
                         <TouchableOpacity
                             onPress={() => {
-                                console.log('save', boxId, objects);
                                 boxId && saveObjects(boxId, objects);
                             }}
                         >
