@@ -116,6 +116,27 @@ export const CrossIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
+export const SaveIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={0.9}
+            viewBox="0 0 24 24"
+        >
+            <Path
+                stroke={color1}
+                fill="none"
+                d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"
+            />
+            <Path stroke={color1} fill="none" d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+            <Path stroke={color1} fill="none" d="M14 4l0 4l-6 0l0 -4" />
+        </Svg>
+    </View>
+);
+
 export const BackIcon = ({ color1 }: IconProps) => (
     <Svg style={{}} strokeWidth="3" viewBox="3.5 3.5 18 18">
         <Path stroke={color1} strokeLinecap="round" fill="none" d="M9 14l-4 -4l4 -4" />

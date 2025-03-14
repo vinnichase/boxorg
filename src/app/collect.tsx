@@ -1,11 +1,11 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
-import { BoxIcon } from '../components/Icons';
+import { BoxIcon, SaveIcon } from '../components/Icons';
 import { EditObject, EditObjectsAtom } from '../atoms/EditObjectsAtom';
 import { setPath } from '../util/setPath';
 import { getPath } from '../util/getPath';
@@ -109,12 +109,18 @@ function App(): JSX.Element {
                             height: HEADER_HEIGHT,
                             flexDirection: 'row',
                             alignItems: 'center',
+                            justifyContent: 'space-between',
                             gap: 20,
                             padding: 20,
                         }}
                     >
-                        <BoxIcon color2={`${WHITE}44`} />
-                        <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box 12</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                            <BoxIcon color2={`${WHITE}44`} />
+                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box 12</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => {}}>
+                            <SaveIcon color1={`${WHITE}`} />
+                        </TouchableOpacity>
                     </View>
                 </SafeAreaView>
             </BlurView>
