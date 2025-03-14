@@ -9,15 +9,15 @@ import {
     useWindowDimensions,
     View,
 } from 'react-native';
-import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, RED, WHITE } from '../util/constants';
+import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
-import { EditObjectsAtom } from '../atoms/EditObjectsAtom';
+import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { CrossIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
 
 function App(): JSX.Element {
     const { width } = useWindowDimensions();
-    const { index, objects } = useAtom(EditObjectsAtom);
+    const { index, objects } = useAtom(CollectObjectsAtom);
     const [, forceUpdate] = useReducer(() => ({}), {});
     const object = objects[index];
 
@@ -80,7 +80,7 @@ function App(): JSX.Element {
                                     <TouchableOpacity
                                         style={{ paddingVertical: 10 }}
                                         onPress={() => {
-                                            EditObjectsAtom.set((a) =>
+                                            CollectObjectsAtom.set((a) =>
                                                 setPath(
                                                     ['objects', index, 'tags'],
                                                     object?.tags?.filter((_, j) => i !== j),
@@ -112,7 +112,7 @@ function App(): JSX.Element {
                                             }}
                                             defaultValue={tag}
                                             onChange={(e) => {
-                                                EditObjectsAtom.set((a) =>
+                                                CollectObjectsAtom.set((a) =>
                                                     setPath(
                                                         ['objects', index, 'tags', i],
                                                         e.nativeEvent.text.toUpperCase().trim(),
@@ -127,7 +127,7 @@ function App(): JSX.Element {
                             <TouchableOpacity
                                 style={{ width: '100%', alignItems: 'center' }}
                                 onPress={() => {
-                                    EditObjectsAtom.set((a) =>
+                                    CollectObjectsAtom.set((a) =>
                                         setPath(['objects', index, 'tags', object?.tags?.length ?? 0], '', a),
                                     );
                                 }}

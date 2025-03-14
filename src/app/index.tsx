@@ -8,8 +8,9 @@ import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
 import { useRouter } from 'expo-router';
-import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
-import { CollectBoxAtom } from '../atoms/CollectBoxAtom';
+import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
+import { collectObjects } from '../service/collectObjects';
+import { setPath } from '../util/setPath';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -23,8 +24,8 @@ function App(): JSX.Element {
 
     useEffect(() => {
         if (!result || !image) return;
-        ObjectDetectionResultAtom.set({ image, objects: result });
         router.push('/collect');
+        collectObjects(image, result).then((objects) => CollectObjectsAtom.set({ index: 0, objects }));
     }, [result]);
 
     const [blur, setBlur] = useState(0);
@@ -130,12 +131,14 @@ function App(): JSX.Element {
                             }}
                             onTouchEnd={(e) => e.stopPropagation()}
                             onFocus={() => setFocus('box')}
-                            onChange={(e) => CollectBoxAtom.set({ boxId: parseInt(e.nativeEvent.text) })}
+                            onChange={(e) =>
+                                CollectObjectsAtom.set((a) => setPath(['boxId'], parseInt(e.nativeEvent.text), a))
+                            }
                         />
                     </MainInputBox>
                     <TouchableOpacity
                         onPressOut={() => {
-                            if (CollectBoxAtom.get().boxId) {
+                            if (CollectObjectsAtom.get().boxId) {
                                 setFocus('none');
                                 Keyboard.dismiss();
                                 launchCamera();

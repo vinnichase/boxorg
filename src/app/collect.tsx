@@ -2,11 +2,10 @@ import React from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
-import { ObjectDetectionResultAtom } from '../atoms/ObjectDetectionResultAtom';
+import { EditObject, CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
 import { BoxIcon, SaveIcon } from '../components/Icons';
-import { EditObject, EditObjectsAtom } from '../atoms/EditObjectsAtom';
 import { setPath } from '../util/setPath';
 import { getPath } from '../util/getPath';
 import { useRouter } from 'expo-router';
@@ -21,8 +20,7 @@ function App(): JSX.Element {
     const { width } = useWindowDimensions();
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
 
-    const { image, objects } = useAtom(ObjectDetectionResultAtom);
-    const { index, objects: editObjects } = useAtom(EditObjectsAtom);
+    const { boxId, objects } = useAtom(CollectObjectsAtom);
 
     return (
         <View
@@ -47,41 +45,23 @@ function App(): JSX.Element {
                         shadowRadius: 50,
                     }}
                 >
-                    {!objects || !image || objects.length === 0 ? (
+                    {!objects || objects.length === 0 ? (
                         <Text style={{ marginTop: 40, marginHorizontal: 20, color: WHITE, fontSize: 20 }}>
                             No Results. Get Back!
                         </Text>
                     ) : (
-                        objects.map(({ frame, labels }, i) => {
-                            const tags = labels.slice(0, 3).map((l) => l.text.toUpperCase());
+                        objects.map(({ tags, uri }, i) => {
                             return (
                                 <ObjectTile
                                     key={i}
-                                    image={image}
-                                    tags={getPath(tags, ['tags'], editObjects[i]) ?? []}
+                                    imageUri={uri}
+                                    tags={tags}
                                     width={TILE_WIDTH}
-                                    rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
                                     onDeleted={(deleted) =>
-                                        EditObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
+                                        CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
                                     }
-                                    onEdit={(imageUri) => {
-                                        EditObjectsAtom.set((a) => setPath(['index'], i, a));
-                                        const currentObject = getPath(
-                                            undefined as EditObject | undefined,
-                                            ['objects', i],
-                                            EditObjectsAtom.get(),
-                                        );
-                                        EditObjectsAtom.set((a) =>
-                                            setPath(
-                                                ['objects', i],
-                                                {
-                                                    deleted: currentObject?.deleted ?? false,
-                                                    uri: imageUri,
-                                                    tags: currentObject?.tags ?? tags,
-                                                },
-                                                a,
-                                            ),
-                                        );
+                                    onEdit={() => {
+                                        CollectObjectsAtom.set((a) => setPath(['index'], i, a));
                                         router.push('/categorize');
                                     }}
                                 />
@@ -116,9 +96,17 @@ function App(): JSX.Element {
                     >
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <BoxIcon color2={`${WHITE}44`} />
-                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box 12</Text>
+                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>
+                                box {boxId}
+                            </Text>
                         </View>
-                        <TouchableOpacity onPress={() => {}}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                // const _objects = editObjects
+                                //     .map((o, i) => o ?? { deleted: false, tags: objects?.[i] })
+                                //     .filter((o) => !o?.deleted);
+                            }}
+                        >
                             <SaveIcon color1={`${WHITE}`} />
                         </TouchableOpacity>
                     </View>
