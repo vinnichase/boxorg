@@ -9,7 +9,7 @@ import {
     useWindowDimensions,
     View,
 } from 'react-native';
-import { BLACK, PURPLE_DARK, PURPLE_LIGHT, RED, WHITE } from '../util/constants';
+import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, RED, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { EditObjectsAtom } from '../atoms/EditObjectsAtom';
 import { CrossIcon } from '../components/Icons';
@@ -103,6 +103,7 @@ function App(): JSX.Element {
                                         }}
                                     >
                                         <TextInput
+                                            autoCapitalize="characters"
                                             style={{
                                                 flex: 1,
                                                 height: '100%',
@@ -110,10 +111,31 @@ function App(): JSX.Element {
                                                 color: WHITE,
                                             }}
                                             defaultValue={tag}
+                                            onChange={(e) => {
+                                                EditObjectsAtom.set((a) =>
+                                                    setPath(
+                                                        ['objects', index, 'tags', i],
+                                                        e.nativeEvent.text.toUpperCase().trim(),
+                                                        a,
+                                                    ),
+                                                );
+                                            }}
                                         />
                                     </View>
                                 </View>
                             ))}
+                            <TouchableOpacity
+                                style={{ width: '100%', alignItems: 'center' }}
+                                onPress={() => {
+                                    EditObjectsAtom.set((a) =>
+                                        setPath(['objects', index, 'tags', object?.tags?.length ?? 0], '', a),
+                                    );
+                                }}
+                            >
+                                <View style={{ height: 25, transform: [{ rotate: '45deg' }] }}>
+                                    <CrossIcon color1={GREEN_LIGHT}></CrossIcon>
+                                </View>
+                            </TouchableOpacity>
                         </View>
                     </ScrollView>
                 </View>

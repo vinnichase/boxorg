@@ -52,44 +52,41 @@ function App(): JSX.Element {
                             No Results. Get Back!
                         </Text>
                     ) : (
-                        objects.map(({ frame, labels }, i) => (
-                            <ObjectTile
-                                key={i}
-                                image={image}
-                                tags={
-                                    getPath(
-                                        labels.slice(0, 3).map((l) => l.text),
-                                        ['tags'],
-                                        editObjects[i],
-                                    ) ?? []
-                                }
-                                width={TILE_WIDTH}
-                                rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
-                                onDeleted={(deleted) =>
-                                    EditObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
-                                }
-                                onEdit={(imageUri) => {
-                                    EditObjectsAtom.set((a) => setPath(['index'], i, a));
-                                    const currentObject = getPath(
-                                        undefined as EditObject | undefined,
-                                        ['objects', i],
-                                        EditObjectsAtom.get(),
-                                    );
-                                    EditObjectsAtom.set((a) =>
-                                        setPath(
+                        objects.map(({ frame, labels }, i) => {
+                            const tags = labels.slice(0, 3).map((l) => l.text.toUpperCase());
+                            return (
+                                <ObjectTile
+                                    key={i}
+                                    image={image}
+                                    tags={getPath(tags, ['tags'], editObjects[i]) ?? []}
+                                    width={TILE_WIDTH}
+                                    rect={[frame.origin.x, frame.origin.y, frame.size.x, frame.size.y]}
+                                    onDeleted={(deleted) =>
+                                        EditObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
+                                    }
+                                    onEdit={(imageUri) => {
+                                        EditObjectsAtom.set((a) => setPath(['index'], i, a));
+                                        const currentObject = getPath(
+                                            undefined as EditObject | undefined,
                                             ['objects', i],
-                                            {
-                                                deleted: currentObject?.deleted ?? false,
-                                                uri: imageUri,
-                                                tags: currentObject?.tags ?? labels.slice(0, 3).map((l) => l.text),
-                                            },
-                                            a,
-                                        ),
-                                    );
-                                    router.push('/categorize');
-                                }}
-                            />
-                        ))
+                                            EditObjectsAtom.get(),
+                                        );
+                                        EditObjectsAtom.set((a) =>
+                                            setPath(
+                                                ['objects', i],
+                                                {
+                                                    deleted: currentObject?.deleted ?? false,
+                                                    uri: imageUri,
+                                                    tags: currentObject?.tags ?? tags,
+                                                },
+                                                a,
+                                            ),
+                                        );
+                                        router.push('/categorize');
+                                    }}
+                                />
+                            );
+                        })
                     )}
                 </View>
             </ScrollView>
