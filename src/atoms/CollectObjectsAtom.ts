@@ -1,7 +1,7 @@
 import { atom } from '@gothub-team/got-atom';
 
 type CollectObjects = {
-    boxId?: string;
+    boxId?: number;
     index: number;
     objects: EditObject[];
 };
@@ -13,3 +13,5 @@ export type EditObject = {
 };
 
 export const CollectObjectsAtom = atom<CollectObjects>({ index: 0, objects: [] });
+
+CollectObjectsAtom.subscribe({ next: console.log });

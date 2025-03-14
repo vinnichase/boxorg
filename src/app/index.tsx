@@ -25,7 +25,7 @@ function App(): JSX.Element {
     useEffect(() => {
         if (!result || !image) return;
         router.push('/collect');
-        collectObjects(image, result).then((objects) => CollectObjectsAtom.set({ index: 0, objects }));
+        collectObjects(image, result).then((objects) => CollectObjectsAtom.set((a) => ({ ...a, index: 0, objects })));
     }, [result]);
 
     const [blur, setBlur] = useState(0);
