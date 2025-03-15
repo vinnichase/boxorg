@@ -108,6 +108,8 @@ function App(): JSX.Element {
                                                 fontSize: 20,
                                                 color: WHITE,
                                             }}
+                                            autoComplete="off"
+                                            spellCheck={false}
                                             defaultValue={tag}
                                             onChange={(e) => {
                                                 CollectObjectsAtom.set((a) =>

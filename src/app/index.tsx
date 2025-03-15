@@ -21,6 +21,7 @@ import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { collectObjects } from '../service/collectObjects';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
+import { SearchAtom } from '../atoms/SearchAtom';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -57,6 +58,7 @@ function App(): JSX.Element {
     useEffect(() => {
         switch (focus) {
             case 'search':
+                SearchAtom.set((a) => setPath(['show'], true, a));
                 shiftSearch();
                 unshiftBox();
                 showSearch();
@@ -66,6 +68,7 @@ function App(): JSX.Element {
                 blur !== 70 && setBlur(70);
                 break;
             case 'box':
+                SearchAtom.set((a) => setPath(['show'], false, a));
                 showBox();
                 shiftBox();
                 shiftAperture();
@@ -75,6 +78,7 @@ function App(): JSX.Element {
                 blur !== 70 && setBlur(70);
                 break;
             case 'none':
+                SearchAtom.set((a) => setPath(['show'], false, a));
                 unshiftSearch();
                 unshiftBox();
                 showSearch();
@@ -126,6 +130,8 @@ function App(): JSX.Element {
                                 fontSize: 25,
                                 color: PURPLE_DARK,
                             }}
+                            autoComplete="off"
+                            spellCheck={false}
                             onTouchEnd={(e) => e.stopPropagation()}
                             onFocus={() => setFocus('box')}
                             onChange={(e) =>
@@ -176,7 +182,7 @@ function App(): JSX.Element {
                     </TouchableOpacity>
                 </SafeAreaView>
             </AnimatedBlurView>
-            <SearchResults show={focus === 'search'} query="" />
+            <SearchResults />
             <MainInputBox
                 style={{
                     position: 'absolute',
@@ -196,8 +202,13 @@ function App(): JSX.Element {
                         fontSize: 25,
                         color: PURPLE_DARK,
                     }}
+                    autoComplete="off"
+                    spellCheck={false}
                     onTouchEnd={(e) => e.stopPropagation()}
-                    onFocus={() => setFocus('search')}
+                    onFocus={() => {
+                        setFocus('search');
+                    }}
+                    onChange={(e) => SearchAtom.set((a) => setPath(['query'], e.nativeEvent.text, a))}
                 />
             </MainInputBox>
             {focus === 'search' && (

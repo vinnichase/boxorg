@@ -14,4 +14,4 @@ export type EditObject = {
 
 export const CollectObjectsAtom = atom<CollectObjects>({ index: 0, objects: [] });
 
-CollectObjectsAtom.subscribe({ next: console.log });
+// CollectObjectsAtom.subscribe({ next: console.log });

@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
-import { getObjects, openDb } from '../db/accessLayer';
+import { openDb, searchObjects } from '../db/accessLayer';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useAtom } from '@gothub-team/got-atom';
+import { SearchAtom } from '../atoms/SearchAtom';
 
 const MARGIN_TOP = 160;
 
-type SearchResultsProps = {
-    show: boolean;
-    query: string;
-};
+type SearchResultsProps = {};
 
 type ObjectWithTags = { id: number; thumb_path: string; box_id: number; tags: string[] };
 
-export const SearchResults = ({ show, query }: SearchResultsProps) => {
+export const SearchResults = ({}: SearchResultsProps) => {
     const [results, setResults] = useState<ObjectWithTags[]>([]);
+    const { show, query } = useAtom(SearchAtom);
 
     useEffect(() => {
+        console.log(query);
         const db = openDb();
         const records =
-            getObjects(db)?.reduce((acc, o) => {
+            searchObjects(db, query)?.reduce((acc, o) => {
                 const accO = acc[o.id] ?? { ...o, tags: [] };
                 accO.tags.push(o.tag);
                 return {
@@ -27,6 +28,7 @@ export const SearchResults = ({ show, query }: SearchResultsProps) => {
                     [o.id]: accO,
                 };
             }, {} as Record<number, ObjectWithTags>) ?? {};
+        console.log(records);
         records && setResults(Object.values(records));
         db.closeSync();
     }, [show, query]);
@@ -35,7 +37,6 @@ export const SearchResults = ({ show, query }: SearchResultsProps) => {
 
     useEffect(() => {
         sharedOpacity.value = withTiming(show ? 1 : 0, { duration: 250 });
-        console.log('show', show, sharedOpacity.value);
     }, [show]);
 
     const animatedStyle = useAnimatedStyle(() => ({
