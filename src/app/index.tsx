@@ -23,6 +23,7 @@ import { useRouter } from 'expo-router';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { collectObjects } from '../service/collectObjects';
 import { setPath } from '../util/setPath';
+import { SearchResults } from '../components/SearchResults';
 
 const MARGIN_TOP = 160;
 
@@ -189,30 +190,11 @@ function App(): JSX.Element {
                         position: 'absolute',
                         height: '100%',
                         width: '100%',
-                        // backgroundColor: `#ff000033`,
                         overflowY: 'visible',
                     }}
                 >
                     <ScrollView style={{ flex: 1, marginTop: MARGIN_TOP, overflow: 'visible' }}>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
-                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <SearchResults query="" />
                     </ScrollView>
                 </KeyboardAvoidingView>
             )}
