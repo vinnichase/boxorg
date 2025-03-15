@@ -3,10 +3,7 @@ import {
     Animated,
     ImageBackground,
     Keyboard,
-    KeyboardAvoidingView,
     SafeAreaView,
-    ScrollView,
-    Text,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
@@ -25,13 +22,10 @@ import { collectObjects } from '../service/collectObjects';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
 
-const MARGIN_TOP = 160;
-
 function App(): JSX.Element {
     const router = useRouter();
 
-    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-    const [height, setHeight] = useState(windowHeight);
+    const { width: windowWidth } = useWindowDimensions();
     const { image, launchCamera } = useImage();
     const { result, detectObjects } = useObjectDetectionModel('myModel');
 
@@ -110,7 +104,6 @@ function App(): JSX.Element {
                 intensity={blur}
             >
                 <SafeAreaView
-                    onLayout={(e) => setHeight(e.nativeEvent.layout.height)}
                     style={{
                         height: '100%',
                         width: '100%',
@@ -183,21 +176,7 @@ function App(): JSX.Element {
                     </TouchableOpacity>
                 </SafeAreaView>
             </AnimatedBlurView>
-            {focus === 'search' && (
-                <KeyboardAvoidingView
-                    behavior="padding"
-                    style={{
-                        position: 'absolute',
-                        height: '100%',
-                        width: '100%',
-                        overflowY: 'visible',
-                    }}
-                >
-                    <ScrollView style={{ flex: 1, marginTop: MARGIN_TOP, overflow: 'visible' }}>
-                        <SearchResults query="" />
-                    </ScrollView>
-                </KeyboardAvoidingView>
-            )}
+            <SearchResults show={focus === 'search'} query="" />
             <MainInputBox
                 style={{
                     position: 'absolute',
