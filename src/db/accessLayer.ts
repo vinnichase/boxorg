@@ -254,8 +254,17 @@ export function removeTagFromObject(db: SqLite.SQLiteDatabase, objectId: number,
  */
 export function getObjects(db: SqLite.SQLiteDatabase) {
     try {
-        const stmt = db.prepareSync(sql`SELECT * FROM objects`);
-        return stmt.executeSync<ObjectRecord>().getAllSync();
+        const stmt = db.prepareSync(
+            sql`SELECT objects.id, objects.thumb_path, objects.box_id, tags.tag FROM objects INNER JOIN object_tags ON objects.id = object_tags.object_id INNER JOIN tags ON object_tags.tag_id = tags.id`,
+        );
+        return stmt
+            .executeSync<{
+                id: number;
+                thumb_path: string;
+                box_id: number;
+                tag: string;
+            }>()
+            .getAllSync();
     } catch (e) {
         console.error(e);
     }

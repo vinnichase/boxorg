@@ -1,19 +1,29 @@
 import { useEffect, useState } from 'react';
-import { Image, View } from 'react-native';
-import { getObjects, ObjectRecord, openDb } from '../db/accessLayer';
-import { PURPLE_LIGHT, WHITE } from '../util/constants';
+import { Image, Text, View } from 'react-native';
+import { getObjects, openDb } from '../db/accessLayer';
+import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 
 type SearchResultsProps = {
     query: string;
 };
 
+type ObjectWithTags = { id: number; thumb_path: string; box_id: number; tags: string[] };
+
 export const SearchResults = ({ query }: SearchResultsProps) => {
-    const [results, setResults] = useState<ObjectRecord[]>([]);
+    const [results, setResults] = useState<ObjectWithTags[]>([]);
 
     useEffect(() => {
         const db = openDb();
-        const records = getObjects(db);
-        records && setResults(records);
+        const records =
+            getObjects(db)?.reduce((acc, o) => {
+                const accO = acc[o.id] ?? { ...o, tags: [] };
+                accO.tags.push(o.tag);
+                return {
+                    ...acc,
+                    [o.id]: accO,
+                };
+            }, {} as Record<number, ObjectWithTags>) ?? {};
+        records && setResults(Object.values(records));
         db.closeSync();
     }, [query]);
 
@@ -29,7 +39,7 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
             }}
         >
             {results.map((record) => (
-                <View key={record.id} style={{ height: 100 }}>
+                <View key={record.id} style={{ height: 100, flexDirection: 'row', gap: 10 }}>
                     <View
                         style={{
                             overflow: 'hidden',
@@ -41,6 +51,48 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
                         }}
                     >
                         <Image source={{ uri: record.thumb_path }} style={{ width: '100%', height: '100%' }} />
+                    </View>
+                    <View
+                        style={{
+                            flex: 1,
+                            maxWidth: '100%',
+                            flexWrap: 'wrap',
+                            gap: 5,
+                            paddingVertical: 5,
+                            // backgroundColor: `#ff000033`,
+                            overflow: 'hidden',
+                            alignItems: 'baseline',
+                            flexDirection: 'row',
+                        }}
+                    >
+                        {record.tags.map((tag) => (
+                            <View key={tag} style={{ padding: 5, backgroundColor: `${WHITE}22`, borderRadius: 5 }}>
+                                <Text style={{ color: WHITE }}>{tag}</Text>
+                            </View>
+                        ))}
+                    </View>
+                    <View
+                        style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            backgroundColor: `${WHITE}66`,
+                            padding: 5,
+                            aspectRatio: 1,
+                            width: 40,
+                            height: 40,
+                            borderRadius: 20,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'column',
+                            shadowColor: `${BLACK}`,
+                            shadowOpacity: 1,
+                            shadowRadius: 10,
+                        }}
+                    >
+                        <Text style={{ fontSize: 25, color: PURPLE_DARK, fontWeight: 600, opacity: 0.9 }}>
+                            {record.box_id}
+                        </Text>
                     </View>
                 </View>
             ))}

@@ -20,7 +20,7 @@ export const useImage = () => {
                 return;
             }
         }
-        const result = await launchImageLibraryAsync({
+        const result = await launchCameraAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
             quality: 1,
