@@ -104,6 +104,8 @@ function App(): JSX.Element {
                         <TouchableOpacity
                             onPress={() => {
                                 boxId && saveObjects(boxId, objects);
+                                CollectObjectsAtom.set({ index: 0, boxId, objects: [] });
+                                router.back();
                             }}
                         >
                             <SaveIcon color1={`${WHITE}`} />
