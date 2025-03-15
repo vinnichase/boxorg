@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Animated, ImageBackground, Keyboard, SafeAreaView, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Animated,
+    ImageBackground,
+    Keyboard,
+    KeyboardAvoidingView,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    useWindowDimensions,
+    View,
+} from 'react-native';
 import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
-import { ApertureIcon, BoxIcon, SearchIcon } from '../components/Icons';
+import { ApertureIcon, BoxIcon, CloseDownIcon, SearchIcon } from '../components/Icons';
 import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
@@ -12,9 +24,13 @@ import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { collectObjects } from '../service/collectObjects';
 import { setPath } from '../util/setPath';
 
+const MARGIN_TOP = 160;
+
 function App(): JSX.Element {
     const router = useRouter();
 
+    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+    const [height, setHeight] = useState(windowHeight);
     const { image, launchCamera } = useImage();
     const { result, detectObjects } = useObjectDetectionModel('myModel');
 
@@ -31,7 +47,7 @@ function App(): JSX.Element {
     const [blur, setBlur] = useState(0);
 
     const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0, -350);
-    const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(0.9, 0);
+    const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(1, 0);
 
     const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -270);
     const [animatedBoxHide, hideBox, showBox] = useSpringSpan(0.9, 0);
@@ -87,12 +103,16 @@ function App(): JSX.Element {
             <AnimatedBlurView
                 style={{
                     flex: 1,
+                    width: '100%',
+                    height: '100%',
                 }}
                 intensity={blur}
             >
                 <SafeAreaView
+                    onLayout={(e) => setHeight(e.nativeEvent.layout.height)}
                     style={{
-                        flex: 1,
+                        height: '100%',
+                        width: '100%',
                         gap: 50,
                     }}
                     onTouchEnd={() => {
@@ -101,23 +121,6 @@ function App(): JSX.Element {
                     }}
                 >
                     <View style={{ flex: 2 }}></View>
-                    <MainInputBox
-                        style={{ transform: [{ translateY: animatedSearchShift }], opacity: animatedSearchHide }}
-                        pointerEvents={focus === 'box' ? 'none' : 'auto'}
-                    >
-                        <SearchIcon color1={PURPLE_DARK} />
-                        <TextInput
-                            ref={searchTextInput}
-                            style={{
-                                flex: 1,
-                                height: '100%',
-                                fontSize: 25,
-                                color: PURPLE_DARK,
-                            }}
-                            onTouchEnd={(e) => e.stopPropagation()}
-                            onFocus={() => setFocus('search')}
-                        />
-                    </MainInputBox>
                     <MainInputBox style={{ transform: [{ translateY: animatedBoxShift }], opacity: animatedBoxHide }}>
                         <BoxIcon color1={PURPLE_DARK} />
                         <TextInput
@@ -179,6 +182,81 @@ function App(): JSX.Element {
                     </TouchableOpacity>
                 </SafeAreaView>
             </AnimatedBlurView>
+            {focus === 'search' && (
+                <KeyboardAvoidingView
+                    behavior="padding"
+                    style={{
+                        position: 'absolute',
+                        height: '100%',
+                        width: '100%',
+                        // backgroundColor: `#ff000033`,
+                        overflowY: 'visible',
+                    }}
+                >
+                    <ScrollView style={{ flex: 1, marginTop: MARGIN_TOP, overflow: 'visible' }}>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                        <Text style={{ color: WHITE, fontSize: 20, margin: 40 }}>Search Results</Text>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            )}
+            <MainInputBox
+                style={{
+                    position: 'absolute',
+                    width: windowWidth - 60,
+                    top: 420,
+                    transform: [{ translateY: animatedSearchShift }],
+                    opacity: animatedSearchHide,
+                }}
+                pointerEvents={focus === 'box' ? 'none' : 'auto'}
+            >
+                <SearchIcon color1={PURPLE_DARK} />
+                <TextInput
+                    ref={searchTextInput}
+                    style={{
+                        flex: 1,
+                        height: '100%',
+                        fontSize: 25,
+                        color: PURPLE_DARK,
+                    }}
+                    onTouchEnd={(e) => e.stopPropagation()}
+                    onFocus={() => setFocus('search')}
+                />
+            </MainInputBox>
+            {focus === 'search' && (
+                <TouchableOpacity
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        width: '100%',
+                        height: 70,
+                        alignItems: 'center',
+                        opacity: 0.6,
+                    }}
+                    onPress={() => {
+                        setFocus('none');
+                        Keyboard.dismiss();
+                    }}
+                >
+                    <CloseDownIcon color1={WHITE} />
+                </TouchableOpacity>
+            )}
         </ImageBackground>
     );
 }

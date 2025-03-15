@@ -137,6 +137,22 @@ export const SaveIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
+export const CloseDownIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={2}
+            strokeLinecap="round"
+            viewBox="0 0 24 16"
+        >
+            <Path stroke={color1} fill="none" d="M4 11l8 3l8 -3" />
+        </Svg>
+    </View>
+);
+
 export const BackIcon = ({ color1 }: IconProps) => (
     <Svg style={{}} strokeWidth="3" viewBox="3.5 3.5 18 18">
         <Path stroke={color1} strokeLinecap="round" fill="none" d="M9 14l-4 -4l4 -4" />
