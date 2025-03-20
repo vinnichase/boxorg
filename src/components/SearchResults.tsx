@@ -17,7 +17,6 @@ export const SearchResults = ({}: SearchResultsProps) => {
     const { show, query } = useAtom(SearchAtom);
 
     useEffect(() => {
-        console.log(query);
         const db = openDb();
         const records =
             searchObjects(db, query)?.reduce((acc, o) => {
@@ -28,7 +27,6 @@ export const SearchResults = ({}: SearchResultsProps) => {
                     [o.id]: accO,
                 };
             }, {} as Record<number, ObjectWithTags>) ?? {};
-        console.log(records);
         records && setResults(Object.values(records));
         db.closeSync();
     }, [show, query]);

@@ -27,9 +27,5 @@ export const saveObjects = async (boxId: number, objects: EditObject[]): Promise
         });
     }
 
-    console.log(db.getAllSync(sql`SELECT * FROM objects`));
-    console.log(db.getAllSync(sql`SELECT * FROM tags`));
-    console.log(db.getAllSync(sql`SELECT * FROM object_tags`));
-
     db.closeSync();
 };

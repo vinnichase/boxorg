@@ -6,7 +6,6 @@ import {
     type ImagePickerAsset,
 } from 'expo-image-picker';
 import { useState } from 'react';
-import { Keyboard } from 'react-native';
 
 export const useImage = () => {
     const [image, setImage] = useState<ImagePickerAsset | null>();
@@ -20,7 +19,7 @@ export const useImage = () => {
                 return;
             }
         }
-        const result = await launchCameraAsync({
+        const result = await launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
             quality: 1,

@@ -7,4 +7,4 @@ type Search = {
 
 export const SearchAtom = atom<Search>({ show: false, query: '' });
 
-SearchAtom.subscribe({ next: console.log });
+// SearchAtom.subscribe({ next: console.log });
