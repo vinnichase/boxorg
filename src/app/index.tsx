@@ -22,23 +22,27 @@ import { collectObjects } from '../service/collectObjects';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
 import { SearchAtom } from '../atoms/SearchAtom';
+import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
 
 function App(): JSX.Element {
     const router = useRouter();
 
     const { width: windowWidth } = useWindowDimensions();
     const { image, launchCamera } = useImage();
-    const { result, detectObjects } = useObjectDetectionModel('myModel');
+    // const { result, detectObjects } = useObjectDetectionModel('myModel');
 
     useEffect(() => {
-        image && detectObjects(image.uri);
+        image &&
+            image.base64 &&
+            SegmentImageAtom.set({ base64: image.base64, uri: image.uri, height: image.height, width: image.width });
+        image && router.push('/segment');
     }, [image]);
 
-    useEffect(() => {
-        if (!result || !image) return;
-        router.push('/collect');
-        collectObjects(image, result).then((objects) => CollectObjectsAtom.set((a) => ({ ...a, index: 0, objects })));
-    }, [result]);
+    // useEffect(() => {
+    //     if (!result || !image) return;
+    //     router.push('/collect');
+    //     collectObjects(image, result).then((objects) => CollectObjectsAtom.set((a) => ({ ...a, index: 0, objects })));
+    // }, [result]);
 
     const [blur, setBlur] = useState(0);
 
