@@ -1,12 +1,8 @@
-import * as FileSystem from 'expo-file-system';
 import { useAtom } from '@gothub-team/got-atom';
 import { LegacyRef, useEffect, useState } from 'react';
 import { InferenceSessionsAtom } from '../atoms/InferenceSessionsAtom';
-import { InferenceSession } from 'onnxruntime-react-native';
-import { blobToOnnxTensor } from '../util/blobToOnnxTensor';
-import { ImageManipulator, ImageResult, useImageManipulator } from 'expo-image-manipulator';
+import { ImageManipulator, ImageResult } from 'expo-image-manipulator';
 import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
-import { preprocessImage } from '../util/test';
 import { Image } from 'react-native';
 
 export const useSegmentation = (imageRef: LegacyRef<Image>) => {
@@ -23,16 +19,16 @@ export const useSegmentation = (imageRef: LegacyRef<Image>) => {
         context.renderAsync().then(async (image) => {
             const saved = await image.saveAsync({ base64: true });
 
-            const tensors = await preprocessImage(saved);
+            // const tensors = await preprocessImage(saved);
 
-            if (!tensors?.pixel_values) return;
+            // if (!tensors?.pixel_values) return;
 
-            try {
-                const result = await encoder.run({ pixel_values: tensors?.pixel_values });
-                console.log(result);
-            } catch (e) {
-                console.error(e);
-            }
+            // try {
+            //     const result = await encoder.run({ pixel_values: tensors?.pixel_values });
+            //     console.log(result);
+            // } catch (e) {
+            //     console.error(e);
+            // }
         });
 
         // fetch(image.uri)
