@@ -12,13 +12,11 @@ import {
 import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
 import { ApertureIcon, BoxIcon, CloseDownIcon, SearchIcon } from '../components/Icons';
-import { useObjectDetectionModel } from '../hooks/useObjectDetectionModel';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
 import { useRouter } from 'expo-router';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
-import { collectObjects } from '../service/collectObjects';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
 import { SearchAtom } from '../atoms/SearchAtom';
@@ -29,7 +27,6 @@ function App(): JSX.Element {
 
     const { width: windowWidth } = useWindowDimensions();
     const { image, launchCamera } = useImage();
-    // const { result, detectObjects } = useObjectDetectionModel('myModel');
 
     useEffect(() => {
         image &&

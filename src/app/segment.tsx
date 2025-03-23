@@ -4,7 +4,6 @@ import { BLACK, PURPLE_DARK } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
 import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
-import { useSegmentation } from '../hooks/useSegmentation';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -15,7 +14,6 @@ function App(): JSX.Element {
 
     const segmentImage = useAtom(SegmentImageAtom);
 
-    const a = useSegmentation(imageRef);
     console.log(imageSize);
 
     return (
@@ -32,8 +30,8 @@ function App(): JSX.Element {
                 {segmentImage && (
                     <Image
                         ref={imageRef}
-                        source={{ uri: a?.uri }}
-                        style={{ aspectRatio: (a?.width ?? segmentImage.width) / (a?.height ?? segmentImage.height) }}
+                        source={{ uri: segmentImage.uri }}
+                        style={{ aspectRatio: segmentImage.width / segmentImage.height }}
                         // onLayout={(e) =>
                         //     setImageSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })
                         // }

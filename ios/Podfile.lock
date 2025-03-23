@@ -8,7 +8,7 @@ PODS:
     - React-Core
   - Expo (52.0.37):
     - ExpoModulesCore
-  - ExpoAsset (11.0.4):
+  - ExpoAsset (11.0.5):
     - ExpoModulesCore
   - ExpoBlur (14.0.3):
     - ExpoModulesCore
@@ -20,12 +20,10 @@ PODS:
     - ExpoModulesCore
   - ExpoHead (4.0.17):
     - ExpoModulesCore
-  - ExpoImage (2.0.6):
+  - ExpoImageManipulator (13.0.6):
+    - EXImageLoader
     - ExpoModulesCore
-    - libavif/libdav1d
-    - SDWebImage (~> 5.19.1)
-    - SDWebImageAVIFCoder (~> 0.11.0)
-    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder
   - ExpoImagePicker (16.0.6):
     - ExpoModulesCore
   - ExpoKeepAwake (14.0.3):
@@ -70,85 +68,21 @@ PODS:
   - FBLazyVector (0.77.0)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - GoogleDataTransport (9.4.1):
-    - GoogleUtilities/Environment (~> 7.7)
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMLKit/MLKitCore (6.0.0):
-    - MLKitCommon (~> 11.0.0)
-  - GoogleMLKit/ObjectDetection (6.0.0):
-    - GoogleMLKit/MLKitCore
-    - MLKitObjectDetection (~> 5.0.0)
-  - GoogleMLKit/ObjectDetectionCustom (6.0.0):
-    - GoogleMLKit/MLKitCore
-    - MLKitObjectDetectionCustom (~> 5.0.0)
-  - GoogleToolboxForMac/Defines (4.2.1)
-  - GoogleToolboxForMac/Logger (4.2.1):
-    - GoogleToolboxForMac/Defines (= 4.2.1)
-  - "GoogleToolboxForMac/NSData+zlib (4.2.1)":
-    - GoogleToolboxForMac/Defines (= 4.2.1)
-  - GoogleUtilities/Environment (7.13.3):
-    - GoogleUtilities/Privacy
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.13.3):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (7.13.3)
-  - GoogleUtilities/UserDefaults (7.13.3):
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Privacy
-  - GoogleUtilitiesComponents (1.1.0):
-    - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (3.5.0)
   - hermes-engine (0.77.0):
     - hermes-engine/Pre-built (= 0.77.0)
   - hermes-engine/Pre-built (0.77.0)
-  - libavif/core (0.11.1)
-  - libavif/libdav1d (0.11.1):
-    - libavif/core
-    - libdav1d (>= 0.6.0)
-  - libdav1d (1.2.0)
-  - MLImage (1.0.0-beta5)
-  - MLKitCommon (11.0.0):
-    - GoogleDataTransport (< 10.0, >= 9.4.1)
-    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
-    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
-    - GoogleUtilities/UserDefaults (< 8.0, >= 7.13.0)
-    - GoogleUtilitiesComponents (~> 1.0)
-    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
-  - MLKitImageLabelingCommon (7.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitVision (~> 7.0)
-  - MLKitObjectDetection (5.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitObjectDetectionCommon (~> 7.0)
-    - MLKitVision (~> 7.0)
-    - MLKitVisionKit (~> 8.0)
-  - MLKitObjectDetectionCommon (7.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitVision (~> 7.0)
-  - MLKitObjectDetectionCustom (5.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitObjectDetectionCommon (~> 7.0)
-    - MLKitVision (~> 7.0)
-    - MLKitVisionKit (~> 8.0)
-  - MLKitVision (7.0.0):
-    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
-    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
-    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
-    - MLImage (= 1.0.0-beta5)
-    - MLKitCommon (~> 11.0)
-  - MLKitVisionKit (8.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitImageLabelingCommon (~> 7.0)
-    - MLKitObjectDetectionCommon (~> 7.0)
-    - MLKitVision (~> 7.0)
-  - nanopb (2.30910.0):
-    - nanopb/decode (= 2.30910.0)
-    - nanopb/encode (= 2.30910.0)
-  - nanopb/decode (2.30910.0)
-  - nanopb/encode (2.30910.0)
-  - PromisesObjC (2.4.0)
+  - libwebp (1.3.2):
+    - libwebp/demux (= 1.3.2)
+    - libwebp/mux (= 1.3.2)
+    - libwebp/sharpyuv (= 1.3.2)
+    - libwebp/webp (= 1.3.2)
+  - libwebp/demux (1.3.2):
+    - libwebp/webp
+  - libwebp/mux (1.3.2):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.3.2)
+  - libwebp/webp (1.3.2):
+    - libwebp/sharpyuv
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1706,14 +1640,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNMLKitCore (2.1.0):
-    - ExpoModulesCore
-    - MLKitVision
-  - RNMLKitObjectDetection (2.0.1):
-    - ExpoModulesCore
-    - GoogleMLKit/ObjectDetection
-    - GoogleMLKit/ObjectDetectionCustom
-    - RNMLKitCore
   - RNReanimated (3.17.1):
     - DoubleConversion
     - glog
@@ -1857,14 +1783,10 @@ PODS:
     - Yoga
   - RNSVG (15.11.1):
     - React-Core
-  - SDWebImage (5.19.7):
-    - SDWebImage/Core (= 5.19.7)
-  - SDWebImage/Core (5.19.7)
-  - SDWebImageAVIFCoder (0.11.0):
-    - libavif/core (>= 0.11.0)
-    - SDWebImage (~> 5.10)
-  - SDWebImageSVGCoder (1.7.0):
-    - SDWebImage/Core (~> 5.6)
+  - SDWebImage/Core (5.20.0)
+  - SDWebImageWebPCoder (0.14.6):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -1874,13 +1796,13 @@ DEPENDENCIES:
   - "EXConstants (from `../node_modules/.pnpm/expo-constants@17.0.7_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+c_cfcc2c9daae549fa7d1e92ada5a61d21/node_modules/expo-constants/ios`)"
   - "EXImageLoader (from `../node_modules/.pnpm/expo-image-loader@5.0.0_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel_2a234ebad71dff53fb8ce0a7c7348197/node_modules/expo-image-loader/ios`)"
   - "Expo (from `../node_modules/.pnpm/expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7.26.9__@expo+metr_3af40f5d97d42676ccee6c29bc24e948/node_modules/expo`)"
-  - "ExpoAsset (from `../node_modules/.pnpm/expo-asset@11.0.4_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@_b9a516786d85964b9f0ececef96e2913/node_modules/expo-asset/ios`)"
+  - "ExpoAsset (from `../node_modules/.pnpm/expo-asset@11.0.5_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@_19a61397ef2f7cea29308e941cc1da0f/node_modules/expo-asset/ios`)"
   - "ExpoBlur (from `../node_modules/.pnpm/expo-blur@14.0.3_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7_936c50c22f8719415fd57e10f6aff098/node_modules/expo-blur/ios`)"
   - "ExpoFileSystem (from `../node_modules/.pnpm/expo-file-system@18.0.11_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babe_bb7a73ba1dfb40207b0586f46f50cc48/node_modules/expo-file-system/ios`)"
   - "ExpoFont (from `../node_modules/.pnpm/expo-font@13.0.4_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7_71f758d6a3832c0e751680915f54a27c/node_modules/expo-font/ios`)"
   - "ExpoHaptics (from `../node_modules/.pnpm/expo-haptics@14.0.1_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+cor_862524e8d25e7b19c8de222bea79a368/node_modules/expo-haptics/ios`)"
   - "ExpoHead (from `../node_modules/.pnpm/expo-router@4.0.17_264a478f53b4f49e587c85ffe886e073/node_modules/expo-router/ios`)"
-  - "ExpoImage (from `../node_modules/.pnpm/expo-image@2.0.6_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7_d20fec93b6e510e9b89b586dc4162d98/node_modules/expo-image/ios`)"
+  - "ExpoImageManipulator (from `../node_modules/.pnpm/expo-image-manipulator@13.0.6_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9__461d3e348d80e1e34a4b2b6e506165cd/node_modules/expo-image-manipulator/ios`)"
   - "ExpoImagePicker (from `../node_modules/.pnpm/expo-image-picker@16.0.6_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babe_760103f549e89dde9e2860d43d10b602/node_modules/expo-image-picker/ios`)"
   - "ExpoKeepAwake (from `../node_modules/.pnpm/expo-keep-awake@14.0.3_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+_ff1c60848fadbd31530329b1f33dce1d/node_modules/expo-keep-awake/ios`)"
   - "ExpoLinking (from `../node_modules/.pnpm/expo-linking@7.0.5_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core_9f4770306dbad70fcef32384123c6663/node_modules/expo-linking/ios`)"
@@ -1959,8 +1881,6 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - "ReactCommon/turbomodule/core (from `../node_modules/.pnpm/react-native@0.77.0_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7.26.9__@types+react@18.3.18_react@18.3.1/node_modules/react-native/ReactCommon`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - "RNMLKitCore (from `../node_modules/.pnpm/@infinitered+react-native-mlkit-core@2.1.0_f9cc6e9713374abc68b3088dbddf8ea2/node_modules/@infinitered/react-native-mlkit-core/ios`)"
-  - "RNMLKitObjectDetection (from `../node_modules/.pnpm/@infinitered+react-native-mlkit-object-detection@2.0.1_f9cc6e9713374abc68b3088dbddf8ea2/node_modules/@infinitered/react-native-mlkit-object-detection/ios`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -1968,27 +1888,9 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - GoogleDataTransport
-    - GoogleMLKit
-    - GoogleToolboxForMac
-    - GoogleUtilities
-    - GoogleUtilitiesComponents
-    - GTMSessionFetcher
-    - libavif
-    - libdav1d
-    - MLImage
-    - MLKitCommon
-    - MLKitImageLabelingCommon
-    - MLKitObjectDetection
-    - MLKitObjectDetectionCommon
-    - MLKitObjectDetectionCustom
-    - MLKitVision
-    - MLKitVisionKit
-    - nanopb
-    - PromisesObjC
+    - libwebp
     - SDWebImage
-    - SDWebImageAVIFCoder
-    - SDWebImageSVGCoder
+    - SDWebImageWebPCoder
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2003,7 +1905,7 @@ EXTERNAL SOURCES:
   Expo:
     :path: "../node_modules/.pnpm/expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7.26.9__@expo+metr_3af40f5d97d42676ccee6c29bc24e948/node_modules/expo"
   ExpoAsset:
-    :path: "../node_modules/.pnpm/expo-asset@11.0.4_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@_b9a516786d85964b9f0ececef96e2913/node_modules/expo-asset/ios"
+    :path: "../node_modules/.pnpm/expo-asset@11.0.5_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@_19a61397ef2f7cea29308e941cc1da0f/node_modules/expo-asset/ios"
   ExpoBlur:
     :path: "../node_modules/.pnpm/expo-blur@14.0.3_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7_936c50c22f8719415fd57e10f6aff098/node_modules/expo-blur/ios"
   ExpoFileSystem:
@@ -2014,8 +1916,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/expo-haptics@14.0.1_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+cor_862524e8d25e7b19c8de222bea79a368/node_modules/expo-haptics/ios"
   ExpoHead:
     :path: "../node_modules/.pnpm/expo-router@4.0.17_264a478f53b4f49e587c85ffe886e073/node_modules/expo-router/ios"
-  ExpoImage:
-    :path: "../node_modules/.pnpm/expo-image@2.0.6_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7_d20fec93b6e510e9b89b586dc4162d98/node_modules/expo-image/ios"
+  ExpoImageManipulator:
+    :path: "../node_modules/.pnpm/expo-image-manipulator@13.0.6_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9__461d3e348d80e1e34a4b2b6e506165cd/node_modules/expo-image-manipulator/ios"
   ExpoImagePicker:
     :path: "../node_modules/.pnpm/expo-image-picker@16.0.6_expo@52.0.37_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babe_760103f549e89dde9e2860d43d10b602/node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
@@ -2169,10 +2071,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/react-native@0.77.0_@babel+core@7.26.9_@babel+preset-env@7.26.9_@babel+core@7.26.9__@types+react@18.3.18_react@18.3.1/node_modules/react-native/ReactCommon"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNMLKitCore:
-    :path: "../node_modules/.pnpm/@infinitered+react-native-mlkit-core@2.1.0_f9cc6e9713374abc68b3088dbddf8ea2/node_modules/@infinitered/react-native-mlkit-core/ios"
-  RNMLKitObjectDetection:
-    :path: "../node_modules/.pnpm/@infinitered+react-native-mlkit-object-detection@2.0.1_f9cc6e9713374abc68b3088dbddf8ea2/node_modules/@infinitered/react-native-mlkit-object-detection/ios"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2188,13 +2086,13 @@ SPEC CHECKSUMS:
   EXConstants: 0472d3c23d97943fe3505306daf9cde8024365c2
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   Expo: f1d13d22815979ad85a0a59fcf6d23660c813ecd
-  ExpoAsset: a4cbc27a7cd24a6e87eb719603790b2cfa8dd326
+  ExpoAsset: 0687fe05f5d051c4a34dd1f9440bd00858413cfe
   ExpoBlur: 567af66164e3043a9a30069594aed1ddf0a88d97
   ExpoFileSystem: 4d2e7f77a41cfde8c3ae98580d872cd49437f993
   ExpoFont: 773955186469acc5108ff569712a2d243857475f
   ExpoHaptics: e01cce0741d68c281853118eb0267f88d42c6b7a
   ExpoHead: 3d555eb5d0d68c478b9ea259337686c58de22c71
-  ExpoImage: 36f2f4a3a530c1d1a2d349a1f0a0b400b0e1af47
+  ExpoImageManipulator: 43c7bb3ecccbe993054d2e9131c8dcbe54f1385b
   ExpoImagePicker: 482b2a6198b365dd18b5a0cb6d4caeec880cb8e1
   ExpoKeepAwake: 2a5f15dd4964cba8002c9a36676319a3394c85c7
   ExpoLinking: 0381341519ca7180a3a057d20edb1cf6a908aaf4
@@ -2208,25 +2106,8 @@ SPEC CHECKSUMS:
   FBLazyVector: 2bc03a5cf64e29c611bbc5d7eb9d9f7431f37ee6
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
-  GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
-  GoogleMLKit: 97ac7af399057e99182ee8edfa8249e3226a4065
-  GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
-  GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
-  GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
-  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: 1f783c3d53940aed0d2c84586f0b7a85ab7827ef
-  libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
-  libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
-  MLImage: 1824212150da33ef225fbd3dc49f184cf611046c
-  MLKitCommon: afec63980417d29ffbb4790529a1b0a2291699e1
-  MLKitImageLabelingCommon: fa802f14c3a321121409f6cbe1df89ba9cf1a00c
-  MLKitObjectDetection: 9b40359730baceef23322c6d41070da7639ff100
-  MLKitObjectDetectionCommon: f3ca8581a0741be6ce609920367316571a280efa
-  MLKitObjectDetectionCustom: a412a63a743724ae124b07d6c3cc817283da3453
-  MLKitVision: e858c5f125ecc288e4a31127928301eaba9ae0c1
-  MLKitVisionKit: 6d2ea9741b262ec0fed2a5a3de521cfa671c6e83
-  nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: f5c19ebdb8804b53ed029123eb69914356192fc8
   RCTRequired: 6ae6cebe470486e0e0ce89c1c0eabb998e7c51f4
@@ -2289,14 +2170,11 @@ SPEC CHECKSUMS:
   ReactCodegen: d7d18e4d71426c8b9607fa0a4d838293af2772c0
   ReactCommon: 6014af4276bb2debc350e2620ef1bd856b4d981c
   RNGestureHandler: 8f5d72b76cdb12421e6c8bc2b006ea12c69662f7
-  RNMLKitCore: 7e1e9816136171d5790bdc25d6561a965b70e176
-  RNMLKitObjectDetection: 9bc921ac3ce1210980daa6f99ecebbcc5298a1d0
   RNReanimated: ecb3281e65617cf4208df0dae11f5ef861aa94d5
   RNScreens: 1067d5050306c4371485de1d1c500df1b5bd22d1
   RNSVG: 515a902fc18a375907eb4c3abec0b803fbfa37ef
-  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
-  SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
-  SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
+  SDWebImage: 73c6079366fea25fa4bb9640d5fb58f0893facd8
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: c0d8564af14a858f962607cd7306539cb2ace926
 

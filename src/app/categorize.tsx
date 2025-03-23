@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React from 'react';
 import {
     Image,
     Keyboard,
@@ -18,7 +18,6 @@ import { setPath } from '../util/setPath';
 function App(): JSX.Element {
     const { width } = useWindowDimensions();
     const { index, objects } = useAtom(CollectObjectsAtom);
-    const [, forceUpdate] = useReducer(() => ({}), {});
     const object = objects[index];
 
     return (
@@ -85,7 +84,6 @@ function App(): JSX.Element {
                                                     a,
                                                 ),
                                             );
-                                            forceUpdate();
                                         }}
                                     >
                                         <CrossIcon color1={PURPLE_LIGHT}></CrossIcon>
