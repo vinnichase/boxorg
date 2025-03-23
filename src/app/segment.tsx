@@ -25,7 +25,7 @@ function App(): JSX.Element {
         <View
             style={{
                 flex: 1,
-                backgroundColor: BLACK,
+                backgroundColor: '#000',
                 shadowColor: `${BLACK}aa`,
                 shadowOpacity: 0.5,
                 shadowRadius: 50,
