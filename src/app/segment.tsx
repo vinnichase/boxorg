@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Image, View } from 'react-native';
-import { BLACK, RED, WHITE } from '../util/constants';
+import { BLACK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
 import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
