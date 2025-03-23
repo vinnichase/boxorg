@@ -50,9 +50,9 @@ function App(): JSX.Element {
     );
 }
 
-const translateRect = (x: number, y: number, w: number) => {
+const translateRect = (x: number, y: number, w: number, maxW: number, maxH: number) => {
     'worklet';
-    return [x - w / 2, y - w / 2, w];
+    return [Math.min(maxW - w, Math.max(0, x - w / 2)), Math.min(maxH - w, Math.max(0, y - w / 2)), w];
 };
 
 type SegmentatorProps = {
@@ -70,7 +70,13 @@ const Segmentator = ({ width, height }: SegmentatorProps) => {
     };
 
     const animatedProps = useAnimatedProps(() => {
-        const [x, y, w] = translateRect(animatedRect.x.value, animatedRect.y.value, animatedRect.w.value);
+        const [x, y, w] = translateRect(
+            animatedRect.x.value,
+            animatedRect.y.value,
+            animatedRect.w.value,
+            width,
+            height,
+        );
         return { x, y, width: w, height: w };
     });
 
@@ -83,13 +89,19 @@ const Segmentator = ({ width, height }: SegmentatorProps) => {
             runOnJS(setCurrentRect)(true);
             animatedRect.x.value = e.x;
             animatedRect.y.value = e.y;
-            animatedRect.w.value = 80;
+            animatedRect.w.value = 10;
         })
         .onUpdate((e) => {
             animatedRect.w.value = animatedRect.w.value - e.velocityY / 100;
         })
         .onEnd((e) => {
-            const [x, y, w] = translateRect(animatedRect.x.value, animatedRect.y.value, animatedRect.w.value);
+            const [x, y, w] = translateRect(
+                animatedRect.x.value,
+                animatedRect.y.value,
+                animatedRect.w.value,
+                width,
+                height,
+            );
             runOnJS(setRects)([...rects, { x, y, w }]);
 
             runOnJS(setCurrentRect)(false);
