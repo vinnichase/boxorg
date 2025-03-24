@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Image, View } from 'react-native';
+import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { BLACK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
@@ -8,6 +8,9 @@ import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
 import Svg, { Rect } from 'react-native-svg';
 import { runOnJS } from 'react-native-reanimated';
 import Animated, { useSharedValue, useAnimatedProps } from 'react-native-reanimated';
+import { SegmentIcon } from '../components/Icons';
+import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
+import { setPath } from '../util/setPath';
 
 // creates the animated component
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
@@ -46,6 +49,29 @@ function App(): JSX.Element {
                     <Segmentator width={imageSize.width} height={imageSize.height} />
                 </>
             )}
+            <SafeAreaView
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                }}
+            >
+                <TouchableOpacity
+                    style={{
+                        margin: 18,
+                        padding: 14,
+                        width: 70,
+                        height: 70,
+                        backgroundColor: `${WHITE}33`,
+                        borderRadius: 35,
+                    }}
+                    onPress={() => {
+                        router.push('/collect');
+                    }}
+                >
+                    <SegmentIcon color1={WHITE} />
+                </TouchableOpacity>
+            </SafeAreaView>
         </View>
     );
 }
@@ -62,6 +88,16 @@ type SegmentatorProps = {
 const Segmentator = ({ width, height }: SegmentatorProps) => {
     const [rects, setRects] = useState<{ x: number; y: number; w: number }[]>([]);
     const [currentRect, setCurrentRect] = useState<boolean>(false);
+
+    useEffect(() => {
+        CollectObjectsAtom.set((a) =>
+            setPath(
+                ['objects'],
+                rects.map(({ x, y, w }) => ({ deleted: false, tags: [''], rect: [x / width, y / height, w / width] })),
+                a,
+            ),
+        );
+    }, [rects]);
 
     const animatedRect = {
         x: useSharedValue(0),

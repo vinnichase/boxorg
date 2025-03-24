@@ -1,7 +1,6 @@
 import { atom } from '@gothub-team/got-atom';
 
 type SegmentImage = {
-    base64: string;
     uri: string;
     width: number;
     height: number;

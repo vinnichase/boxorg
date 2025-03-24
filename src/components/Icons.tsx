@@ -153,6 +153,27 @@ export const CloseDownIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
+export const SegmentIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={1.2}
+            strokeLinecap="round"
+            stroke={color1}
+            fill="none"
+            viewBox="0 0 24 24"
+        >
+            <Path d="M16 4h2a2 2 0 0 1 2 2v2" />
+            <Path d="M20 16v2a2 2 0 0 1 -2 2h-2" />
+            <Path d="M8 20h-2a2 2 0 0 1 -2 -2v-2" />
+            <Path d="M4 8v-2a2 2 0 0 1 2 -2h2" />
+        </Svg>
+    </View>
+);
+
 export const BackIcon = ({ color1 }: IconProps) => (
     <Svg style={{}} strokeWidth="3" viewBox="3.5 3.5 18 18">
         <Path stroke={color1} strokeLinecap="round" fill="none" d="M9 14l-4 -4l4 -4" />

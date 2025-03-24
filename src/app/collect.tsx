@@ -9,6 +9,7 @@ import { BoxIcon, SaveIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
 import { useRouter } from 'expo-router';
 import { saveObjects } from '../service/saveObjects';
+import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
 
 const HEADER_HEIGHT = 90;
 const TILE_GAP = 18;
@@ -20,6 +21,7 @@ function App(): JSX.Element {
     const { width } = useWindowDimensions();
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
 
+    const segmentImage = useAtom(SegmentImageAtom);
     const { boxId, objects } = useAtom(CollectObjectsAtom);
 
     return (
@@ -45,17 +47,18 @@ function App(): JSX.Element {
                         shadowRadius: 50,
                     }}
                 >
-                    {!objects || objects.length === 0 ? (
+                    {!segmentImage || !objects || objects.length === 0 ? (
                         <Text style={{ marginTop: 40, marginHorizontal: 20, color: WHITE, fontSize: 20 }}>
                             No Results. Get Back!
                         </Text>
                     ) : (
-                        objects.map(({ deleted, tags, uri }, i) => {
+                        objects.map(({ deleted, tags, rect }, i) => {
                             return (
                                 <ObjectTile
                                     key={i}
-                                    imageUri={uri}
+                                    imageUri={segmentImage.uri}
                                     tags={tags}
+                                    rect={rect}
                                     width={TILE_WIDTH}
                                     deleted={deleted}
                                     onDeleted={(deleted) =>

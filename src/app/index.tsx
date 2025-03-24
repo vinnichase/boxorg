@@ -29,9 +29,7 @@ function App(): JSX.Element {
     const { image, launchCamera } = useImage();
 
     useEffect(() => {
-        image &&
-            image.base64 &&
-            SegmentImageAtom.set({ base64: image.base64, uri: image.uri, height: image.height, width: image.width });
+        image && SegmentImageAtom.set({ uri: image.uri, height: image.height, width: image.width });
         image && router.push('/segment');
     }, [image]);
 
