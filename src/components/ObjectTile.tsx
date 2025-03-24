@@ -1,20 +1,14 @@
-import { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { ImagePickerAsset } from 'expo-image-picker';
-import { cropImage } from '../util/cropImage';
-import { PURPLE_MID, RED, WHITE } from '../util/constants';
+import { BLACK, PURPLE_MID, RED, WHITE } from '../util/constants';
 import { BackIcon, CrossIcon } from './Icons';
-import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
-import { useAtom } from '@gothub-team/got-atom';
 
 const BORDER_WIDTH = 3;
 
 type ObjectTileProps = {
-    imageUri: string;
     width: number;
-    rect: [number, number, number];
     tags: string[];
     deleted: boolean;
+    imageUri?: string;
     onEdit?: () => void;
     onDeleted?: (deleted: boolean) => void;
 };
@@ -23,17 +17,10 @@ export const ObjectTile = ({
     imageUri,
     deleted,
     tags,
-    rect: [x, y, w],
     width,
     onEdit = () => {},
     onDeleted = () => {},
 }: ObjectTileProps) => {
-    const segmentImage = useAtom(SegmentImageAtom);
-    const aspectRatio = (segmentImage?.height ?? 1) / (segmentImage?.width ?? 1);
-    const imgWidth = width / w;
-    const xShift = x * imgWidth;
-    const yShift = y * aspectRatio * imgWidth;
-
     return (
         <View>
             <TouchableOpacity style={{ gap: 9, opacity: deleted ? 0.35 : 1 }} onPress={() => onEdit()}>
@@ -44,18 +31,16 @@ export const ObjectTile = ({
                         borderColor: `${WHITE}cc`,
                         borderWidth: BORDER_WIDTH,
                         borderRadius: 15,
+                        backgroundColor: BLACK,
                         overflow: 'hidden',
                     }}
                 >
-                    <Image
-                        source={{ uri: imageUri }}
-                        style={{
-                            width: imgWidth,
-                            height: aspectRatio * imgWidth,
-                            top: -BORDER_WIDTH - yShift,
-                            left: -BORDER_WIDTH - xShift,
-                        }}
-                    ></Image>
+                    {imageUri && (
+                        <Image
+                            source={{ uri: imageUri }}
+                            style={{ width, height: width, top: -BORDER_WIDTH, left: -BORDER_WIDTH }}
+                        ></Image>
+                    )}
                 </View>
                 {tags.map((tag) => (
                     <Text

@@ -4,13 +4,13 @@ import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { BLACK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
-import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
 import Svg, { Rect } from 'react-native-svg';
 import { runOnJS } from 'react-native-reanimated';
 import Animated, { useSharedValue, useAnimatedProps } from 'react-native-reanimated';
 import { SegmentIcon } from '../components/Icons';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
+import { cropImage } from '../util/cropImage';
 
 // creates the animated component
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
@@ -22,7 +22,7 @@ function App(): JSX.Element {
 
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
-    const segmentImage = useAtom(SegmentImageAtom);
+    const { image } = useAtom(CollectObjectsAtom);
 
     return (
         <View
@@ -36,17 +36,17 @@ function App(): JSX.Element {
                 alignItems: 'stretch',
             }}
         >
-            {segmentImage && (
+            {image && (
                 <>
                     <Image
                         ref={imageRef}
-                        source={{ uri: segmentImage.uri }}
-                        style={{ aspectRatio: segmentImage.width / segmentImage.height }}
+                        source={{ uri: image.uri }}
+                        style={{ aspectRatio: image.width / image.height }}
                         onLayout={(e) =>
                             setImageSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })
                         }
                     />
-                    <Segmentator width={imageSize.width} height={imageSize.height} />
+                    <Segmentator width={imageSize.width} height={imageSize.height} image={image} />
                 </>
             )}
             <SafeAreaView
@@ -84,20 +84,36 @@ const translateRect = (x: number, y: number, w: number, maxW: number, maxH: numb
 type SegmentatorProps = {
     width: number;
     height: number;
+    image: {
+        uri: string;
+        width: number;
+        height: number;
+    };
 };
-const Segmentator = ({ width, height }: SegmentatorProps) => {
-    const [rects, setRects] = useState<{ x: number; y: number; w: number }[]>([]);
+const Segmentator = ({ width, height, image }: SegmentatorProps) => {
+    const [rects, setRects] = useState<{ x: number; y: number; w: number; uri: string }[]>([]);
     const [currentRect, setCurrentRect] = useState<boolean>(false);
 
     useEffect(() => {
         CollectObjectsAtom.set((a) =>
             setPath(
                 ['objects'],
-                rects.map(({ x, y, w }) => ({ deleted: false, tags: [''], rect: [x / width, y / height, w / width] })),
+                rects.map(({ uri }) => ({ deleted: false, tags: [''], uri })),
                 a,
             ),
         );
     }, [rects]);
+
+    const addRect = async (x: number, y: number, w: number) => {
+        const cropped = await cropImage(image, [
+            (x / width) * image.width,
+            (y / height) * image.height,
+            (w / width) * image.width,
+            (w / width) * image.width,
+        ]);
+        setRects([...rects, { x, y, w, uri: cropped.uri }]);
+        setCurrentRect(false);
+    };
 
     const animatedRect = {
         x: useSharedValue(0),
@@ -130,17 +146,18 @@ const Segmentator = ({ width, height }: SegmentatorProps) => {
         .onUpdate((e) => {
             animatedRect.w.value = animatedRect.w.value - e.velocityY / 100;
         })
-        .onEnd((e) => {
+        .onEnd(async () => {
             const [x, y, w] = translateRect(
                 animatedRect.x.value,
                 animatedRect.y.value,
-                animatedRect.w.value,
+                Math.abs(animatedRect.w.value),
                 width,
                 height,
             );
-            runOnJS(setRects)([...rects, { x, y, w }]);
 
-            runOnJS(setCurrentRect)(false);
+            console.log(x, y, w);
+
+            runOnJS(addRect)(x, y, w);
         });
 
     return (

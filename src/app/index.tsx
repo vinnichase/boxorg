@@ -20,7 +20,6 @@ import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
 import { SearchAtom } from '../atoms/SearchAtom';
-import { SegmentImageAtom } from '../atoms/SegmentImageAtom';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -29,7 +28,10 @@ function App(): JSX.Element {
     const { image, launchCamera } = useImage();
 
     useEffect(() => {
-        image && SegmentImageAtom.set({ uri: image.uri, height: image.height, width: image.width });
+        image &&
+            CollectObjectsAtom.set((a) =>
+                setPath(['image'], { uri: image.uri, height: image.height, width: image.width }, a),
+            );
         image && router.push('/segment');
     }, [image]);
 
