@@ -1,4 +1,4 @@
-package com.anonymous.boxorg
+package io.gothub.dev.boxorg
 
 import android.app.Application
 import android.content.res.Configuration

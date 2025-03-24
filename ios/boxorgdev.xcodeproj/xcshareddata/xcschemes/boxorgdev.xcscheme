@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "boxorg.app"
-               BlueprintName = "boxorg"
-               ReferencedContainer = "container:boxorg.xcodeproj">
+               BuildableName = "boxorgdev.app"
+               BlueprintName = "boxorgdev"
+               ReferencedContainer = "container:boxorgdev.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "boxorgTests.xctest"
-               BlueprintName = "boxorgTests"
-               ReferencedContainer = "container:boxorg.xcodeproj">
+               BuildableName = "boxorgdevTests.xctest"
+               BlueprintName = "boxorgdevTests"
+               ReferencedContainer = "container:boxorgdev.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "boxorg.app"
-            BlueprintName = "boxorg"
-            ReferencedContainer = "container:boxorg.xcodeproj">
+            BuildableName = "boxorgdev.app"
+            BlueprintName = "boxorgdev"
+            ReferencedContainer = "container:boxorgdev.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "boxorg.app"
-            BlueprintName = "boxorg"
-            ReferencedContainer = "container:boxorg.xcodeproj">
+            BuildableName = "boxorgdev.app"
+            BlueprintName = "boxorgdev"
+            ReferencedContainer = "container:boxorgdev.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
