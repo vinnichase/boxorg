@@ -13,7 +13,7 @@ type CollectObjects = {
 
 export type EditObject = {
     deleted: boolean;
-    uri?: string;
+    uri: string;
     tags: string[];
 };
 

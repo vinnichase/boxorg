@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as FileSystem from 'expo-file-system';
 import { Image, KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
 import { openDb, searchObjects } from '../db/accessLayer';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
@@ -77,7 +78,7 @@ export const SearchResults = ({}: SearchResultsProps) => {
                                     }}
                                 >
                                     <Image
-                                        source={{ uri: record.thumb_path }}
+                                        source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
                                         style={{ width: '100%', height: '100%' }}
                                     />
                                 </View>

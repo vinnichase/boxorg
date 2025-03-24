@@ -106,7 +106,7 @@ function App(): JSX.Element {
                             onPress={() => {
                                 boxId && saveObjects(boxId, objects);
                                 CollectObjectsAtom.set({ index: 0, boxId, objects: [] });
-                                router.back();
+                                router.dismissTo('/');
                             }}
                         >
                             <SaveIcon color1={`${WHITE}`} />
