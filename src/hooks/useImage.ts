@@ -23,7 +23,7 @@ export const useImage = () => {
             mediaTypes: ['images'],
             allowsEditing: false,
             quality: 1,
-            base64: true,
+            base64: false,
         });
 
         if (!result.canceled) {
