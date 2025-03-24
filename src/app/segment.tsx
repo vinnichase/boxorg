@@ -155,8 +155,6 @@ const Segmentator = ({ width, height, image }: SegmentatorProps) => {
                 height,
             );
 
-            console.log(x, y, w);
-
             runOnJS(addRect)(x, y, w);
         });
 

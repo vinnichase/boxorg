@@ -28,6 +28,7 @@
         <data android:scheme="myapp"/>
         <data android:scheme="com.anonymous.boxorg"/>
         <data android:scheme="io.gothub.dev.boxorg"/>
+        <data android:scheme="io.gothub.boxorg"/>
       </intent-filter>
     </activity>
   </application>

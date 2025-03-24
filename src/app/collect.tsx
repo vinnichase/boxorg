@@ -50,25 +50,22 @@ function App(): JSX.Element {
                             No Results. Get Back!
                         </Text>
                     ) : (
-                        objects.map(({ deleted, tags, uri }, i) => {
-                            console.log('URI', uri);
-                            return (
-                                <ObjectTile
-                                    key={i}
-                                    imageUri={uri}
-                                    tags={tags.filter(Boolean)}
-                                    width={TILE_WIDTH}
-                                    deleted={deleted}
-                                    onDeleted={(deleted) =>
-                                        CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
-                                    }
-                                    onEdit={() => {
-                                        CollectObjectsAtom.set((a) => setPath(['index'], i, a));
-                                        router.push('/label');
-                                    }}
-                                />
-                            );
-                        })
+                        objects.map(({ deleted, tags, uri }, i) => (
+                            <ObjectTile
+                                key={i}
+                                imageUri={uri}
+                                tags={tags.filter(Boolean)}
+                                width={TILE_WIDTH}
+                                deleted={deleted}
+                                onDeleted={(deleted) =>
+                                    CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
+                                }
+                                onEdit={() => {
+                                    CollectObjectsAtom.set((a) => setPath(['index'], i, a));
+                                    router.push('/label');
+                                }}
+                            />
+                        ))
                     )}
                 </View>
             </ScrollView>

@@ -1,4 +1,4 @@
-package io.gothub.dev.boxorg
+package io.gothub.boxorg
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

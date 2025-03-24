@@ -4,7 +4,6 @@ export const cropImage = async (
     image: { uri: string; width: number; height: number },
     [x, y, w, h]: [number, number, number, number],
 ) => {
-    console.log(image, { x, y, w, h });
     const cropped = await ImageEditor.cropImage(image.uri, {
         offset: { x, y },
         size: { width: w, height: h },

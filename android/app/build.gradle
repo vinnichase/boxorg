@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'io.gothub.dev.boxorg'
+    namespace 'io.gothub.boxorg'
     defaultConfig {
-        applicationId 'io.gothub.dev.boxorg'
+        applicationId 'io.gothub.boxorg'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
