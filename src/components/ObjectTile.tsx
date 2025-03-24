@@ -33,8 +33,7 @@ export const ObjectTile = ({
     const imgWidth = width / w;
     const xShift = x * imgWidth;
     const yShift = y * aspectRatio * imgWidth;
-    console.log(imgWidth, w, x, y, xShift, yShift);
-    console.log('RATIO', aspectRatio);
+
     return (
         <View>
             <TouchableOpacity style={{ gap: 9, opacity: deleted ? 0.35 : 1 }} onPress={() => onEdit()}>
