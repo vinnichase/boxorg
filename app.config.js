@@ -15,6 +15,7 @@ module.exports = () => {
                 supportsTablet: true,
                 bundleIdentifier: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
                 infoPlist: {
+                    ITSAppUsesNonExemptEncryption: false,
                     UISupportsDocumentBrowser: true,
                     UIFileSharingEnabled: true,
                     LSSupportsOpeningDocumentsInPlace: true,
