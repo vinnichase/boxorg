@@ -14,6 +14,11 @@ module.exports = () => {
             ios: {
                 supportsTablet: true,
                 bundleIdentifier: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
+                infoPlist: {
+                    UISupportsDocumentBrowser: true,
+                    UIFileSharingEnabled: true,
+                    LSSupportsOpeningDocumentsInPlace: true,
+                },
             },
             android: {
                 adaptiveIcon: {
