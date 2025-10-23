@@ -35,12 +35,6 @@ function App(): JSX.Element {
         image && router.push('/segment');
     }, [image]);
 
-    // useEffect(() => {
-    //     if (!result || !image) return;
-    //     router.push('/collect');
-    //     collectObjects(image, result).then((objects) => CollectObjectsAtom.set((a) => ({ ...a, index: 0, objects })));
-    // }, [result]);
-
     const [blur, setBlur] = useState(0);
 
     const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0, -350);
