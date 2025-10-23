@@ -46,29 +46,54 @@ function App(): JSX.Element {
                         shadowOpacity: 1,
                         shadowRadius: 100,
                     }}
-                    onTouchEnd={() => Keyboard.dismiss()}
                 >
-                    <Image
-                        source={{ uri: object ? FileSystem.documentDirectory + object.thumb_path : undefined }}
+                    <View
                         style={{
                             width,
                             height: '50%',
                             maxHeight: width,
                         }}
-                    ></Image>
-                    <TextInput
-                        style={{
-                            marginTop: 18,
-                            marginHorizontal: 18,
-                            fontSize: 24,
-                            fontWeight: 'bold',
-                            color: WHITE,
-                            borderBottomWidth: 2,
-                            borderBottomColor: PURPLE_LIGHT,
-                            paddingBottom: 4,
-                        }}
-                    />
+                        onTouchEnd={() => Keyboard.dismiss()}
+                    >
+                        <Image
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            source={{ uri: object ? FileSystem.documentDirectory + object.thumb_path : undefined }}
+                        ></Image>
+                    </View>
                     <ScrollView style={{ flex: 1 }}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                margin: 18,
+                                marginBottom: 0,
+                                padding: 10,
+                                paddingHorizontal: 18,
+                                backgroundColor: PURPLE_LIGHT,
+                                opacity: 0.9,
+                                borderRadius: 14,
+                            }}
+                        >
+                            <Text style={{ marginRight: 10, color: WHITE, fontSize: 25 }}>box</Text>
+                            <TextInput
+                                keyboardType="number-pad"
+                                style={{
+                                    flex: 1,
+                                    height: '100%',
+                                    color: WHITE,
+                                    fontSize: 25,
+                                    fontWeight: 'bold',
+                                }}
+                                autoComplete="off"
+                                spellCheck={false}
+                                defaultValue={object.box_id.toString() ?? ''}
+                                onChange={(e) => {
+                                    EditObjectAtom.set((a) => setPath(['box_id'], Number(e.nativeEvent.text), a));
+                                }}
+                            />
+                        </View>
                         <View
                             style={{
                                 flex: 1,
@@ -77,7 +102,7 @@ function App(): JSX.Element {
                             }}
                             onTouchEnd={(e) => e.stopPropagation()}
                         >
-                            {object?.tags?.map((tag, i) => (
+                            {object.tags.map((tag, i) => (
                                 <View
                                     key={i}
                                     style={{
@@ -91,13 +116,13 @@ function App(): JSX.Element {
                                     <TouchableOpacity
                                         style={{ paddingVertical: 10 }}
                                         onPress={() => {
-                                            // CollectObjectsAtom.set((a) =>
-                                            //     setPath(
-                                            //         ['objects', index, 'tags'],
-                                            //         object?.tags?.filter((_, j) => i !== j),
-                                            //         a,
-                                            //     ),
-                                            // );
+                                            EditObjectAtom.set((a) =>
+                                                setPath(
+                                                    ['tags'],
+                                                    object.tags.filter((_, j) => i !== j),
+                                                    a,
+                                                ),
+                                            );
                                         }}
                                     >
                                         <CrossIcon color1={PURPLE_LIGHT}></CrossIcon>
@@ -105,7 +130,7 @@ function App(): JSX.Element {
                                     <View
                                         style={{
                                             flex: 1,
-                                            padding: 4,
+                                            padding: 10,
                                             paddingHorizontal: 18,
                                             backgroundColor: PURPLE_LIGHT,
                                             opacity: 0.9,
@@ -124,13 +149,9 @@ function App(): JSX.Element {
                                             spellCheck={false}
                                             defaultValue={tag}
                                             onChange={(e) => {
-                                                // CollectObjectsAtom.set((a) =>
-                                                //     setPath(
-                                                //         ['objects', index, 'tags', i],
-                                                //         e.nativeEvent.text.toUpperCase().trim(),
-                                                //         a,
-                                                //     ),
-                                                // );
+                                                EditObjectAtom.set((a) =>
+                                                    setPath(['tags', i], e.nativeEvent.text.toUpperCase(), a),
+                                                );
                                             }}
                                         />
                                     </View>
@@ -139,9 +160,7 @@ function App(): JSX.Element {
                             <TouchableOpacity
                                 style={{ width: '100%', alignItems: 'center' }}
                                 onPress={() => {
-                                    // CollectObjectsAtom.set((a) =>
-                                    //     setPath(['objects', index, 'tags', object?.tags?.length ?? 0], '', a),
-                                    // );
+                                    EditObjectAtom.set((a) => setPath(['tags', object.tags.length ?? 0], '', a));
                                 }}
                             >
                                 <View style={{ height: 25, transform: [{ rotate: '45deg' }] }}>
