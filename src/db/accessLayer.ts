@@ -113,6 +113,22 @@ export function updateObject(
 }
 
 /**
+ * Updates a object's box ID.
+ * @param id The object ID.
+ * @param box_id The new box ID.
+ */
+export function updateObjectBoxId(db: SqLite.SQLiteDatabase, id: number, box_id: number): boolean {
+    try {
+        const stmt = db.prepareSync(sql`UPDATE objects SET box_id = ? WHERE id = ?`);
+        const info = stmt.executeSync(box_id, id);
+        return info.changes > 0;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
+}
+
+/**
  * Deletes a object.
  * @param id The object ID.
  */

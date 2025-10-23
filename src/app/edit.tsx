@@ -3,6 +3,7 @@ import {
     Image,
     Keyboard,
     KeyboardAvoidingView,
+    SafeAreaView,
     ScrollView,
     Text,
     TextInput,
@@ -14,11 +15,19 @@ import * as FileSystem from 'expo-file-system';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 
-import { CrossIcon } from '../components/Icons';
+import { BoxIcon, CrossIcon, SaveIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
+import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
+import { saveObjectBoxId } from '../service/saveObjectBoxId';
+import { SearchAtom } from '../atoms/SearchAtom';
+
+const HEADER_HEIGHT = 90;
 
 function App(): JSX.Element {
+    const router = useRouter();
+
     const { width } = useWindowDimensions();
     const object = useAtom(EditObjectAtom);
 
@@ -64,36 +73,6 @@ function App(): JSX.Element {
                         ></Image>
                     </View>
                     <ScrollView style={{ flex: 1 }}>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                margin: 18,
-                                marginBottom: 0,
-                                padding: 10,
-                                paddingHorizontal: 18,
-                                backgroundColor: PURPLE_LIGHT,
-                                opacity: 0.9,
-                                borderRadius: 14,
-                            }}
-                        >
-                            <Text style={{ marginRight: 10, color: WHITE, fontSize: 25 }}>box</Text>
-                            <TextInput
-                                keyboardType="number-pad"
-                                style={{
-                                    flex: 1,
-                                    height: '100%',
-                                    color: WHITE,
-                                    fontSize: 25,
-                                    fontWeight: 'bold',
-                                }}
-                                autoComplete="off"
-                                spellCheck={false}
-                                defaultValue={object.box_id.toString() ?? ''}
-                                onChange={(e) => {
-                                    EditObjectAtom.set((a) => setPath(['box_id'], Number(e.nativeEvent.text), a));
-                                }}
-                            />
-                        </View>
                         <View
                             style={{
                                 flex: 1,
@@ -170,6 +149,65 @@ function App(): JSX.Element {
                         </View>
                     </ScrollView>
                 </View>
+                <SafeAreaView />
+                <BlurView
+                    intensity={30}
+                    tint="regular"
+                    style={{
+                        position: 'absolute',
+                        width: '100%',
+                        left: 0,
+                        top: 0,
+                        borderBottomColor: `${WHITE}22`,
+                        borderBottomWidth: 1,
+                    }}
+                >
+                    <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}33` }}>
+                        <View
+                            style={{
+                                height: HEADER_HEIGHT,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 20,
+                                padding: 20,
+                            }}
+                        >
+                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                <BoxIcon color2={`${WHITE}44`} />
+                                <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
+                                <TextInput
+                                    keyboardType="number-pad"
+                                    style={{
+                                        flex: 1,
+                                        height: '100%',
+                                        paddingHorizontal: 14,
+                                        paddingVertical: 8,
+                                        color: WHITE,
+                                        fontSize: 35,
+                                        fontWeight: 'bold',
+                                        borderRadius: 14,
+                                        backgroundColor: WHITE + '33',
+                                    }}
+                                    autoComplete="off"
+                                    spellCheck={false}
+                                    defaultValue={object.box_id.toString() ?? ''}
+                                    onChange={(e) => {
+                                        EditObjectAtom.set((a) => setPath(['box_id'], Number(e.nativeEvent.text), a));
+                                    }}
+                                />
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    object.box_id && saveObjectBoxId(object);
+                                    router.dismissTo('/');
+                                }}
+                            >
+                                <SaveIcon color1={`${WHITE}`} />
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+                </BlurView>
             </KeyboardAvoidingView>
         </View>
     );
