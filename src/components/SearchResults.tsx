@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
-import { Image, KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
-import { openDb, searchObjects } from '../db/accessLayer';
+import { Image, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ObjectWithTags, openDb, searchObjects } from '../db/accessLayer';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { SearchAtom } from '../atoms/SearchAtom';
+import { EditObjectAtom } from '../atoms/EditObjectAtom';
+import { router } from 'expo-router';
 
 const MARGIN_TOP = 160;
 
 type SearchResultsProps = {};
-
-type ObjectWithTags = { id: number; thumb_path: string; box_id: number; tags: string[] };
 
 export const SearchResults = ({}: SearchResultsProps) => {
     const [results, setResults] = useState<ObjectWithTags[]>([]);
@@ -66,7 +66,14 @@ export const SearchResults = ({}: SearchResultsProps) => {
                         }}
                     >
                         {results.map((record) => (
-                            <View key={record.id} style={{ height: 100, flexDirection: 'row', gap: 20 }}>
+                            <TouchableOpacity
+                                key={record.id}
+                                style={{ height: 100, flexDirection: 'row', gap: 20 }}
+                                onPress={() => {
+                                    EditObjectAtom.set(record);
+                                    router.push('/edit');
+                                }}
+                            >
                                 <View
                                     style={{
                                         overflow: 'hidden',
@@ -127,7 +134,7 @@ export const SearchResults = ({}: SearchResultsProps) => {
                                         {record.box_id}
                                     </Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </View>
                 </Animated.View>

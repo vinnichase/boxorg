@@ -61,6 +61,8 @@ db.closeSync();
 // Objects CRUD
 // ===========================================================================
 
+export type ObjectWithTags = { id: number; thumb_path: string; box_id: number; tags: string[] };
+
 /**
  * Creates a new object.
  * @param box_id The box ID.

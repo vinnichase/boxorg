@@ -1,0 +1,159 @@
+import React from 'react';
+import {
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    useWindowDimensions,
+    View,
+} from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
+import { useAtom } from '@gothub-team/got-atom';
+
+import { CrossIcon } from '../components/Icons';
+import { setPath } from '../util/setPath';
+import { EditObjectAtom } from '../atoms/EditObjectAtom';
+
+function App(): JSX.Element {
+    const { width } = useWindowDimensions();
+    const object = useAtom(EditObjectAtom);
+
+    return (
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: PURPLE_DARK,
+                shadowColor: `${BLACK}aa`,
+                shadowOpacity: 0.5,
+                shadowRadius: 50,
+            }}
+        >
+            <KeyboardAvoidingView
+                behavior="height"
+                style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                }}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        shadowColor: `${PURPLE_LIGHT}`,
+                        shadowOpacity: 1,
+                        shadowRadius: 100,
+                    }}
+                    onTouchEnd={() => Keyboard.dismiss()}
+                >
+                    <Image
+                        source={{ uri: object ? FileSystem.documentDirectory + object.thumb_path : undefined }}
+                        style={{
+                            width,
+                            height: '50%',
+                            maxHeight: width,
+                        }}
+                    ></Image>
+                    <TextInput
+                        style={{
+                            marginTop: 18,
+                            marginHorizontal: 18,
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            color: WHITE,
+                            borderBottomWidth: 2,
+                            borderBottomColor: PURPLE_LIGHT,
+                            paddingBottom: 4,
+                        }}
+                    />
+                    <ScrollView style={{ flex: 1 }}>
+                        <View
+                            style={{
+                                flex: 1,
+                                gap: 18,
+                                marginVertical: 18,
+                            }}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                        >
+                            {object?.tags?.map((tag, i) => (
+                                <View
+                                    key={i}
+                                    style={{
+                                        flex: 1,
+                                        height: 45,
+                                        flexDirection: 'row',
+                                        gap: 18,
+                                        marginHorizontal: 18,
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        style={{ paddingVertical: 10 }}
+                                        onPress={() => {
+                                            // CollectObjectsAtom.set((a) =>
+                                            //     setPath(
+                                            //         ['objects', index, 'tags'],
+                                            //         object?.tags?.filter((_, j) => i !== j),
+                                            //         a,
+                                            //     ),
+                                            // );
+                                        }}
+                                    >
+                                        <CrossIcon color1={PURPLE_LIGHT}></CrossIcon>
+                                    </TouchableOpacity>
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            padding: 4,
+                                            paddingHorizontal: 18,
+                                            backgroundColor: PURPLE_LIGHT,
+                                            opacity: 0.9,
+                                            borderRadius: 14,
+                                        }}
+                                    >
+                                        <TextInput
+                                            autoCapitalize="characters"
+                                            style={{
+                                                flex: 1,
+                                                height: '100%',
+                                                fontSize: 20,
+                                                color: WHITE,
+                                            }}
+                                            autoComplete="off"
+                                            spellCheck={false}
+                                            defaultValue={tag}
+                                            onChange={(e) => {
+                                                // CollectObjectsAtom.set((a) =>
+                                                //     setPath(
+                                                //         ['objects', index, 'tags', i],
+                                                //         e.nativeEvent.text.toUpperCase().trim(),
+                                                //         a,
+                                                //     ),
+                                                // );
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                            ))}
+                            <TouchableOpacity
+                                style={{ width: '100%', alignItems: 'center' }}
+                                onPress={() => {
+                                    // CollectObjectsAtom.set((a) =>
+                                    //     setPath(['objects', index, 'tags', object?.tags?.length ?? 0], '', a),
+                                    // );
+                                }}
+                            >
+                                <View style={{ height: 25, transform: [{ rotate: '45deg' }] }}>
+                                    <CrossIcon color1={GREEN_LIGHT}></CrossIcon>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                </View>
+            </KeyboardAvoidingView>
+        </View>
+    );
+}
+
+export default App;
