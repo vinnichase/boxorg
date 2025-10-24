@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Image, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { ObjectWithTags, openDb, searchObjects } from '../db/accessLayer';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
-import { SearchAtom } from '../atoms/SearchAtom';
+import { SearchAtom, SearchResultsAtom } from '../atoms/SearchAtom';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
 import { router } from 'expo-router';
 
@@ -14,23 +13,8 @@ const MARGIN_TOP = 160;
 type SearchResultsProps = {};
 
 export const SearchResults = ({}: SearchResultsProps) => {
-    const [results, setResults] = useState<ObjectWithTags[]>([]);
-    const { show, query } = useAtom(SearchAtom);
-
-    useEffect(() => {
-        const db = openDb();
-        const records =
-            searchObjects(db, query)?.reduce((acc, o) => {
-                const accO = acc[o.id] ?? { ...o, tags: [] };
-                accO.tags.push(o.tag);
-                return {
-                    ...acc,
-                    [o.id]: accO,
-                };
-            }, {} as Record<number, ObjectWithTags>) ?? {};
-        records && setResults(Object.values(records));
-        db.closeSync();
-    }, [show, query]);
+    const { show } = useAtom(SearchAtom);
+    const results = useAtom(SearchResultsAtom);
 
     const sharedOpacity = useSharedValue(1);
 

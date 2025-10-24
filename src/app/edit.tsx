@@ -21,7 +21,7 @@ import { EditObjectAtom } from '../atoms/EditObjectAtom';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { saveObjectBoxId } from '../service/saveObjectBoxId';
-import { SearchAtom } from '../atoms/SearchAtom';
+import { executeSearch } from '../atoms/SearchAtom';
 
 const HEADER_HEIGHT = 90;
 
@@ -200,6 +200,7 @@ function App(): JSX.Element {
                             <TouchableOpacity
                                 onPress={() => {
                                     object.box_id && saveObjectBoxId(object);
+                                    executeSearch();
                                     router.dismissTo('/');
                                 }}
                             >
