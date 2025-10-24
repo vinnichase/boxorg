@@ -20,7 +20,7 @@ import { setPath } from '../util/setPath';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import { saveObjectBoxId } from '../service/saveObjectBoxId';
+import { saveObject } from '../service/saveObject';
 import { executeSearch } from '../atoms/SearchAtom';
 
 const HEADER_HEIGHT = 90;
@@ -199,7 +199,7 @@ function App(): JSX.Element {
                             </View>
                             <TouchableOpacity
                                 onPress={() => {
-                                    object.box_id && saveObjectBoxId(object);
+                                    object.box_id && saveObject(object);
                                     executeSearch();
                                     router.dismissTo('/');
                                 }}

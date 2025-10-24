@@ -316,7 +316,7 @@ export function getTags(db: SqLite.SQLiteDatabase) {
  * Retrieves all tags assigned to a object.
  * @param objectId The object ID.
  */
-export function getTagsForObject(db: SqLite.SQLiteDatabase, objectId: number) {
+export function getObjectTags(db: SqLite.SQLiteDatabase, objectId: number) {
     try {
         const stmt = db.prepareSync(sql`
         SELECT t.id, t.tag
