@@ -23,7 +23,7 @@ export function executeSearch() {
     const records =
         searchObjects(db, query)?.reduce((acc, o) => {
             const accO = acc[o.id] ?? { ...o, tags: [] };
-            accO.tags.push(o.tag);
+            o.tag && accO.tags.push(o.tag);
             return {
                 ...acc,
                 [o.id]: accO,
