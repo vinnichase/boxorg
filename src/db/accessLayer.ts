@@ -280,12 +280,21 @@ export function getObjects(db: SqLite.SQLiteDatabase) {
 }
 
 /**
- * Retrieves all objects.
+ * Retrieves all objects that match the search query, including all their tags.
  */
 export function searchObjects(db: SqLite.SQLiteDatabase, query: string) {
     try {
         const stmt = db.prepareSync(
-            sql`SELECT objects.id, objects.thumb_path, objects.box_id, tags.tag FROM objects LEFT JOIN object_tags ON objects.id = object_tags.object_id LEFT JOIN tags ON object_tags.tag_id = tags.id WHERE tags.tag LIKE ? OR tags.tag IS NULL`,
+            sql`SELECT objects.id, objects.thumb_path, objects.box_id, tags.tag
+                FROM objects
+                LEFT JOIN object_tags ON objects.id = object_tags.object_id
+                LEFT JOIN tags ON object_tags.tag_id = tags.id
+                WHERE objects.id IN (
+                    SELECT DISTINCT object_id
+                    FROM object_tags
+                    INNER JOIN tags ON object_tags.tag_id = tags.id
+                    WHERE tags.tag LIKE ?
+                )`,
         );
         return stmt
             .executeSync<{
