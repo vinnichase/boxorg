@@ -47,6 +47,7 @@ module.exports = () => {
                     },
                 ],
                 'expo-sqlite',
+                'expo-font',
             ],
             experiments: {
                 typedRoutes: true,
