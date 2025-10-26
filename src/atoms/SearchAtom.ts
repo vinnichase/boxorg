@@ -13,7 +13,11 @@ export const SearchResultsAtom = atom<ObjectWithTags[]>([]);
 SearchAtom.subscribe({
     next: async (a) => {
         if (!a.show) return;
-        executeSearch();
+        if (!a.query) {
+            SearchResultsAtom.set([]);
+        } else {
+            executeSearch();
+        }
     },
 });
 
