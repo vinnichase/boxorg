@@ -149,7 +149,6 @@ function App(): JSX.Element {
                         </View>
                     </ScrollView>
                 </View>
-                <SafeAreaView />
                 <BlurView
                     intensity={30}
                     tint="regular"
@@ -162,7 +161,7 @@ function App(): JSX.Element {
                         borderBottomWidth: 1,
                     }}
                 >
-                    <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}33` }}>
+                    <SafeAreaView edges={['top']} style={{ backgroundColor: `${PURPLE_DARK}33` }}>
                         <View
                             style={{
                                 height: HEADER_HEIGHT,

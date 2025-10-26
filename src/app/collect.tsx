@@ -33,44 +33,44 @@ function App(): JSX.Element {
                 shadowRadius: 50,
             }}
         >
-            <SafeAreaView />
-            <ScrollView style={{ marginTop: HEADER_HEIGHT, overflow: 'visible' }}>
-                <View
-                    style={{
-                        gap: TILE_GAP,
-                        padding: TILE_GAP,
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        shadowColor: `${PURPLE_LIGHT}`,
-                        shadowOpacity: 1,
-                        shadowRadius: 50,
-                    }}
-                >
-                    {!image || !objects || objects.length === 0 ? (
-                        <Text style={{ marginTop: 40, marginHorizontal: 20, color: WHITE, fontSize: 20 }}>
-                            No Results. Get Back!
-                        </Text>
-                    ) : (
-                        objects.map(({ deleted, tags, uri }, i) => (
-                            <ObjectTile
-                                key={i}
-                                imageUri={uri}
-                                tags={tags.filter(Boolean)}
-                                width={TILE_WIDTH}
-                                deleted={deleted}
-                                onDeleted={(deleted) =>
-                                    CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
-                                }
-                                onEdit={() => {
-                                    CollectObjectsAtom.set((a) => setPath(['index'], i, a));
-                                    router.push('/label');
-                                }}
-                            />
-                        ))
-                    )}
-                </View>
-            </ScrollView>
-            <SafeAreaView />
+            <SafeAreaView>
+                <ScrollView style={{ marginTop: HEADER_HEIGHT, overflow: 'visible' }}>
+                    <View
+                        style={{
+                            gap: TILE_GAP,
+                            padding: TILE_GAP,
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            shadowColor: `${PURPLE_LIGHT}`,
+                            shadowOpacity: 1,
+                            shadowRadius: 50,
+                        }}
+                    >
+                        {!image || !objects || objects.length === 0 ? (
+                            <Text style={{ marginTop: 40, marginHorizontal: 20, color: WHITE, fontSize: 20 }}>
+                                No Results. Get Back!
+                            </Text>
+                        ) : (
+                            objects.map(({ deleted, tags, uri }, i) => (
+                                <ObjectTile
+                                    key={i}
+                                    imageUri={uri}
+                                    tags={tags.filter(Boolean)}
+                                    width={TILE_WIDTH}
+                                    deleted={deleted}
+                                    onDeleted={(deleted) =>
+                                        CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
+                                    }
+                                    onEdit={() => {
+                                        CollectObjectsAtom.set((a) => setPath(['index'], i, a));
+                                        router.push('/label');
+                                    }}
+                                />
+                            ))
+                        )}
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
             <BlurView
                 intensity={80}
                 tint="regular"
@@ -83,7 +83,7 @@ function App(): JSX.Element {
                     borderBottomWidth: 1,
                 }}
             >
-                <SafeAreaView style={{ backgroundColor: `${PURPLE_DARK}33` }}>
+                <SafeAreaView edges={['top']} style={{ backgroundColor: `${PURPLE_DARK}33` }}>
                     <View
                         style={{
                             height: HEADER_HEIGHT,
