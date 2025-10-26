@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';

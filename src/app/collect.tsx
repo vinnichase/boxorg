@@ -1,5 +1,6 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';

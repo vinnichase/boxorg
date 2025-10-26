@@ -3,12 +3,12 @@ import {
     Animated,
     ImageBackground,
     Keyboard,
-    SafeAreaView,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
 import { ApertureIcon, BoxIcon, CloseDownIcon, SearchIcon } from '../components/Icons';
