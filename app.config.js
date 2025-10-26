@@ -1,6 +1,8 @@
 module.exports = () => {
     const isDev = process.env.BUILD_PROFILE === 'dev';
 
+    console.log('Building for profile:', isDev ? 'dev' : 'prod');
+
     return {
         expo: {
             name: isDev ? 'boxorg-dev' : 'boxorg',
@@ -10,7 +12,7 @@ module.exports = () => {
             icon: './assets/images/icon.png',
             scheme: 'myapp',
             userInterfaceStyle: 'automatic',
-            newArchEnabled: false,
+            newArchEnabled: true,
             ios: {
                 supportsTablet: true,
                 bundleIdentifier: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',

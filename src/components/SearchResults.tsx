@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Image, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';

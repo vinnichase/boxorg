@@ -1,9 +1,10 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { EditObject } from '../atoms/CollectObjectsAtom';
 import { assignTagToObject, createObject, openDb, updateObject } from '../db/accessLayer';
 
 export const saveObjects = async (boxId: number, objects: EditObject[]): Promise<void> => {
-    if (objects.length === 0 || !FileSystem.documentDirectory) return;
+    const docDir = FileSystem.documentDirectory;
+    if (objects.length === 0 || !docDir) return;
 
     const db = openDb();
 
@@ -22,7 +23,7 @@ export const saveObjects = async (boxId: number, objects: EditObject[]): Promise
 
         await FileSystem.copyAsync({
             from: object.uri,
-            to: FileSystem.documentDirectory + imageFilename,
+            to: docDir + imageFilename,
         });
     }
 
