@@ -21,6 +21,8 @@ module.exports = () => {
                     UISupportsDocumentBrowser: true,
                     UIFileSharingEnabled: true,
                     LSSupportsOpeningDocumentsInPlace: true,
+                    UIStatusBarStyle: 'UIStatusBarStyleLightContent',
+                    UIViewControllerBasedStatusBarAppearance: false,
                 },
             },
             android: {
@@ -29,6 +31,10 @@ module.exports = () => {
                     backgroundColor: '#442871',
                 },
                 package: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
+                statusBar: {
+                    barStyle: 'light-content',
+                    backgroundColor: '#442871',
+                },
             },
             web: {
                 bundler: 'metro',
