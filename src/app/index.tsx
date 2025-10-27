@@ -95,6 +95,7 @@ function App(): JSX.Element {
             resizeMode="cover"
         >
             <AnimatedBlurView
+                experimentalBlurMethod="dimezisBlurView"
                 style={{
                     flex: 1,
                     width: '100%',

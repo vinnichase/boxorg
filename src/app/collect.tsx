@@ -74,6 +74,7 @@ function App(): JSX.Element {
             <BlurView
                 intensity={80}
                 tint="regular"
+                experimentalBlurMethod="dimezisBlurView"
                 style={{
                     position: 'absolute',
                     width: '100%',
