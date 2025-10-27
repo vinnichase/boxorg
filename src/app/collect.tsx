@@ -73,7 +73,7 @@ function App(): JSX.Element {
             </SafeAreaView>
             <BlurView
                 intensity={80}
-                tint="regular"
+                tint="dark"
                 experimentalBlurMethod="dimezisBlurView"
                 style={{
                     position: 'absolute',

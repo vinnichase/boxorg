@@ -96,6 +96,7 @@ function App(): JSX.Element {
         >
             <AnimatedBlurView
                 experimentalBlurMethod="dimezisBlurView"
+                tint="dark"
                 style={{
                     flex: 1,
                     width: '100%',
