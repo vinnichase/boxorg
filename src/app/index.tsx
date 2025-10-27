@@ -124,6 +124,8 @@ function App(): JSX.Element {
                                 height: '100%',
                                 fontSize: 25,
                                 color: PURPLE_DARK,
+                                textAlignVertical: 'center',
+                                paddingVertical: 0,
                             }}
                             autoComplete="off"
                             spellCheck={false}
@@ -196,6 +198,8 @@ function App(): JSX.Element {
                         height: '100%',
                         fontSize: 25,
                         color: PURPLE_DARK,
+                        textAlignVertical: 'center',
+                        paddingVertical: 0,
                     }}
                     autoComplete="off"
                     spellCheck={false}

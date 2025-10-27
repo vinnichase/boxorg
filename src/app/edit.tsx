@@ -123,6 +123,8 @@ function App(): JSX.Element {
                                                 height: '100%',
                                                 fontSize: 20,
                                                 color: WHITE,
+                                                textAlignVertical: 'center',
+                                                paddingVertical: 0,
                                             }}
                                             autoComplete="off"
                                             spellCheck={false}
@@ -187,6 +189,7 @@ function App(): JSX.Element {
                                         fontWeight: 'bold',
                                         borderRadius: 14,
                                         backgroundColor: WHITE + '33',
+                                        textAlignVertical: 'center',
                                     }}
                                     autoComplete="off"
                                     spellCheck={false}

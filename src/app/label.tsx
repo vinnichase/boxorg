@@ -105,6 +105,8 @@ function App(): JSX.Element {
                                                 height: '100%',
                                                 fontSize: 20,
                                                 color: WHITE,
+                                                textAlignVertical: 'center',
+                                                paddingVertical: 0,
                                             }}
                                             autoComplete="off"
                                             spellCheck={false}
