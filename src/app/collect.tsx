@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
@@ -34,7 +34,12 @@ function App(): JSX.Element {
             }}
         >
             <SafeAreaView>
-                <ScrollView style={{ marginTop: HEADER_HEIGHT, overflow: 'visible' }}>
+                <ScrollView
+                    style={{
+                        marginTop: HEADER_HEIGHT,
+                        ...(Platform.OS !== 'android' && { overflow: 'visible' }),
+                    }}
+                >
                     <View
                         style={{
                             gap: TILE_GAP,
