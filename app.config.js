@@ -29,6 +29,7 @@ module.exports = () => {
                 adaptiveIcon: {
                     foregroundImage: './assets/images/adaptive-icon.png',
                     backgroundColor: '#442871',
+                    borderColor: '#442871',
                 },
                 package: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
                 statusBar: {
