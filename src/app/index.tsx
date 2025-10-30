@@ -24,7 +24,10 @@ import { SearchAtom } from '../atoms/SearchAtom';
 function App(): JSX.Element {
     const router = useRouter();
 
-    const { width: windowWidth } = useWindowDimensions();
+    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+    const windowRatio = windowWidth / windowHeight;
+    const windowRatioComplement = 1 - windowRatio;
+
     const { image, launchCamera } = useImage();
 
     useEffect(() => {
@@ -37,7 +40,10 @@ function App(): JSX.Element {
 
     const [blur, setBlur] = useState(0);
 
-    const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0, -350);
+    const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(
+        0,
+        -(windowHeight * (windowRatioComplement - 0.12)),
+    );
     const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(1, 0);
 
     const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -270);
@@ -186,7 +192,7 @@ function App(): JSX.Element {
                 style={{
                     position: 'absolute',
                     width: windowWidth - 60,
-                    top: 420,
+                    top: windowHeight * windowRatioComplement * 0.95,
                     transform: [{ translateY: animatedSearchShift }],
                     opacity: animatedSearchHide,
                 }}
