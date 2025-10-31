@@ -3,6 +3,7 @@ import {
     Animated,
     ImageBackground,
     Keyboard,
+    Platform,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
@@ -20,6 +21,11 @@ import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
 import { SearchAtom } from '../atoms/SearchAtom';
+
+// Global focus state to be used in keyboard listeners
+let focusGlobal: 'search' | 'box' | 'none' = 'none';
+
+const SHOW_EVENT = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -40,19 +46,37 @@ function App(): JSX.Element {
 
     const [blur, setBlur] = useState(0);
 
-    const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(
-        0,
-        -(windowHeight * (windowRatioComplement - 0.12)),
-    );
-    const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(1, 0);
+    const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0);
+    const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(1);
 
-    const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0, -270);
-    const [animatedBoxHide, hideBox, showBox] = useSpringSpan(0.9, 0);
+    const [animatedBoxShift, shiftBox, unshiftBox] = useSpringSpan(0);
+    const [animatedBoxHide, hideBox, showBox] = useSpringSpan(0.9);
 
-    const [animatedApertureShift, shiftAperture, unshiftAperture] = useSpringSpan(0, -270);
-    const [animatedApertureHide, hideAperture, showAperture] = useSpringSpan(0.9, 0);
+    const [animatedApertureShift, shiftAperture, unshiftAperture] = useSpringSpan(0);
+    const [animatedApertureHide, hideAperture, showAperture] = useSpringSpan(0.9);
 
-    const [focus, setFocus] = useState<'search' | 'box' | 'none'>('none');
+    const [focus, _setFocus] = useState<'search' | 'box' | 'none'>('none');
+    const setFocus = (f: 'search' | 'box' | 'none') => {
+        focusGlobal = f;
+        _setFocus(f);
+    };
+
+    useEffect(() => {
+        const keyboardShow = Keyboard.addListener(SHOW_EVENT, (e) => {
+            setTimeout(() => {
+                if (focusGlobal === 'box') {
+                    const keyboardHeight = e.endCoordinates.height;
+                    shiftBox(-keyboardHeight);
+                    shiftAperture(-keyboardHeight);
+                }
+            }, 0);
+        });
+
+        return () => {
+            keyboardShow.remove();
+        };
+    }, []);
+
     const searchTextInput = React.useRef<TextInput>(null);
     const boxTextInput = React.useRef<TextInput>(null);
 
@@ -60,21 +84,21 @@ function App(): JSX.Element {
         switch (focus) {
             case 'search':
                 SearchAtom.set((a) => setPath(['show'], true, a));
-                shiftSearch();
+                shiftSearch(-(windowHeight * (windowRatioComplement - 0.12)));
                 unshiftBox();
                 showSearch();
-                hideBox();
-                hideAperture();
+                hideBox(0);
+                hideAperture(0);
                 searchTextInput.current?.focus();
                 blur !== 70 && setBlur(70);
                 break;
             case 'box':
                 SearchAtom.set((a) => setPath(['show'], false, a));
                 showBox();
-                shiftBox();
-                shiftAperture();
+                // shiftBox(); => see keyboard useEffect
+                // shiftAperture(); => see keyboard useEffect
                 unshiftSearch();
-                hideSearch();
+                hideSearch(0);
                 boxTextInput.current?.focus();
                 blur !== 70 && setBlur(70);
                 break;

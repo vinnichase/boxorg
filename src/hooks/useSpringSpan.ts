@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Animated } from 'react-native';
 
-export const useSpringSpan = (from: number, to: number) => {
+export const useSpringSpan = (from: number) => {
     const [animatedValue] = useState(new Animated.Value(from));
-    const shift = () => {
+    const shift = (to: number) => {
         Animated.spring(animatedValue, {
             toValue: to,
             useNativeDriver: true,
