@@ -9,7 +9,7 @@ import {
     useWindowDimensions,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
 import { ApertureIcon, BoxIcon, CloseDownIcon, SearchIcon } from '../components/Icons';
@@ -29,6 +29,7 @@ const SHOW_EVENT = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow
 
 function App(): JSX.Element {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const { width: windowWidth, height: windowHeight } = useWindowDimensions();
     const windowRatio = windowWidth / windowHeight;
@@ -69,7 +70,7 @@ function App(): JSX.Element {
                     shiftBox(-keyboardHeight);
                     shiftAperture(-keyboardHeight);
                 }
-            }, 0);
+            }, 10);
         });
 
         return () => {
@@ -246,10 +247,11 @@ function App(): JSX.Element {
                 <TouchableOpacity
                     style={{
                         position: 'absolute',
-                        top: 0,
+                        top: windowHeight * 0.12 - windowHeight * windowRatioComplement * 0.05 - 50,
                         width: '100%',
-                        height: 70,
+                        height: 50,
                         alignItems: 'center',
+                        justifyContent: 'center',
                         opacity: 0.6,
                     }}
                     onPress={() => {
