@@ -52,16 +52,21 @@ export const SearchResults = ({}: SearchResultsProps) => {
 
     return (
         <KeyboardAvoidingView
-            behavior="padding"
+            behavior="height"
             style={{
                 position: 'absolute',
-                height: '100%',
+                top: MARGIN_TOP,
+                bottom: 0,
                 width: '100%',
                 overflow: 'visible',
             }}
             pointerEvents={show ? 'auto' : 'none'}
         >
-            <ScrollView style={{ flex: 1, marginTop: MARGIN_TOP, overflow: 'visible' }}>
+            <ScrollView
+                automaticallyAdjustsScrollIndicatorInsets={false}
+                contentInsetAdjustmentBehavior="never"
+                style={{ flex: 1, overflow: 'visible' }}
+            >
                 <Animated.View style={animatedStyle}>
                     <View
                         style={{
