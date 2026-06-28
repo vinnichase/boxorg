@@ -16,7 +16,7 @@ import { cropImage } from '../util/cropImage';
 // creates the animated component
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
-function App(): JSX.Element {
+function App(): React.ReactElement {
     const router = useRouter();
 
     const imageRef = useRef<Image>(null);

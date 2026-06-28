@@ -29,7 +29,7 @@ let focusGlobal: 'search' | 'box' | 'none' = 'none';
 
 const SHOW_EVENT = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 
-function App(): JSX.Element {
+function App(): React.ReactElement {
     const router = useRouter();
     const insets = useSafeAreaInsets();
 

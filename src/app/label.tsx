@@ -15,7 +15,7 @@ import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { CrossIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
 
-function App(): JSX.Element {
+function App(): React.ReactElement {
     const { width } = useWindowDimensions();
     const { index, objects } = useAtom(CollectObjectsAtom);
     const object = objects[index];

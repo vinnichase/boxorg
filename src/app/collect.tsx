@@ -15,7 +15,7 @@ const HEADER_HEIGHT = 90;
 const TILE_GAP = 18;
 const TILE_COLUMNS = 2;
 
-function App(): JSX.Element {
+function App(): React.ReactElement {
     const router = useRouter();
 
     const { width } = useWindowDimensions();

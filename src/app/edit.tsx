@@ -25,7 +25,7 @@ import { executeSearch } from '../atoms/SearchAtom';
 
 const HEADER_HEIGHT = 90;
 
-function App(): JSX.Element {
+function App(): React.ReactElement {
     const router = useRouter();
 
     const { width } = useWindowDimensions();
