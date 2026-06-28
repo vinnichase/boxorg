@@ -308,7 +308,8 @@ edit.tsx → EditObjectAtom (read/write)
 
 - Unit tests for utility functions in `/src/test`
 - Test geometric calculations (`getSquareDimensions`)
-- Manual testing via Expo Go for UI/UX flows
+- End-to-end and release smoke testing are defined in [`docs/e2e.md`](docs/e2e.md)
+- Manual testing should use EAS development/preview builds for native-device flows
 
 ---
 
