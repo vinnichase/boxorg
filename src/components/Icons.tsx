@@ -153,6 +153,27 @@ export const CloseDownIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
+export const KeyboardDownIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            viewBox="0 0 24 24"
+        >
+            <Path
+                stroke={color1}
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                d="M2.5 8l9.5 9.5 9.5-9.5"
+            />
+        </Svg>
+    </View>
+);
+
 export const SegmentIcon = ({ color1 }: IconProps) => (
     <View>
         <Svg

@@ -7,3 +7,5 @@ export const BLACK = '#0c0714';
 export const WHITE = '#ffffff';
 
 export const NONE = 'none';
+
+export const SEARCH_KEYBOARD_TOOLBAR_HEIGHT = 60;

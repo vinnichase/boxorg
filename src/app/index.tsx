@@ -12,9 +12,9 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useAtom } from '@gothub-team/got-atom';
-import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
+import { BLACK, PURPLE_DARK, RED, SEARCH_KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
-import { ApertureIcon, BoxIcon, CloseDownIcon, SearchIcon } from '../components/Icons';
+import { ApertureIcon, BoxIcon, CloseDownIcon, KeyboardDownIcon, SearchIcon } from '../components/Icons';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
@@ -28,7 +28,6 @@ import { SearchAtom } from '../atoms/SearchAtom';
 let focusGlobal: 'search' | 'box' | 'none' = 'none';
 
 const SHOW_EVENT = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-const SEARCH_KEYBOARD_TOOLBAR_HEIGHT = 60;
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -102,6 +101,11 @@ function App(): JSX.Element {
         setSearchQuery(`#${digits}`);
         searchTextInput.current?.focus();
     }, [setSearchQuery]);
+
+    const dismissSearchKeyboard = useCallback(() => {
+        searchTextInput.current?.blur();
+        Keyboard.dismiss();
+    }, []);
 
     const handleSearchChangeText = useCallback(
         (text: string) => {
@@ -303,9 +307,11 @@ function App(): JSX.Element {
                         pointerEvents="box-none"
                         style={{
                             height: SEARCH_KEYBOARD_TOOLBAR_HEIGHT,
-                            alignItems: 'flex-start',
-                            justifyContent: 'center',
-                            paddingHorizontal: 16 + insets.left,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            paddingLeft: 16 + insets.left,
+                            paddingRight: 16 + insets.right,
                         }}
                     >
                         <TouchableOpacity
@@ -322,6 +328,29 @@ function App(): JSX.Element {
                         >
                             <View style={{ width: 28, height: 28 }}>
                                 <BoxIcon color1={boxSearchActive ? WHITE : PURPLE_DARK} />
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            accessibilityLabel="Dismiss keyboard"
+                            style={{
+                                width: 44,
+                                height: 44,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: 12,
+                                backgroundColor: `${WHITE}CC`,
+                            }}
+                            onPress={dismissSearchKeyboard}
+                        >
+                            <View
+                                style={{
+                                    width: 28,
+                                    height: 28,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <KeyboardDownIcon color1={PURPLE_DARK} />
                             </View>
                         </TouchableOpacity>
                     </View>

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Image, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
+import { BLACK, PURPLE_DARK, PURPLE_LIGHT, SEARCH_KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { SearchAtom, SearchResultsAtom } from '../atoms/SearchAtom';
@@ -9,6 +9,7 @@ import { EditObjectAtom } from '../atoms/EditObjectAtom';
 import { router } from 'expo-router';
 
 const MARGIN_TOP = 160;
+const BOTTOM_SPACER_HEIGHT = SEARCH_KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
 
 type SearchResultsProps = {};
 
@@ -63,8 +64,11 @@ export const SearchResults = ({}: SearchResultsProps) => {
             pointerEvents={show ? 'auto' : 'none'}
         >
             <ScrollView
+                automaticallyAdjustKeyboardInsets={false}
                 automaticallyAdjustsScrollIndicatorInsets={false}
                 contentInsetAdjustmentBehavior="never"
+                keyboardShouldPersistTaps="handled"
+                scrollIndicatorInsets={{ top: 0, bottom: BOTTOM_SPACER_HEIGHT }}
                 style={{ flex: 1, overflow: 'visible' }}
             >
                 <Animated.View style={animatedStyle}>
@@ -150,6 +154,7 @@ export const SearchResults = ({}: SearchResultsProps) => {
                             </TouchableOpacity>
                         ))}
                     </View>
+                    <View style={{ height: BOTTOM_SPACER_HEIGHT }} />
                 </Animated.View>
             </ScrollView>
         </KeyboardAvoidingView>
