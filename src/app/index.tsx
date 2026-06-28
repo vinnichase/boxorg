@@ -14,7 +14,7 @@ import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useAtom } from '@gothub-team/got-atom';
 import { BLACK, PURPLE_DARK, RED, SEARCH_KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
-import { ApertureIcon, BoxIcon, CloseDownIcon, KeyboardDownIcon, SearchIcon } from '../components/Icons';
+import { ApertureIcon, BoxIcon, CloseDownIcon, KeyboardDownIcon, SearchIcon, TextIcon } from '../components/Icons';
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
@@ -96,8 +96,16 @@ function App(): JSX.Element {
         SearchAtom.set((a) => setPath(['query'], query, a));
     }, []);
 
-    const activateBoxSearch = useCallback(() => {
-        const digits = SearchAtom.get().query.replace(/\D/g, '');
+    const handleBoxSearchPress = useCallback(() => {
+        const query = SearchAtom.get().query;
+
+        if (query.startsWith('#')) {
+            setSearchQuery('');
+            searchTextInput.current?.focus();
+            return;
+        }
+
+        const digits = query.replace(/\D/g, '');
         setSearchQuery(`#${digits}`);
         searchTextInput.current?.focus();
     }, [setSearchQuery]);
@@ -315,19 +323,23 @@ function App(): JSX.Element {
                         }}
                     >
                         <TouchableOpacity
-                            accessibilityLabel="Box search"
+                            accessibilityLabel={boxSearchActive ? 'Tag search' : 'Box search'}
                             style={{
                                 width: 44,
                                 height: 44,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderRadius: 12,
-                                backgroundColor: boxSearchActive ? PURPLE_DARK : `${WHITE}CC`,
+                                backgroundColor: `${WHITE}CC`,
                             }}
-                            onPress={activateBoxSearch}
+                            onPress={handleBoxSearchPress}
                         >
                             <View style={{ width: 28, height: 28 }}>
-                                <BoxIcon color1={boxSearchActive ? WHITE : PURPLE_DARK} />
+                                {boxSearchActive ? (
+                                    <TextIcon color1={PURPLE_DARK} />
+                                ) : (
+                                    <BoxIcon color1={PURPLE_DARK} />
+                                )}
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity

@@ -174,6 +174,28 @@ export const KeyboardDownIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
+export const TextIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={color1}
+            strokeWidth={1.4}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <Path d="M3 19v-10.5a3.5 3.5 0 0 1 7 0v10.5" />
+            <Path d="M3 13h7" />
+            <Path d="M14 19v-10.5a3.5 3.5 0 0 1 7 0v10.5" />
+            <Path d="M14 13h7" />
+        </Svg>
+    </View>
+);
+
 export const SegmentIcon = ({ color1 }: IconProps) => (
     <View>
         <Svg
