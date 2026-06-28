@@ -304,6 +304,31 @@ export function getObjectsWithTags(db: SqLite.SQLiteDatabase) {
 }
 
 /**
+ * Retrieves all objects in a box, including all their tags.
+ */
+export function getObjectsWithTagsByBoxId(db: SqLite.SQLiteDatabase, boxId: number) {
+    try {
+        const stmt = db.prepareSync(
+            sql`SELECT objects.id, objects.thumb_path, objects.box_id, tags.tag
+                FROM objects
+                LEFT JOIN object_tags ON objects.id = object_tags.object_id
+                LEFT JOIN tags ON object_tags.tag_id = tags.id
+                WHERE objects.box_id = ?`,
+        );
+        return stmt
+            .executeSync<{
+                id: number;
+                thumb_path: string;
+                box_id: number;
+                tag: string | null;
+            }>(boxId)
+            .getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
  * Retrieves all objects that match the search query, including all their tags.
  */
 export function searchObjects(db: SqLite.SQLiteDatabase, query: string) {

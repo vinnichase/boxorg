@@ -1,5 +1,11 @@
 import { atom } from '@gothub-team/got-atom';
-import { getObjectsWithTags, ObjectWithTags, openDb, searchObjects } from '../db/accessLayer';
+import {
+    getObjectsWithTags,
+    getObjectsWithTagsByBoxId,
+    ObjectWithTags,
+    openDb,
+    searchObjects,
+} from '../db/accessLayer';
 
 type Search = {
     show: boolean;
@@ -21,8 +27,15 @@ export function executeSearch() {
     const { query } = SearchAtom.get();
     const trimmedQuery = query.trim();
     const db = openDb();
+    const queryResults = (() => {
+        if (!trimmedQuery) return getObjectsWithTags(db);
+        if (!trimmedQuery.startsWith('#')) return searchObjects(db, trimmedQuery);
+
+        const boxId = parseInt(trimmedQuery.slice(1), 10);
+        return Number.isNaN(boxId) ? [] : getObjectsWithTagsByBoxId(db, boxId);
+    })();
     const records =
-        (trimmedQuery ? searchObjects(db, trimmedQuery) : getObjectsWithTags(db))?.reduce((acc, o) => {
+        queryResults?.reduce((acc, o) => {
             const accO = acc[o.id] ?? { ...o, tags: [] };
             o.tag && accO.tags.push(o.tag);
             return {

@@ -10,6 +10,8 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import { useAtom } from '@gothub-team/got-atom';
 import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
 import { AnimatedBlurView } from '../components/AnimatedBlurView';
 import { ApertureIcon, BoxIcon, CloseDownIcon, SearchIcon } from '../components/Icons';
@@ -26,6 +28,7 @@ import { SearchAtom } from '../atoms/SearchAtom';
 let focusGlobal: 'search' | 'box' | 'none' = 'none';
 
 const SHOW_EVENT = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+const SEARCH_KEYBOARD_TOOLBAR_HEIGHT = 60;
 
 function App(): JSX.Element {
     const router = useRouter();
@@ -36,6 +39,9 @@ function App(): JSX.Element {
     const windowRatioComplement = 1 - windowRatio;
 
     const { image, launchCamera } = useImage();
+    const search = useAtom(SearchAtom);
+    const boxSearchActive = search.query.startsWith('#');
+    const searchKeyboardType = boxSearchActive ? 'number-pad' : 'default';
 
     useEffect(() => {
         image &&
@@ -86,6 +92,33 @@ function App(): JSX.Element {
 
     const searchTextInput = React.useRef<TextInput>(null);
     const boxTextInput = React.useRef<TextInput>(null);
+
+    const setSearchQuery = useCallback((query: string) => {
+        SearchAtom.set((a) => setPath(['query'], query, a));
+    }, []);
+
+    const activateBoxSearch = useCallback(() => {
+        const digits = SearchAtom.get().query.replace(/\D/g, '');
+        setSearchQuery(`#${digits}`);
+        searchTextInput.current?.focus();
+    }, [setSearchQuery]);
+
+    const handleSearchChangeText = useCallback(
+        (text: string) => {
+            if (boxSearchActive || text.startsWith('#')) {
+                setSearchQuery(text ? `#${text.replace(/\D/g, '')}` : '');
+                return;
+            }
+
+            setSearchQuery(text);
+        },
+        [boxSearchActive, setSearchQuery],
+    );
+
+    useEffect(() => {
+        if (focus !== 'search') return;
+        requestAnimationFrame(() => searchTextInput.current?.focus());
+    }, [boxSearchActive, focus]);
 
     useEffect(() => {
         switch (focus) {
@@ -232,7 +265,10 @@ function App(): JSX.Element {
             >
                 <SearchIcon color1={PURPLE_DARK} />
                 <TextInput
+                    key={searchKeyboardType}
                     ref={searchTextInput}
+                    value={search.query}
+                    keyboardType={searchKeyboardType}
                     style={{
                         flex: 1,
                         height: '100%',
@@ -247,9 +283,50 @@ function App(): JSX.Element {
                     onFocus={() => {
                         setFocus('search');
                     }}
-                    onChange={(e) => SearchAtom.set((a) => setPath(['query'], e.nativeEvent.text, a))}
+                    onChangeText={handleSearchChangeText}
                 />
             </MainInputBox>
+            {focus === 'search' && (
+                <KeyboardStickyView
+                    enabled={focus === 'search'}
+                    offset={{ closed: SEARCH_KEYBOARD_TOOLBAR_HEIGHT, opened: 0 }}
+                    pointerEvents="box-none"
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        height: SEARCH_KEYBOARD_TOOLBAR_HEIGHT,
+                    }}
+                >
+                    <View
+                        pointerEvents="box-none"
+                        style={{
+                            height: SEARCH_KEYBOARD_TOOLBAR_HEIGHT,
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            paddingHorizontal: 16 + insets.left,
+                        }}
+                    >
+                        <TouchableOpacity
+                            accessibilityLabel="Box search"
+                            style={{
+                                width: 44,
+                                height: 44,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: 12,
+                                backgroundColor: boxSearchActive ? PURPLE_DARK : `${WHITE}CC`,
+                            }}
+                            onPress={activateBoxSearch}
+                        >
+                            <View style={{ width: 28, height: 28 }}>
+                                <BoxIcon color1={boxSearchActive ? WHITE : PURPLE_DARK} />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardStickyView>
+            )}
             {focus === 'search' && (
                 <TouchableOpacity
                     style={{
