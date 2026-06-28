@@ -18,7 +18,7 @@ import { ApertureIcon, BoxIcon, CloseDownIcon, KeyboardDownIcon, SearchIcon, Tex
 import { useImage } from '../hooks/useImage';
 import { MainInputBox } from '../components/MainInputBox';
 import { useSpringSpan } from '../hooks/useSpringSpan';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
 import { SearchResults } from '../components/SearchResults';
@@ -92,6 +92,11 @@ function App(): JSX.Element {
     const searchTextInput = React.useRef<TextInput>(null);
     const boxTextInput = React.useRef<TextInput>(null);
 
+    const requestSearchTextInputFocus = useCallback(() => {
+        const frame = requestAnimationFrame(() => searchTextInput.current?.focus());
+        return () => cancelAnimationFrame(frame);
+    }, []);
+
     const setSearchQuery = useCallback((query: string) => {
         SearchAtom.set((a) => setPath(['query'], query, a));
     }, []);
@@ -129,8 +134,15 @@ function App(): JSX.Element {
 
     useEffect(() => {
         if (focus !== 'search') return;
-        requestAnimationFrame(() => searchTextInput.current?.focus());
-    }, [boxSearchActive, focus]);
+        return requestSearchTextInputFocus();
+    }, [boxSearchActive, focus, requestSearchTextInputFocus]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (focus !== 'search') return;
+            return requestSearchTextInputFocus();
+        }, [focus, requestSearchTextInputFocus]),
+    );
 
     useEffect(() => {
         switch (focus) {
