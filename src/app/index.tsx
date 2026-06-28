@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Animated,
     ImageBackground,
@@ -47,6 +47,12 @@ function App(): JSX.Element {
 
     const [blur, setBlur] = useState(0);
 
+    const handleBlurAnimationEnd = useCallback((intensity: number) => {
+        if (intensity === 70 && focusGlobal === 'search') {
+            SearchAtom.set((a) => setPath(['show'], true, a));
+        }
+    }, []);
+
     const [animatedSearchShift, shiftSearch, unshiftSearch] = useSpringSpan(0);
     const [animatedSearchHide, hideSearch, showSearch] = useSpringSpan(1);
 
@@ -84,14 +90,14 @@ function App(): JSX.Element {
     useEffect(() => {
         switch (focus) {
             case 'search':
-                SearchAtom.set((a) => setPath(['show'], true, a));
+                SearchAtom.set((a) => setPath(['show'], false, a));
                 shiftSearch(-(windowHeight * (windowRatioComplement - 0.12)));
                 unshiftBox();
                 showSearch();
                 hideBox(0);
                 hideAperture(0);
                 searchTextInput.current?.focus();
-                blur !== 70 && setBlur(70);
+                blur !== 70 ? setBlur(70) : SearchAtom.set((a) => setPath(['show'], true, a));
                 break;
             case 'box':
                 SearchAtom.set((a) => setPath(['show'], false, a));
@@ -134,6 +140,7 @@ function App(): JSX.Element {
                     height: '100%',
                 }}
                 intensity={blur}
+                onIntensityAnimationEnd={handleBlurAnimationEnd}
             >
                 <SafeAreaView
                     style={{

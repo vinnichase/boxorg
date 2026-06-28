@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Image, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
@@ -16,11 +16,35 @@ export const SearchResults = ({}: SearchResultsProps) => {
     const { show } = useAtom(SearchAtom);
     const results = useAtom(SearchResultsAtom);
 
-    const sharedOpacity = useSharedValue(1);
+    const sharedOpacity = useSharedValue(0);
+    const previousResultCount = useRef(0);
 
     useEffect(() => {
-        sharedOpacity.value = withTiming(show ? 1 : 0, { duration: 250 });
-    }, [show]);
+        const currentResultCount = results.length;
+
+        if (!show) {
+            previousResultCount.current = 0;
+            sharedOpacity.value = withTiming(0, { duration: 120 });
+            return;
+        }
+
+        if (currentResultCount === 0) {
+            previousResultCount.current = 0;
+            sharedOpacity.value = 0;
+            return;
+        }
+
+        const didLoadFirstResults = previousResultCount.current === 0;
+        previousResultCount.current = currentResultCount;
+
+        if (didLoadFirstResults) {
+            sharedOpacity.value = 0;
+            sharedOpacity.value = withTiming(1, { duration: 250 });
+            return;
+        }
+
+        sharedOpacity.value = 1;
+    }, [results.length, show]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: sharedOpacity.value,
@@ -33,7 +57,7 @@ export const SearchResults = ({}: SearchResultsProps) => {
                 position: 'absolute',
                 height: '100%',
                 width: '100%',
-                overflowY: 'visible',
+                overflow: 'visible',
             }}
             pointerEvents={show ? 'auto' : 'none'}
         >

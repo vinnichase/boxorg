@@ -6,8 +6,8 @@ import { BLACK, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
 import Svg, { Rect } from 'react-native-svg';
-import { runOnJS } from 'react-native-reanimated';
 import Animated, { useSharedValue, useAnimatedProps } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { SegmentIcon } from '../components/Icons';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
@@ -137,9 +137,9 @@ const Segmentator = ({ width, height, image }: SegmentatorProps) => {
         .onBegin((e) => {
             const existingIndex = rects.findIndex((r) => e.y > r.y && e.y < r.y + r.w && e.x > r.x && e.x < r.x + r.w);
             if (existingIndex > -1) {
-                runOnJS(setRects)(rects.filter((_, i) => i !== existingIndex));
+                scheduleOnRN(setRects, rects.filter((_, i) => i !== existingIndex));
             }
-            runOnJS(setCurrentRect)(true);
+            scheduleOnRN(setCurrentRect, true);
             animatedRect.x.value = e.x;
             animatedRect.y.value = e.y;
             animatedRect.w.value = 10;
@@ -156,7 +156,7 @@ const Segmentator = ({ width, height, image }: SegmentatorProps) => {
                 height,
             );
 
-            runOnJS(addRect)(x, y, w);
+            scheduleOnRN(addRect, x, y, w);
         });
 
     return (

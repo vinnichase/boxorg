@@ -1,5 +1,5 @@
 import { atom } from '@gothub-team/got-atom';
-import { ObjectWithTags, openDb, searchObjects } from '../db/accessLayer';
+import { getObjectsWithTags, ObjectWithTags, openDb, searchObjects } from '../db/accessLayer';
 
 type Search = {
     show: boolean;
@@ -11,21 +11,18 @@ export const SearchAtom = atom<Search>({ show: false, query: '' });
 export const SearchResultsAtom = atom<ObjectWithTags[]>([]);
 
 SearchAtom.subscribe({
-    next: async (a) => {
+    next: (a) => {
         if (!a.show) return;
-        if (!a.query) {
-            SearchResultsAtom.set([]);
-        } else {
-            executeSearch();
-        }
+        executeSearch();
     },
 });
 
 export function executeSearch() {
     const { query } = SearchAtom.get();
+    const trimmedQuery = query.trim();
     const db = openDb();
     const records =
-        searchObjects(db, query)?.reduce((acc, o) => {
+        (trimmedQuery ? searchObjects(db, trimmedQuery) : getObjectsWithTags(db))?.reduce((acc, o) => {
             const accO = acc[o.id] ?? { ...o, tags: [] };
             o.tag && accO.tags.push(o.tag);
             return {
