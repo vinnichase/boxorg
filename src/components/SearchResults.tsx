@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Image, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, SEARCH_KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';

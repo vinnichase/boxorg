@@ -2,13 +2,13 @@ import React from 'react';
 import {
     Image,
     Keyboard,
-    KeyboardAvoidingView,
     ScrollView,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
     View,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
@@ -31,7 +31,7 @@ function App(): React.ReactElement {
             }}
         >
             <KeyboardAvoidingView
-                behavior="height"
+                behavior="translate-with-padding"
                 style={{
                     flex: 1,
                     overflow: 'hidden',
