@@ -2,7 +2,6 @@ import React from 'react';
 import {
     Image,
     Keyboard,
-    KeyboardAvoidingView,
     ScrollView,
     Text,
     TextInput,
@@ -10,8 +9,10 @@ import {
     useWindowDimensions,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as FileSystem from 'expo-file-system/legacy';
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 
@@ -24,12 +25,21 @@ import { saveObject } from '../service/saveObject';
 import { executeSearch } from '../atoms/SearchAtom';
 
 const HEADER_HEIGHT = 90;
+const KEYBOARD_SHIFT_REFERENCE_HEIGHT = 844;
 
 function App(): React.ReactElement {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
-    const { width } = useWindowDimensions();
+    const { width, height: windowHeight } = useWindowDimensions();
     const object = useAtom(EditObjectAtom);
+    const headerOffset = HEADER_HEIGHT + insets.top;
+    const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
+    const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
+
+    const keyboardShiftStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: (keyboardHeight.value / 2) * keyboardShiftScale }],
+    }));
 
     return (
         <View
@@ -41,16 +51,19 @@ function App(): React.ReactElement {
                 shadowRadius: 50,
             }}
         >
-            <KeyboardAvoidingView
-                behavior="height"
-                style={{
-                    flex: 1,
-                    overflow: 'hidden',
-                }}
+            <Reanimated.View
+                style={[
+                    {
+                        flex: 1,
+                        overflow: 'hidden',
+                    },
+                    keyboardShiftStyle,
+                ]}
             >
                 <View
                     style={{
                         flex: 1,
+                        paddingTop: headerOffset,
                         shadowColor: `${PURPLE_LIGHT}`,
                         shadowOpacity: 1,
                         shadowRadius: 100,
@@ -151,68 +164,68 @@ function App(): React.ReactElement {
                         </View>
                     </ScrollView>
                 </View>
-                <BlurView
-                    intensity={30}
-                    tint="dark"
-                    experimentalBlurMethod="dimezisBlurView"
-                    style={{
-                        position: 'absolute',
-                        width: '100%',
-                        left: 0,
-                        top: 0,
-                        borderBottomColor: `${WHITE}22`,
-                        borderBottomWidth: 1,
-                    }}
-                >
-                    <SafeAreaView edges={['top']} style={{ backgroundColor: `${PURPLE_DARK}33` }}>
-                        <View
-                            style={{
-                                height: HEADER_HEIGHT,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: 20,
-                                padding: 20,
+            </Reanimated.View>
+            <BlurView
+                intensity={30}
+                tint="dark"
+                experimentalBlurMethod="dimezisBlurView"
+                style={{
+                    position: 'absolute',
+                    width: '100%',
+                    left: 0,
+                    top: 0,
+                    borderBottomColor: `${WHITE}22`,
+                    borderBottomWidth: 1,
+                }}
+            >
+                <SafeAreaView edges={['top']} style={{ backgroundColor: `${PURPLE_DARK}33` }}>
+                    <View
+                        style={{
+                            height: HEADER_HEIGHT,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 20,
+                            padding: 20,
+                        }}
+                    >
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                            <BoxIcon color2={`${WHITE}44`} />
+                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
+                            <TextInput
+                                keyboardType="number-pad"
+                                style={{
+                                    flex: 1,
+                                    height: '100%',
+                                    paddingHorizontal: 14,
+                                    paddingVertical: 8,
+                                    color: WHITE,
+                                    fontSize: 35,
+                                    fontWeight: 'bold',
+                                    borderRadius: 14,
+                                    backgroundColor: WHITE + '33',
+                                    textAlignVertical: 'center',
+                                }}
+                                autoComplete="off"
+                                spellCheck={false}
+                                defaultValue={object.box_id.toString() ?? ''}
+                                onChange={(e) => {
+                                    EditObjectAtom.set((a) => setPath(['box_id'], Number(e.nativeEvent.text), a));
+                                }}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => {
+                                object.box_id && saveObject(object);
+                                executeSearch();
+                                router.dismissTo('/');
                             }}
                         >
-                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                <BoxIcon color2={`${WHITE}44`} />
-                                <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
-                                <TextInput
-                                    keyboardType="number-pad"
-                                    style={{
-                                        flex: 1,
-                                        height: '100%',
-                                        paddingHorizontal: 14,
-                                        paddingVertical: 8,
-                                        color: WHITE,
-                                        fontSize: 35,
-                                        fontWeight: 'bold',
-                                        borderRadius: 14,
-                                        backgroundColor: WHITE + '33',
-                                        textAlignVertical: 'center',
-                                    }}
-                                    autoComplete="off"
-                                    spellCheck={false}
-                                    defaultValue={object.box_id.toString() ?? ''}
-                                    onChange={(e) => {
-                                        EditObjectAtom.set((a) => setPath(['box_id'], Number(e.nativeEvent.text), a));
-                                    }}
-                                />
-                            </View>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    object.box_id && saveObject(object);
-                                    executeSearch();
-                                    router.dismissTo('/');
-                                }}
-                            >
-                                <SaveIcon color1={`${WHITE}`} />
-                            </TouchableOpacity>
-                        </View>
-                    </SafeAreaView>
-                </BlurView>
-            </KeyboardAvoidingView>
+                            <SaveIcon color1={`${WHITE}`} />
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+            </BlurView>
         </View>
     );
 }
