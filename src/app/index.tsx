@@ -205,10 +205,6 @@ function App(): React.ReactElement {
                         width: '100%',
                         gap: 50,
                     }}
-                    onTouchEnd={() => {
-                        Keyboard.dismiss();
-                        setFocus('none');
-                    }}
                 >
                     <View style={{ flex: 2 }}></View>
                     <MainInputBox style={{ transform: [{ translateY: animatedBoxShift }], opacity: animatedBoxHide }}>

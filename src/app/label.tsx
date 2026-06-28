@@ -1,24 +1,33 @@
 import React from 'react';
 import {
     Image,
-    Keyboard,
     ScrollView,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
     View,
 } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { CrossIcon } from '../components/Icons';
+import { KeyboardDismissToolbar } from '../components/KeyboardDismissToolbar';
 import { setPath } from '../util/setPath';
 
+const KEYBOARD_SHIFT_REFERENCE_HEIGHT = 844;
+
 function App(): React.ReactElement {
-    const { width } = useWindowDimensions();
+    const { width, height: windowHeight } = useWindowDimensions();
     const { index, objects } = useAtom(CollectObjectsAtom);
     const object = objects[index];
+    const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
+    const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
+
+    const keyboardShiftStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: (keyboardHeight.value / 2) * keyboardShiftScale }],
+    }));
 
     return (
         <View
@@ -30,12 +39,14 @@ function App(): React.ReactElement {
                 shadowRadius: 50,
             }}
         >
-            <KeyboardAvoidingView
-                behavior="translate-with-padding"
-                style={{
-                    flex: 1,
-                    overflow: 'hidden',
-                }}
+            <Reanimated.View
+                style={[
+                    {
+                        flex: 1,
+                        overflow: 'hidden',
+                    },
+                    keyboardShiftStyle,
+                ]}
             >
                 <View
                     style={{
@@ -44,7 +55,6 @@ function App(): React.ReactElement {
                         shadowOpacity: 1,
                         shadowRadius: 100,
                     }}
-                    onTouchEnd={() => Keyboard.dismiss()}
                 >
                     <Image
                         source={{ uri: object?.uri }}
@@ -139,7 +149,8 @@ function App(): React.ReactElement {
                         </View>
                     </ScrollView>
                 </View>
-            </KeyboardAvoidingView>
+            </Reanimated.View>
+            <KeyboardDismissToolbar />
         </View>
     );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Image,
-    Keyboard,
     ScrollView,
     Text,
     TextInput,
@@ -17,6 +16,7 @@ import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/co
 import { useAtom } from '@gothub-team/got-atom';
 
 import { BoxIcon, CrossIcon, SaveIcon } from '../components/Icons';
+import { KeyboardDismissToolbar } from '../components/KeyboardDismissToolbar';
 import { setPath } from '../util/setPath';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
 import { BlurView } from 'expo-blur';
@@ -75,7 +75,6 @@ function App(): React.ReactElement {
                             height: '50%',
                             maxHeight: width,
                         }}
-                        onTouchEnd={() => Keyboard.dismiss()}
                     >
                         <Image
                             style={{
@@ -226,6 +225,7 @@ function App(): React.ReactElement {
                     </View>
                 </SafeAreaView>
             </BlurView>
+            <KeyboardDismissToolbar />
         </View>
     );
 }
