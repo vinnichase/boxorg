@@ -189,7 +189,7 @@ function App(): React.ReactElement {
             resizeMode="cover"
         >
             <AnimatedBlurView
-                experimentalBlurMethod="dimezisBlurView"
+                blurMethod="dimezisBlurView"
                 tint="dark"
                 style={{
                     flex: 1,
