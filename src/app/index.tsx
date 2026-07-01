@@ -4,6 +4,7 @@ import {
     ImageBackground,
     Keyboard,
     Platform,
+    Pressable,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
@@ -91,6 +92,12 @@ function App(): React.ReactElement {
 
     const searchTextInput = React.useRef<TextInput>(null);
     const boxTextInput = React.useRef<TextInput>(null);
+
+    const dismissBoxKeyboard = () => {
+        boxTextInput.current?.blur();
+        Keyboard.dismiss();
+        setFocus('none');
+    };
 
     const requestSearchTextInputFocus = useCallback(() => {
         const frame = requestAnimationFrame(() => searchTextInput.current?.focus());
@@ -199,7 +206,20 @@ function App(): React.ReactElement {
                 intensity={blur}
                 onIntensityAnimationEnd={handleBlurAnimationEnd}
             >
+                {focus === 'box' && (
+                    <Pressable
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 0,
+                        }}
+                        onPress={dismissBoxKeyboard}
+                    />
+                )}
                 <SafeAreaView
+                    pointerEvents={focus === 'box' ? 'box-none' : 'auto'}
                     style={{
                         height: '100%',
                         width: '100%',
