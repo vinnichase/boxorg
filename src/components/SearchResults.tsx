@@ -86,6 +86,7 @@ export const SearchResults = ({}: SearchResultsProps) => {
                         {results.map((record) => (
                             <TouchableOpacity
                                 key={record.id}
+                                delayPressIn={16}
                                 style={{ height: 100, flexDirection: 'row', gap: 20 }}
                                 onPress={() => {
                                     EditObjectAtom.set(record);
