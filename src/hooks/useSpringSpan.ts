@@ -1,19 +1,14 @@
-import { useState } from 'react';
-import { Animated } from 'react-native';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 
 export const useSpringSpan = (from: number) => {
-    const [animatedValue] = useState(new Animated.Value(from));
+    const animatedValue = useSharedValue(from);
+
     const shift = (to: number) => {
-        Animated.spring(animatedValue, {
-            toValue: to,
-            useNativeDriver: true,
-        }).start();
+        animatedValue.value = withSpring(to);
     };
+
     const unshift = () => {
-        Animated.spring(animatedValue, {
-            toValue: from,
-            useNativeDriver: true,
-        }).start();
+        animatedValue.value = withSpring(from);
     };
 
     return [animatedValue, shift, unshift] as const;

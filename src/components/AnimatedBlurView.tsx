@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { ViewStyle } from 'react-native';
 import { BlurView, BlurViewProps } from 'expo-blur';
 import Animated, { useSharedValue, useAnimatedProps, withTiming } from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
 // Create an animated version of BlurView
@@ -11,6 +12,7 @@ type AnimatedBlurViewProps = BlurViewProps & {
     children?: ReactNode;
     style?: ViewStyle;
     intensity: number;
+    controlledIntensity?: SharedValue<number>;
     onIntensityAnimationEnd?: (intensity: number) => void;
 };
 
@@ -18,6 +20,7 @@ export const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({
     children,
     style,
     intensity,
+    controlledIntensity,
     onIntensityAnimationEnd,
     ...rest
 }) => {
@@ -32,7 +35,7 @@ export const AnimatedBlurView: React.FC<AnimatedBlurViewProps> = ({
     }, [intensity, onIntensityAnimationEnd]);
 
     const animatedProps = useAnimatedProps(() => ({
-        intensity: sharedIntensity.value,
+        intensity: controlledIntensity ? controlledIntensity.value : sharedIntensity.value,
     }));
 
     return (
