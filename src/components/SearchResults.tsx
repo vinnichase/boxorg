@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { Image, Keyboard, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, KeyboardController } from 'react-native-keyboard-controller';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -132,6 +132,8 @@ export const SearchResults = () => {
                                 delayPressIn={16}
                                 style={{ height: 100, flexDirection: 'row', gap: 20 }}
                                 onPress={() => {
+                                    void KeyboardController.dismiss({ keepFocus: false, animated: true });
+                                    Keyboard.dismiss();
                                     EditObjectAtom.set(record);
                                     router.push('/edit');
                                 }}

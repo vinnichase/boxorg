@@ -4,7 +4,6 @@ import { KeyboardController } from 'react-native-keyboard-controller';
 import { GestureDetector } from 'react-native-gesture-handler';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
-import { useFocusEffect } from 'expo-router';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { SearchAtom } from '../atoms/SearchAtom';
@@ -39,15 +38,6 @@ export const SearchInput = () => {
 
         inputRef.current?.blur();
     }, [focus]);
-
-    useFocusEffect(
-        useCallback(() => {
-            if (focus !== 'search') return;
-
-            const frame = requestAnimationFrame(() => inputRef.current?.focus());
-            return () => cancelAnimationFrame(frame);
-        }, [focus]),
-    );
 
     const beginSearchPullDown = useCallback(() => {
         void KeyboardController.dismiss({ keepFocus: true, animated: true });
