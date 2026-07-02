@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { useAtom } from '@gothub-team/got-atom';
 import { SearchAtom, SearchResultsAtom } from '../atoms/SearchAtom';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
@@ -22,6 +23,7 @@ export const SearchResults = () => {
     const results = useAtom(SearchResultsAtom);
     const focus = useAtom(HomeFocusAtom);
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
+    const [acceptsTouches, setAcceptsTouches] = useState(false);
 
     const sharedOpacity = useSharedValue(0);
     const previousResultCount = useRef(0);
@@ -47,6 +49,16 @@ export const SearchResults = () => {
 
         return () => clearTimeout(timeout);
     }, [focus, show]);
+
+    useAnimatedReaction(
+        () => show && searchPullDownBehavior.progress.value < 0.3,
+        (nextAcceptsTouches, previousAcceptsTouches) => {
+            if (nextAcceptsTouches !== previousAcceptsTouches) {
+                scheduleOnRN(setAcceptsTouches, nextAcceptsTouches);
+            }
+        },
+        [show],
+    );
 
     useEffect(() => {
         const currentResultCount = results.length;
@@ -85,7 +97,7 @@ export const SearchResults = () => {
                 width: '100%',
                 overflow: 'visible',
             }}
-            pointerEvents={show ? 'auto' : 'none'}
+            pointerEvents={acceptsTouches ? 'auto' : 'none'}
         >
             <ScrollView
                 automaticallyAdjustKeyboardInsets={false}

@@ -119,18 +119,17 @@ export function usePullDownBehavior(
                         event.velocityY > PULL_DOWN_VELOCITY ||
                         (event.velocityY > -PULL_DOWN_VELOCITY && projectedProgress > PULL_DOWN_COMPLETE_PROGRESS);
                     const targetProgress = shouldComplete ? 1 : 0;
-                    const settledCallback = shouldComplete ? onComplete : onCancel;
+                    const endCallback = shouldComplete ? onComplete : onCancel;
+
+                    if (endCallback) {
+                        scheduleOnRN(endCallback);
+                    }
 
                     progress.value = withSpring(
                         targetProgress,
                         {
                             ...PULL_DOWN_SPRING,
                             velocity: event.velocityY / pullDistance,
-                        },
-                        (finished) => {
-                            if (finished && settledCallback) {
-                                scheduleOnRN(settledCallback);
-                            }
                         },
                     );
                 });
