@@ -295,6 +295,10 @@ edit.tsx → EditObjectAtom (read/write)
 
 ## Code Design Conventions
 
+- Prefer reusable components only for atomic UI primitives with a broad, clear purpose.
+- Keep concrete feature UI in concrete named components, even when they subscribe to atoms or shared behavior hooks directly.
+- Do not hide feature-specific singleton behavior inside generic-looking reusable components; keep it in concrete feature components or explicit screen orchestration.
+- For concrete sibling components that share feature UI state, prefer small feature atoms/hooks over broad prop APIs and prop drilling.
 - Prefer module-local constants for values that only shape one screen, hook, or component.
 - Keep module-local constants at the top of the module, near related types and helper functions.
 - Add constants to `src/util/constants.ts` only when they are truly shared across modules or represent reusable global theme/layout values.
