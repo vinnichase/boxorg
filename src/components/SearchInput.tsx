@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Keyboard, TextInput, useWindowDimensions } from 'react-native';
 import { KeyboardController } from 'react-native-keyboard-controller';
 import { GestureDetector } from 'react-native-gesture-handler';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { useFocusEffect } from 'expo-router';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
@@ -15,7 +15,6 @@ import { SearchIcon } from './Icons';
 import { MainInputBox } from './MainInputBox';
 
 const SEARCH_OPEN_SHIFT_COMPLEMENT = 0.12;
-
 export const SearchInput = () => {
     const inputRef = useRef<TextInput>(null);
     const focus = useAtom(HomeFocusAtom);
@@ -26,6 +25,7 @@ export const SearchInput = () => {
     const pullDistance = Math.max(1, -searchOpenShift);
     const boxSearchActive = search.query.startsWith('#');
     const keyboardType = boxSearchActive ? 'number-pad' : 'default';
+    const visibility = useSharedValue(1);
 
     useEffect(() => {
         if (focus !== 'search') return;
@@ -83,6 +83,10 @@ export const SearchInput = () => {
         searchPullDownBehavior.actions.complete();
     }, [focus, searchPullDownBehavior.actions]);
 
+    useEffect(() => {
+        visibility.value = withTiming(focus === 'box' ? 0 : 1, { duration: 200 });
+    }, [focus, visibility]);
+
     const setSearchQuery = (query: string) => {
         SearchAtom.set((a) => setPath(['query'], query, a));
     };
@@ -104,9 +108,9 @@ export const SearchInput = () => {
                         position: 'absolute',
                         width: windowWidth - 60,
                         top: windowHeight * windowRatioComplement * 0.95,
-                        opacity: focus === 'box' ? 0 : 1,
                     },
                     useAnimatedStyle(() => ({
+                        opacity: visibility.value,
                         transform: [{ translateY: searchOpenShift * (1 - searchPullDownBehavior.progress.value) }],
                     })),
                 ]}

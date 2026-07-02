@@ -1,5 +1,19 @@
 # BoxOrg Architecture Documentation
 
+## Mandatory Editing Gate: Code Conventions
+
+Before making or reviewing any code edit in this repository, load and follow [`docs/code-conventions.md`](docs/code-conventions.md).
+
+This is not optional and not a final-summary-only check:
+
+- Read the conventions before choosing an implementation shape.
+- Keep the conventions active while editing.
+- After every edit cycle, review the changed code against the conventions before considering the work complete.
+- Treat this review as a required gate alongside type checks and `git diff --check`.
+- If a change intentionally violates a convention, call out the exception explicitly.
+
+---
+
 ## Project Overview
 
 **BoxOrg** is a React Native mobile application built with Expo that helps users organize objects in boxes by capturing images, segmenting them into individual items, tagging them, and storing them in a SQLite database with search capabilities.
