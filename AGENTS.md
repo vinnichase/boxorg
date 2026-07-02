@@ -295,6 +295,8 @@ edit.tsx → EditObjectAtom (read/write)
 
 ## Code Design Conventions
 
+- Detailed code conventions live in [`docs/code-conventions.md`](docs/code-conventions.md).
+- After every edit cycle, review changed code against those conventions before considering the work complete.
 - Prefer reusable components only for atomic UI primitives with a broad, clear purpose.
 - Keep concrete feature UI in concrete named components, even when they subscribe to atoms or shared behavior hooks directly.
 - Do not hide feature-specific singleton behavior inside generic-looking reusable components; keep it in concrete feature components or explicit screen orchestration.
