@@ -293,6 +293,14 @@ edit.tsx → EditObjectAtom (read/write)
 
 ---
 
+## Code Design Conventions
+
+- Prefer module-local constants for values that only shape one screen, hook, or component.
+- Keep module-local constants at the top of the module, near related types and helper functions.
+- Add constants to `src/util/constants.ts` only when they are truly shared across modules or represent reusable global theme/layout values.
+
+---
+
 ## Development Workflow
 
 ### Adding a New Feature
