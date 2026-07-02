@@ -8,4 +8,4 @@ export const WHITE = '#ffffff';
 
 export const NONE = 'none';
 
-export const SEARCH_KEYBOARD_TOOLBAR_HEIGHT = 60;
+export const KEYBOARD_TOOLBAR_HEIGHT = 60;

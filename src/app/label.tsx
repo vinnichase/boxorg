@@ -13,7 +13,7 @@ import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/co
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { CrossIcon } from '../components/Icons';
-import { KeyboardDismissToolbar } from '../components/KeyboardDismissToolbar';
+import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 
 const KEYBOARD_SHIFT_REFERENCE_HEIGHT = 844;
@@ -24,10 +24,6 @@ function App(): React.ReactElement {
     const object = objects[index];
     const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
     const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
-
-    const keyboardShiftStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: (keyboardHeight.value / 2) * keyboardShiftScale }],
-    }));
 
     return (
         <View
@@ -45,7 +41,9 @@ function App(): React.ReactElement {
                         flex: 1,
                         overflow: 'hidden',
                     },
-                    keyboardShiftStyle,
+                    useAnimatedStyle(() => ({
+                        transform: [{ translateY: (keyboardHeight.value / 2) * keyboardShiftScale }],
+                    })),
                 ]}
             >
                 <View
@@ -150,7 +148,7 @@ function App(): React.ReactElement {
                     </ScrollView>
                 </View>
             </Reanimated.View>
-            <KeyboardDismissToolbar />
+            <KeyboardToolbarDismiss />
         </View>
     );
 }

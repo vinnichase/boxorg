@@ -2,24 +2,51 @@ import { useEffect, useRef } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { BLACK, PURPLE_DARK, PURPLE_LIGHT, SEARCH_KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
+import { BLACK, PURPLE_DARK, PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { SearchAtom, SearchResultsAtom } from '../atoms/SearchAtom';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
 import { router } from 'expo-router';
+import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
+import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
+import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
+import { setPath } from '../util/setPath';
 
 const MARGIN_TOP = 160;
-const BOTTOM_SPACER_HEIGHT = SEARCH_KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
+const BOTTOM_SPACER_HEIGHT = KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
+const SEARCH_RESULTS_LOAD_DELAY = 300;
 
-type SearchResultsProps = {};
-
-export const SearchResults = ({}: SearchResultsProps) => {
+export const SearchResults = () => {
     const { show } = useAtom(SearchAtom);
     const results = useAtom(SearchResultsAtom);
+    const focus = useAtom(HomeFocusAtom);
+    const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
 
     const sharedOpacity = useSharedValue(0);
     const previousResultCount = useRef(0);
+    const previousFocus = useRef(focus);
+
+    useEffect(() => {
+        const focusBeforeChange = previousFocus.current;
+        previousFocus.current = focus;
+
+        if (focus !== 'search') {
+            if (show) {
+                SearchAtom.set((a) => setPath(['show'], false, a));
+            }
+            return;
+        }
+
+        if (show) return;
+
+        const delay = focusBeforeChange === 'box' ? 0 : SEARCH_RESULTS_LOAD_DELAY;
+        const timeout = setTimeout(() => {
+            SearchAtom.set((a) => setPath(['show'], true, a));
+        }, delay);
+
+        return () => clearTimeout(timeout);
+    }, [focus, show]);
 
     useEffect(() => {
         const currentResultCount = results.length;
@@ -48,10 +75,6 @@ export const SearchResults = ({}: SearchResultsProps) => {
         sharedOpacity.value = 1;
     }, [results.length, show]);
 
-    const animatedStyle = useAnimatedStyle(() => ({
-        opacity: sharedOpacity.value,
-    }));
-
     return (
         <KeyboardAvoidingView
             behavior="height"
@@ -72,7 +95,15 @@ export const SearchResults = ({}: SearchResultsProps) => {
                 scrollIndicatorInsets={{ top: 0, bottom: BOTTOM_SPACER_HEIGHT }}
                 style={{ flex: 1, overflow: 'visible' }}
             >
-                <Animated.View style={animatedStyle}>
+                <Animated.View
+                    style={useAnimatedStyle(() => {
+                        const fadeProgress = Math.min(Math.max(searchPullDownBehavior.progress.value / 0.3, 0), 1);
+
+                        return {
+                            opacity: sharedOpacity.value * (1 - fadeProgress),
+                        };
+                    })}
+                >
                     <View
                         style={{
                             gap: 10,

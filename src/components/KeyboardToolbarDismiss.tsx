@@ -1,28 +1,28 @@
 import { Keyboard, TouchableOpacity, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PURPLE_DARK, SEARCH_KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
+import { PURPLE_DARK, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import { KeyboardDownIcon } from './Icons';
 
-export const KeyboardDismissToolbar = () => {
+export const KeyboardToolbarDismiss = () => {
     const insets = useSafeAreaInsets();
 
     return (
         <KeyboardStickyView
-            offset={{ closed: SEARCH_KEYBOARD_TOOLBAR_HEIGHT, opened: 0 }}
+            offset={{ closed: KEYBOARD_TOOLBAR_HEIGHT, opened: 0 }}
             pointerEvents="box-none"
             style={{
                 position: 'absolute',
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: SEARCH_KEYBOARD_TOOLBAR_HEIGHT,
+                height: KEYBOARD_TOOLBAR_HEIGHT,
             }}
         >
             <View
                 pointerEvents="box-none"
                 style={{
-                    height: SEARCH_KEYBOARD_TOOLBAR_HEIGHT,
+                    height: KEYBOARD_TOOLBAR_HEIGHT,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
