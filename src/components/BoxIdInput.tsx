@@ -67,10 +67,11 @@ export const BoxIdInput = () => {
                     Math.max((searchPullDownBehavior.progress.value - 0.3) / (1 - 0.3), 0),
                     1,
                 );
+                const pullDownOpacity = CONTROL_VISIBLE_OPACITY * fadeInProgress;
 
                 return {
                     transform: [{ translateY: shift.value }],
-                    opacity: focus === 'search' ? fadeInProgress : visibility.value,
+                    opacity: focus === 'search' ? pullDownOpacity : Math.max(visibility.value, pullDownOpacity),
                 };
             })}
         >
