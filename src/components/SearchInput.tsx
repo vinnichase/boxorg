@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, TextInput, useWindowDimensions } from 'react-native';
 import { KeyboardController } from 'react-native-keyboard-controller';
 import { GestureDetector } from 'react-native-gesture-handler';
@@ -11,6 +11,7 @@ import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
 import { setPath } from '../util/setPath';
 import { PURPLE_DARK } from '../util/constants';
 import { SearchIcon } from './Icons';
+import { KeyboardToolbarSearch } from './KeyboardToolbarSearch';
 import { MainInputBox } from './MainInputBox';
 
 const SEARCH_OPEN_SHIFT_COMPLEMENT = 0.12;
@@ -24,6 +25,7 @@ export const SearchInput = () => {
     const pullDistance = Math.max(1, -searchOpenShift);
     const boxSearchActive = search.query.startsWith('#');
     const keyboardType = boxSearchActive ? 'number-pad' : 'default';
+    const [inputFocused, setInputFocused] = useState(false);
     const visibility = useSharedValue(1);
 
     useEffect(() => {
@@ -91,42 +93,49 @@ export const SearchInput = () => {
     };
 
     return (
-        <GestureDetector gesture={searchPullDownBehavior.gesture}>
-            <MainInputBox
-                style={[
-                    {
-                        position: 'absolute',
-                        width: windowWidth - 60,
-                        top: windowHeight * windowRatioComplement * 0.95,
-                    },
-                    useAnimatedStyle(() => ({
-                        opacity: visibility.value,
-                        transform: [{ translateY: searchOpenShift * (1 - searchPullDownBehavior.progress.value) }],
-                    })),
-                ]}
-                pointerEvents={focus === 'box' ? 'none' : 'auto'}
-            >
-                <SearchIcon color1={PURPLE_DARK} />
-                <TextInput
-                    key={keyboardType}
-                    ref={inputRef}
-                    value={search.query}
-                    keyboardType={keyboardType}
-                    style={{
-                        flex: 1,
-                        height: '100%',
-                        fontSize: 25,
-                        color: PURPLE_DARK,
-                        textAlignVertical: 'center',
-                        paddingVertical: 0,
-                    }}
-                    autoComplete="off"
-                    spellCheck={false}
-                    onTouchEnd={(e) => e.stopPropagation()}
-                    onFocus={() => HomeFocusAtom.set('search')}
-                    onChangeText={handleChangeText}
-                />
-            </MainInputBox>
-        </GestureDetector>
+        <Fragment>
+            <GestureDetector gesture={searchPullDownBehavior.gesture}>
+                <MainInputBox
+                    style={[
+                        {
+                            position: 'absolute',
+                            width: windowWidth - 60,
+                            top: windowHeight * windowRatioComplement * 0.95,
+                        },
+                        useAnimatedStyle(() => ({
+                            opacity: visibility.value,
+                            transform: [{ translateY: searchOpenShift * (1 - searchPullDownBehavior.progress.value) }],
+                        })),
+                    ]}
+                    pointerEvents={focus === 'box' ? 'none' : 'auto'}
+                >
+                    <SearchIcon color1={PURPLE_DARK} />
+                    <TextInput
+                        key={keyboardType}
+                        ref={inputRef}
+                        value={search.query}
+                        keyboardType={keyboardType}
+                        style={{
+                            flex: 1,
+                            height: '100%',
+                            fontSize: 25,
+                            color: PURPLE_DARK,
+                            textAlignVertical: 'center',
+                            paddingVertical: 0,
+                        }}
+                        autoComplete="off"
+                        spellCheck={false}
+                        onTouchEnd={(e) => e.stopPropagation()}
+                        onFocus={() => {
+                            setInputFocused(true);
+                            HomeFocusAtom.set('search');
+                        }}
+                        onBlur={() => setInputFocused(false)}
+                        onChangeText={handleChangeText}
+                    />
+                </MainInputBox>
+            </GestureDetector>
+            <KeyboardToolbarSearch visible={focus === 'search' && inputFocused} />
+        </Fragment>
     );
 };

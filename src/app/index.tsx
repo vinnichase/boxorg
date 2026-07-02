@@ -8,7 +8,6 @@ import { BoxIdInput } from '../components/BoxIdInput';
 import { CaptureButton } from '../components/CaptureButton';
 import { SearchCloseCaret } from '../components/SearchCloseCaret';
 import { SearchInput } from '../components/SearchInput';
-import { KeyboardToolbarSearch } from '../components/KeyboardToolbarSearch';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { HomeBlurBackground } from '../components/HomeBlurBackground';
 import { BoxKeyboardDismissOverlay } from '../components/BoxKeyboardDismissOverlay';
@@ -43,7 +42,6 @@ function App(): React.ReactElement {
             <SearchCloseCaret />
             <SearchResults />
             <SearchInput />
-            <KeyboardToolbarSearch />
         </ImageBackground>
     );
 }

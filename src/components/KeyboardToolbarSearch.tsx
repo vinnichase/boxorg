@@ -2,17 +2,18 @@ import { Keyboard, TouchableOpacity, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAtom } from '@gothub-team/got-atom';
-import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchAtom } from '../atoms/SearchAtom';
 import { setPath } from '../util/setPath';
 import { PURPLE_DARK, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import { BoxIcon, KeyboardDownIcon, TextIcon } from './Icons';
 
-export const KeyboardToolbarSearch = () => {
+type KeyboardToolbarSearchProps = {
+    visible: boolean;
+};
+
+export const KeyboardToolbarSearch = ({ visible }: KeyboardToolbarSearchProps) => {
     const insets = useSafeAreaInsets();
-    const focus = useAtom(HomeFocusAtom);
     const search = useAtom(SearchAtom);
-    const visible = focus === 'search';
     const boxSearchActive = search.query.startsWith('#');
 
     if (!visible) return null;
