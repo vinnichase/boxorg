@@ -84,7 +84,7 @@ export const SearchInput = () => {
     }, [focus, searchPullDownBehavior.actions]);
 
     useEffect(() => {
-        visibility.value = withTiming(focus === 'box' ? 0 : 1, { duration: 200 });
+        visibility.value = withTiming(focus === 'box' ? 0 : 1, { duration: focus === 'box' ? 200 : 400 });
     }, [focus, visibility]);
 
     const setSearchQuery = (query: string) => {
