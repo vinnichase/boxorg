@@ -268,11 +268,13 @@ const Segmentator = ({ width, height, image }: SegmentatorProps) => {
             return { opacity: 0 };
         }
 
-        const [x, y, w] = translateRect(drawX.value, drawY.value, drawW.value, width, height);
+        // dragging down accumulates a negative size; render the absolute value
+        // so the square grows the same way in both directions
+        const [x, y, w] = translateRect(drawX.value, drawY.value, Math.abs(drawW.value), width, height);
         return {
-            opacity: w > 0 ? 1 : 0,
-            width: Math.max(0, w),
-            height: Math.max(0, w),
+            opacity: 1,
+            width: w,
+            height: w,
             transform: [{ translateX: x - drawOrigin.x }, { translateY: y - drawOrigin.y }],
         };
     });
