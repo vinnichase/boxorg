@@ -9,6 +9,7 @@
         "reset-project": "node ./scripts/reset-project.js",
         "android": "BUILD_PROFILE=dev expo run android",
         "ios": "BUILD_PROFILE=dev expo start --ios",
+        "dev": "BUILD_PROFILE=dev expo start",
         "prebuild": "BUILD_PROFILE=dev expo prebuild",
         "doctor": "BUILD_PROFILE=dev npx expo-doctor",
         "web": "expo start --web",
