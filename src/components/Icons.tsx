@@ -217,6 +217,24 @@ export const SegmentIcon = ({ color1 }: IconProps) => (
     </View>
 );
 
+export const ArrowLeftIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={1.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+        >
+            <Path stroke={color1} fill="none" d="M19 12h-14" />
+            <Path stroke={color1} fill="none" d="M11 18l-6 -6l6 -6" />
+        </Svg>
+    </View>
+);
+
 export const BackIcon = ({ color1 }: IconProps) => (
     <Svg style={{}} strokeWidth="3" viewBox="3.5 3.5 18 18">
         <Path stroke={color1} strokeLinecap="round" fill="none" d="M9 14l-4 -4l4 -4" />

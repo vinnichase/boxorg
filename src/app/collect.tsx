@@ -6,7 +6,7 @@ import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
-import { BoxIcon, SaveIcon } from '../components/Icons';
+import { ArrowLeftIcon, SaveIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
 import { useRouter } from 'expo-router';
 import { saveObjects } from '../service/saveObjects';
@@ -106,7 +106,9 @@ function App(): React.ReactElement {
                         }}
                     >
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                            <BoxIcon color2={`${WHITE}44`} />
+                            <TouchableOpacity onPress={() => router.back()}>
+                                <ArrowLeftIcon color1={WHITE} />
+                            </TouchableOpacity>
                             <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
                             <TextInput
                                 keyboardType="number-pad"

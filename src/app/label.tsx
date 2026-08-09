@@ -15,7 +15,8 @@ import { BlurView } from 'expo-blur';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
-import { BoxIcon, CrossIcon } from '../components/Icons';
+import { useRouter } from 'expo-router';
+import { ArrowLeftIcon, CrossIcon } from '../components/Icons';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 
@@ -23,6 +24,7 @@ const HEADER_HEIGHT = 90;
 const KEYBOARD_SHIFT_REFERENCE_HEIGHT = 844;
 
 function App(): React.ReactElement {
+    const router = useRouter();
     const insets = useSafeAreaInsets();
     const { width, height: windowHeight } = useWindowDimensions();
     const { index, objects, boxId } = useAtom(CollectObjectsAtom);
@@ -179,7 +181,9 @@ function App(): React.ReactElement {
                         }}
                     >
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                            <BoxIcon color2={`${WHITE}44`} />
+                            <TouchableOpacity onPress={() => router.back()}>
+                                <ArrowLeftIcon color1={WHITE} />
+                            </TouchableOpacity>
                             <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
                             <TextInput
                                 keyboardType="number-pad"

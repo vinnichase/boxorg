@@ -7,7 +7,7 @@ import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import { CrossIcon, SegmentIcon } from '../components/Icons';
+import { ArrowLeftIcon, CrossIcon, SegmentIcon } from '../components/Icons';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
 import { cropImage } from '../util/cropImage';
@@ -43,6 +43,29 @@ function App(): React.ReactElement {
                     <Segmentator width={imageSize.width} height={imageSize.height} image={image} />
                 </>
             )}
+            <SafeAreaView
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                }}
+            >
+                <TouchableOpacity
+                    style={{
+                        margin: 18,
+                        padding: 14,
+                        width: 70,
+                        height: 70,
+                        backgroundColor: `${WHITE}33`,
+                        borderRadius: 35,
+                    }}
+                    onPress={() => {
+                        router.back();
+                    }}
+                >
+                    <ArrowLeftIcon color1={WHITE} />
+                </TouchableOpacity>
+            </SafeAreaView>
             <SafeAreaView
                 style={{
                     position: 'absolute',
