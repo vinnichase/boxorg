@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Keyboard, Platform, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
@@ -13,7 +13,6 @@ import { BLACK, PURPLE_DARK, RED, WHITE } from '../util/constants';
 import { ApertureIcon } from './Icons';
 
 const CONTROL_VISIBLE_OPACITY = 0.9;
-const KEYBOARD_SHOW_EVENT = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 
 export const CaptureButton = () => {
     const router = useRouter();
@@ -21,7 +20,6 @@ export const CaptureButton = () => {
     const focus = useAtom(HomeFocusAtom);
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
     const visibility = useSharedValue(CONTROL_VISIBLE_OPACITY);
-    const shift = useSharedValue(0);
 
     useEffect(() => {
         if (!image) return;
@@ -33,32 +31,8 @@ export const CaptureButton = () => {
     }, [image, router]);
 
     useEffect(() => {
-        switch (focus) {
-            case 'search':
-                shift.value = withSpring(0);
-                visibility.value = withSpring(0);
-                break;
-            case 'box':
-                visibility.value = withSpring(CONTROL_VISIBLE_OPACITY);
-                break;
-            case 'none':
-                shift.value = withSpring(0);
-                visibility.value = withSpring(CONTROL_VISIBLE_OPACITY);
-                break;
-        }
-    }, [focus, shift, visibility]);
-
-    useEffect(() => {
-        const keyboardShow = Keyboard.addListener(KEYBOARD_SHOW_EVENT, (event) => {
-            setTimeout(() => {
-                if (HomeFocusAtom.get() === 'box') {
-                    shift.value = withSpring(-event.endCoordinates.height);
-                }
-            }, 10);
-        });
-
-        return () => keyboardShow.remove();
-    }, [shift]);
+        visibility.value = withSpring(focus === 'search' ? 0 : CONTROL_VISIBLE_OPACITY);
+    }, [focus, visibility]);
 
     return (
         <Reanimated.View
@@ -85,7 +59,6 @@ export const CaptureButton = () => {
                     const pullDownOpacity = CONTROL_VISIBLE_OPACITY * fadeInProgress;
 
                     return {
-                        transform: [{ translateY: shift.value }],
                         opacity: focus === 'search' ? pullDownOpacity : Math.max(visibility.value, pullDownOpacity),
                     };
                 }),
@@ -95,11 +68,8 @@ export const CaptureButton = () => {
             <TouchableOpacity
                 style={{ width: '100%', height: '100%' }}
                 onPressOut={() => {
-                    if (CollectObjectsAtom.get().boxId) {
-                        HomeFocusAtom.set('none');
-                        Keyboard.dismiss();
-                        launchCamera();
-                    }
+                    HomeFocusAtom.set('none');
+                    launchCamera();
                 }}
             >
                 <View

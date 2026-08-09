@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Platform, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
@@ -100,15 +100,39 @@ function App(): React.ReactElement {
                             padding: 20,
                         }}
                     >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <BoxIcon color2={`${WHITE}44`} />
-                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>
-                                box {boxId}
-                            </Text>
+                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
+                            <TextInput
+                                keyboardType="number-pad"
+                                style={{
+                                    flex: 1,
+                                    height: '100%',
+                                    paddingHorizontal: 14,
+                                    paddingVertical: 8,
+                                    color: WHITE,
+                                    fontSize: 35,
+                                    fontWeight: 'bold',
+                                    borderRadius: 14,
+                                    backgroundColor: WHITE + '33',
+                                    textAlignVertical: 'center',
+                                }}
+                                autoComplete="off"
+                                spellCheck={false}
+                                defaultValue={boxId?.toString() ?? ''}
+                                onChange={(e) => {
+                                    const nextBoxId = parseInt(e.nativeEvent.text);
+                                    CollectObjectsAtom.set((a) =>
+                                        setPath(['boxId'], Number.isNaN(nextBoxId) ? undefined : nextBoxId, a),
+                                    );
+                                }}
+                            />
                         </View>
                         <TouchableOpacity
                             onPress={() => {
-                                boxId && saveObjects(boxId, objects);
+                                if (!boxId) return;
+
+                                saveObjects(boxId, objects);
                                 CollectObjectsAtom.set({ index: 0, boxId, objects: [] });
                                 router.dismissTo('/');
                             }}

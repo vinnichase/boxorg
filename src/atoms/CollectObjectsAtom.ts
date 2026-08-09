@@ -15,6 +15,7 @@ export type EditObject = {
     deleted: boolean;
     uri: string;
     tags: string[];
+    boxId?: number;
 };
 
 export const CollectObjectsAtom = atom<CollectObjects>({ index: 0, objects: [] });

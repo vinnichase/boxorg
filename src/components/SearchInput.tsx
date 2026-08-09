@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, TextInput, useWindowDimensions } from 'react-native';
 import { KeyboardController } from 'react-native-keyboard-controller';
 import { GestureDetector } from 'react-native-gesture-handler';
-import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
@@ -26,7 +26,6 @@ export const SearchInput = () => {
     const boxSearchActive = search.query.startsWith('#');
     const keyboardType = boxSearchActive ? 'number-pad' : 'default';
     const [inputFocused, setInputFocused] = useState(false);
-    const visibility = useSharedValue(1);
 
     useEffect(() => {
         if (focus !== 'search') return;
@@ -75,10 +74,6 @@ export const SearchInput = () => {
         searchPullDownBehavior.actions.complete();
     }, [focus, searchPullDownBehavior.actions]);
 
-    useEffect(() => {
-        visibility.value = withTiming(focus === 'box' ? 0 : 1, { duration: focus === 'box' ? 200 : 400 });
-    }, [focus, visibility]);
-
     const setSearchQuery = (query: string) => {
         SearchAtom.set((a) => setPath(['query'], query, a));
     };
@@ -103,11 +98,9 @@ export const SearchInput = () => {
                             top: windowHeight * windowRatioComplement * 0.95,
                         },
                         useAnimatedStyle(() => ({
-                            opacity: visibility.value,
                             transform: [{ translateY: searchOpenShift * (1 - searchPullDownBehavior.progress.value) }],
                         })),
                     ]}
-                    pointerEvents={focus === 'box' ? 'none' : 'auto'}
                 >
                     <SearchIcon color1={PURPLE_DARK} />
                     <TextInput

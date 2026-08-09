@@ -11,12 +11,14 @@ export const saveObjects = async (boxId: number, objects: EditObject[]): Promise
     for (const object of objects) {
         if (object.deleted) continue;
 
-        const objectId = createObject(db, boxId);
+        const objectBoxId = object.boxId ?? boxId;
+
+        const objectId = createObject(db, objectBoxId);
         if (!objectId) continue;
 
         const imageFilename = objectId + '.jpg';
 
-        objectId && updateObject(db, objectId, imageFilename, imageFilename, boxId);
+        objectId && updateObject(db, objectId, imageFilename, imageFilename, objectBoxId);
         for (const tag of object.tags) {
             assignTagToObject(db, objectId, tag);
         }

@@ -27,9 +27,6 @@ export const HomeBlurBackground = ({ children }: HomeBlurBackgroundProps) => {
             case 'search':
                 blur !== HOME_BLUR_OPEN_INTENSITY && setBlur(HOME_BLUR_OPEN_INTENSITY);
                 break;
-            case 'box':
-                blur !== HOME_BLUR_OPEN_INTENSITY && setBlur(HOME_BLUR_OPEN_INTENSITY);
-                break;
             case 'none':
                 blur !== 0 && setBlur(0);
                 break;
@@ -37,8 +34,6 @@ export const HomeBlurBackground = ({ children }: HomeBlurBackgroundProps) => {
     }, [focus, blur]);
 
     const controlledBlurIntensity = useDerivedValue(() => {
-        if (focus === 'box') return animatedBlur.value;
-
         return animatedBlur.value * (1 - searchPullDownBehavior.progress.value);
     });
 

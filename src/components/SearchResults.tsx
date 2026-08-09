@@ -27,12 +27,8 @@ export const SearchResults = () => {
 
     const sharedOpacity = useSharedValue(0);
     const previousResultCount = useRef(0);
-    const previousFocus = useRef(focus);
 
     useEffect(() => {
-        const focusBeforeChange = previousFocus.current;
-        previousFocus.current = focus;
-
         if (focus !== 'search') {
             if (show) {
                 SearchAtom.set((a) => setPath(['show'], false, a));
@@ -42,10 +38,9 @@ export const SearchResults = () => {
 
         if (show) return;
 
-        const delay = focusBeforeChange === 'box' ? 0 : SEARCH_RESULTS_LOAD_DELAY;
         const timeout = setTimeout(() => {
             SearchAtom.set((a) => setPath(['show'], true, a));
-        }, delay);
+        }, SEARCH_RESULTS_LOAD_DELAY);
 
         return () => clearTimeout(timeout);
     }, [focus, show]);

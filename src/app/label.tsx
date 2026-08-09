@@ -2,26 +2,32 @@ import React from 'react';
 import {
     Image,
     ScrollView,
+    Text,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
     View,
 } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
-import { CrossIcon } from '../components/Icons';
+import { BoxIcon, CrossIcon } from '../components/Icons';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 
+const HEADER_HEIGHT = 90;
 const KEYBOARD_SHIFT_REFERENCE_HEIGHT = 844;
 
 function App(): React.ReactElement {
+    const insets = useSafeAreaInsets();
     const { width, height: windowHeight } = useWindowDimensions();
-    const { index, objects } = useAtom(CollectObjectsAtom);
+    const { index, objects, boxId } = useAtom(CollectObjectsAtom);
     const object = objects[index];
+    const headerOffset = HEADER_HEIGHT + insets.top;
     const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
     const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
 
@@ -49,6 +55,7 @@ function App(): React.ReactElement {
                 <View
                     style={{
                         flex: 1,
+                        paddingTop: headerOffset,
                         shadowColor: `${PURPLE_LIGHT}`,
                         shadowOpacity: 1,
                         shadowRadius: 100,
@@ -148,6 +155,64 @@ function App(): React.ReactElement {
                     </ScrollView>
                 </View>
             </Reanimated.View>
+            <BlurView
+                intensity={30}
+                tint="dark"
+                experimentalBlurMethod="dimezisBlurView"
+                style={{
+                    position: 'absolute',
+                    width: '100%',
+                    left: 0,
+                    top: 0,
+                    borderBottomColor: `${WHITE}22`,
+                    borderBottomWidth: 1,
+                }}
+            >
+                <SafeAreaView edges={['top']} style={{ backgroundColor: `${PURPLE_DARK}33` }}>
+                    <View
+                        style={{
+                            height: HEADER_HEIGHT,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 20,
+                            padding: 20,
+                        }}
+                    >
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                            <BoxIcon color2={`${WHITE}44`} />
+                            <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
+                            <TextInput
+                                keyboardType="number-pad"
+                                style={{
+                                    flex: 1,
+                                    height: '100%',
+                                    paddingHorizontal: 14,
+                                    paddingVertical: 8,
+                                    color: WHITE,
+                                    fontSize: 35,
+                                    fontWeight: 'bold',
+                                    borderRadius: 14,
+                                    backgroundColor: WHITE + '33',
+                                    textAlignVertical: 'center',
+                                }}
+                                autoComplete="off"
+                                spellCheck={false}
+                                defaultValue={(object?.boxId ?? boxId)?.toString() ?? ''}
+                                onChange={(e) => {
+                                    const nextBoxId = parseInt(e.nativeEvent.text);
+                                    CollectObjectsAtom.set((a) =>
+                                        setPath(
+                                            ['objects', index, 'boxId'],
+                                            Number.isNaN(nextBoxId) ? undefined : nextBoxId,
+                                            a,
+                                        ),
+                                    );
+                                }}
+                            />
+                        </View>
+                    </View>
+                </SafeAreaView>
+            </BlurView>
             <KeyboardToolbarDismiss />
         </View>
     );
