@@ -1,50 +1,43 @@
-# Welcome to your Expo app 👋
+# boxorg
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Know what's in the box.** Photograph a box, frame the items with your finger,
+assign a box number — done. When you look for something later, search by name
+or box number and instantly see which box it's in, with a picture.
 
-## Get started
+No typing out inventory lists. No cloud, no account, no tracking — everything
+stays on your device.
 
-1. Install dependencies
+## How it works
 
-   ```bash
-   npm install
-   ```
+1. **Photograph** the open box before you close it
+2. **Frame** each item by dragging a square around it
+3. **Tag** the items and give the run a box number (override per item if needed)
+4. **Search** anytime — by tag or `#boxnumber` — and find the right box
 
-2. Start the app
+## Privacy
 
-   ```bash
-    npx expo start
-   ```
+boxorg is local-first by design: all data lives in a SQLite database and image
+files on your device. The app works completely offline and collects nothing.
 
-In the output, you'll find options to open the app in a
+## Development
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+boxorg is a React Native app built with [Expo](https://expo.dev).
 
 ```bash
-npm run reset-project
+pnpm install
+pnpm dev            # start the dev server (Expo Go)
+pnpm ios            # start with iOS simulator target
+pnpm test           # jest
+pnpm lint           # eslint
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+See [docs/code-conventions.md](docs/code-conventions.md) for code style and
+[docs/e2e.md](docs/e2e.md) for end-to-end testing notes.
 
-## Learn more
+## Contributing
 
-To learn more about developing your project with Expo, look at the following resources:
+Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## License
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+[MIT](LICENSE) — boxorg is free, open source, and will stay that way.
