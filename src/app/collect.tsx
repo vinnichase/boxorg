@@ -56,13 +56,14 @@ function App(): React.ReactElement {
                                 No Results. Get Back!
                             </Text>
                         ) : (
-                            objects.map(({ deleted, tags, uri }, i) => (
+                            objects.map(({ deleted, tags, uri, boxId: objectBoxId }, i) => (
                                 <ObjectTile
                                     key={i}
                                     imageUri={uri}
                                     tags={tags.filter(Boolean)}
                                     width={TILE_WIDTH}
                                     deleted={deleted}
+                                    boxId={objectBoxId ?? boxId}
                                     onDeleted={(deleted) =>
                                         CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
                                     }

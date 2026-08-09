@@ -1,13 +1,16 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { BLACK, PURPLE_MID, RED, WHITE } from '../util/constants';
+import { BLACK, PURPLE_DARK, PURPLE_MID, RED, WHITE } from '../util/constants';
 import { BackIcon, CrossIcon } from './Icons';
 
 const BORDER_WIDTH = 3;
+const BOX_BADGE_SIZE = 40;
+const BOX_BADGE_OFFSET = 10;
 
 type ObjectTileProps = {
     width: number;
     tags: string[];
     deleted: boolean;
+    boxId?: number;
     imageUri?: string;
     onEdit?: () => void;
     onDeleted?: (deleted: boolean) => void;
@@ -18,6 +21,7 @@ export const ObjectTile = ({
     deleted,
     tags,
     width,
+    boxId,
     onEdit = () => {},
     onDeleted = () => {},
 }: ObjectTileProps) => {
@@ -42,6 +46,32 @@ export const ObjectTile = ({
                         ></Image>
                     )}
                 </View>
+                {boxId !== undefined && (
+                    <View
+                        pointerEvents="none"
+                        style={{
+                            position: 'absolute',
+                            top: width - BOX_BADGE_SIZE - BOX_BADGE_OFFSET,
+                            right: BOX_BADGE_OFFSET,
+                            backgroundColor: `${WHITE}66`,
+                            padding: 5,
+                            aspectRatio: 1,
+                            width: BOX_BADGE_SIZE,
+                            height: BOX_BADGE_SIZE,
+                            borderRadius: BOX_BADGE_SIZE / 2,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'column',
+                            shadowColor: `${BLACK}`,
+                            shadowOpacity: 1,
+                            shadowRadius: 10,
+                        }}
+                    >
+                        <Text style={{ fontSize: 25, color: PURPLE_DARK, fontWeight: 600, opacity: 0.9 }}>
+                            {boxId}
+                        </Text>
+                    </View>
+                )}
                 {tags.map((tag) => (
                     <Text
                         key={tag}
