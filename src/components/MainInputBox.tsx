@@ -1,4 +1,4 @@
-import { BLACK, PURPLE_MID, WHITE } from '../util/constants';
+import { BLACK, MAIN_INPUT_HEIGHT, PURPLE_MID, WHITE } from '../util/constants';
 import { View } from 'react-native';
 import type { ComponentProps, ReactNode } from 'react';
 import Reanimated from 'react-native-reanimated';
@@ -11,7 +11,7 @@ export const MainInputBox = ({ children, style, ...props }: MainInputBoxProps) =
     <Reanimated.View
         style={[
             {
-                height: 65,
+                height: MAIN_INPUT_HEIGHT,
                 marginHorizontal: 30,
                 padding: 4,
                 backgroundColor: WHITE,

@@ -4,13 +4,12 @@ import { useAtom } from '@gothub-team/got-atom';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
-import { WHITE } from '../util/constants';
+import { SEARCH_OPEN_TOP_RATIO, WHITE } from '../util/constants';
 import { CloseDownIcon } from './Icons';
 
 export const SearchCloseCaret = () => {
     const focus = useAtom(HomeFocusAtom);
-    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-    const windowRatioComplement = 1 - windowWidth / windowHeight;
+    const { height: windowHeight } = useWindowDimensions();
     const visible = focus === 'search';
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
 
@@ -20,7 +19,7 @@ export const SearchCloseCaret = () => {
             style={[
                 {
                     position: 'absolute',
-                    top: windowHeight * 0.12 - windowHeight * windowRatioComplement * 0.05 - 50,
+                    top: windowHeight * SEARCH_OPEN_TOP_RATIO - 50,
                     width: '100%',
                     height: 50,
                     alignItems: 'center',

@@ -9,3 +9,9 @@ export const WHITE = '#ffffff';
 export const NONE = 'none';
 
 export const KEYBOARD_TOOLBAR_HEIGHT = 60;
+
+export const MAIN_INPUT_HEIGHT = 65;
+
+// vertical home screen layout as fractions of the window height
+export const SEARCH_RESTING_TOP_RATIO = 0.57;
+export const SEARCH_OPEN_TOP_RATIO = 0.1;

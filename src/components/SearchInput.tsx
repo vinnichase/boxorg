@@ -9,19 +9,17 @@ import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { SearchAtom } from '../atoms/SearchAtom';
 import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
 import { setPath } from '../util/setPath';
-import { PURPLE_DARK } from '../util/constants';
+import { PURPLE_DARK, SEARCH_OPEN_TOP_RATIO, SEARCH_RESTING_TOP_RATIO } from '../util/constants';
 import { SearchIcon } from './Icons';
 import { KeyboardToolbarSearch } from './KeyboardToolbarSearch';
 import { MainInputBox } from './MainInputBox';
 
-const SEARCH_OPEN_SHIFT_COMPLEMENT = 0.12;
 export const SearchInput = () => {
     const inputRef = useRef<TextInput>(null);
     const focus = useAtom(HomeFocusAtom);
     const search = useAtom(SearchAtom);
     const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-    const windowRatioComplement = 1 - windowWidth / windowHeight;
-    const searchOpenShift = -(windowHeight * (windowRatioComplement - SEARCH_OPEN_SHIFT_COMPLEMENT));
+    const searchOpenShift = -(windowHeight * (SEARCH_RESTING_TOP_RATIO - SEARCH_OPEN_TOP_RATIO));
     const pullDistance = Math.max(1, -searchOpenShift);
     const boxSearchActive = search.query.startsWith('#');
     const keyboardType = boxSearchActive ? 'number-pad' : 'default';
@@ -95,7 +93,7 @@ export const SearchInput = () => {
                         {
                             position: 'absolute',
                             width: windowWidth - 60,
-                            top: windowHeight * windowRatioComplement * 0.95,
+                            top: windowHeight * SEARCH_RESTING_TOP_RATIO,
                         },
                         useAnimatedStyle(() => ({
                             transform: [{ translateY: searchOpenShift * (1 - searchPullDownBehavior.progress.value) }],

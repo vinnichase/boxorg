@@ -41,7 +41,6 @@ export const CaptureButton = () => {
                 {
                     width: 110,
                     height: 110,
-                    marginBottom: 20,
                     padding: 4,
                     backgroundColor: WHITE,
                     shadowColor: `${BLACK}`,
