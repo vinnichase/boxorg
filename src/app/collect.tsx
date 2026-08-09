@@ -64,6 +64,10 @@ function App(): React.ReactElement {
                                     width={TILE_WIDTH}
                                     deleted={deleted}
                                     boxId={objectBoxId ?? boxId}
+                                    boxIdOverridden={objectBoxId !== undefined}
+                                    onResetBoxId={() =>
+                                        CollectObjectsAtom.set((a) => setPath(['objects', i, 'boxId'], undefined, a))
+                                    }
                                     onDeleted={(deleted) =>
                                         CollectObjectsAtom.set((a) => setPath(['objects', i, 'deleted'], deleted, a))
                                     }
