@@ -79,7 +79,7 @@ function App(): React.ReactElement {
             <BlurView
                 intensity={80}
                 tint="dark"
-                blurMethod="dimezisBlurView"
+                experimentalBlurMethod="dimezisBlurView"
                 style={{
                     position: 'absolute',
                     width: '100%',

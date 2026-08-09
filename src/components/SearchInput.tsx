@@ -42,7 +42,7 @@ export const SearchInput = () => {
     }, [focus]);
 
     const beginSearchPullDown = useCallback(() => {
-        void KeyboardController.dismiss({ keepFocus: true, animated: true });
+        void KeyboardController.dismiss({ keepFocus: true });
     }, []);
 
     const cancelSearchPullDown = useCallback(() => {
@@ -54,7 +54,7 @@ export const SearchInput = () => {
     const completeSearchPullDown = useCallback(() => {
         inputRef.current?.blur();
         HomeFocusAtom.set('none');
-        void KeyboardController.dismiss({ keepFocus: false, animated: true });
+        void KeyboardController.dismiss({ keepFocus: false });
         Keyboard.dismiss();
     }, []);
 

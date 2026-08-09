@@ -132,7 +132,7 @@ export const SearchResults = () => {
                                 delayPressIn={16}
                                 style={{ height: 100, flexDirection: 'row', gap: 20 }}
                                 onPress={() => {
-                                    void KeyboardController.dismiss({ keepFocus: false, animated: true });
+                                    void KeyboardController.dismiss({ keepFocus: false });
                                     Keyboard.dismiss();
                                     EditObjectAtom.set(record);
                                     router.push('/edit');
