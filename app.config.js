@@ -13,10 +13,18 @@ module.exports = () => {
             scheme: 'myapp',
             userInterfaceStyle: 'automatic',
             newArchEnabled: true,
+            // system dialogs (camera permission, "Foto benutzen"/"Wiederholen")
+            // follow the languages the app declares; German is the primary one
+            locales: {
+                de: './assets/locales/de.json',
+                en: './assets/locales/en.json',
+            },
             ios: {
                 supportsTablet: true,
                 bundleIdentifier: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
                 infoPlist: {
+                    CFBundleDevelopmentRegion: 'de',
+                    CFBundleLocalizations: ['de', 'en'],
                     ITSAppUsesNonExemptEncryption: false,
                     UISupportsDocumentBrowser: true,
                     UIFileSharingEnabled: true,
@@ -55,6 +63,16 @@ module.exports = () => {
                 ],
                 'expo-sqlite',
                 'expo-font',
+                [
+                    'expo-image-picker',
+                    {
+                        // fallback; the localized strings live in assets/locales
+                        cameraPermission:
+                            'boxorg verwendet die Kamera, um ein Foto vom Inhalt einer Kiste aufzunehmen. Anschließend markierst du die Gegenstände auf dem Foto, damit du sie später über ihre Beschriftung oder die Box-Nummer wiederfindest. Die Fotos bleiben ausschließlich auf deinem Gerät.',
+                        photosPermission: false,
+                        microphonePermission: false,
+                    },
+                ],
             ],
             experiments: {
                 typedRoutes: true,

@@ -1,0 +1,4 @@
+{
+    "NSCameraUsageDescription": "boxorg verwendet die Kamera, um ein Foto vom Inhalt einer Kiste aufzunehmen. Anschließend markierst du die Gegenstände auf dem Foto, damit du sie später über ihre Beschriftung oder die Box-Nummer wiederfindest. Die Fotos bleiben ausschließlich auf deinem Gerät.",
+    "CFBundleDisplayName": "boxorg"
+}
