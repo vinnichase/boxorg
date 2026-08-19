@@ -1,23 +1,46 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Image, TouchableOpacity, View, type ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image, TouchableOpacity, useWindowDimensions, View, type ViewStyle } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BLACK, RED, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import { ArrowLeftIcon, CrossIcon, SegmentIcon } from '../components/Icons';
+import { ArrowLeftIcon, CrossIcon, SegmentNextIcon } from '../components/Icons';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { setPath } from '../util/setPath';
 import { cropImage } from '../util/cropImage';
 
+const HEADER_BUTTON_SIZE = 70;
+const HEADER_BUTTON_MARGIN = 18;
+// the header row (buttons + margins) is reserved above the photo, so the
+// buttons stay anchored to the screen and never overlap the drawing area
+const HEADER_HEIGHT = HEADER_BUTTON_SIZE + 2 * HEADER_BUTTON_MARGIN;
+
+const headerButtonStyle: ViewStyle = {
+    margin: HEADER_BUTTON_MARGIN,
+    padding: 14,
+    width: HEADER_BUTTON_SIZE,
+    height: HEADER_BUTTON_SIZE,
+    backgroundColor: `${WHITE}33`,
+    borderRadius: HEADER_BUTTON_SIZE / 2,
+};
+
 function App(): React.ReactElement {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
+    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
-    const { image } = useAtom(CollectObjectsAtom);
+    const { image, objects } = useAtom(CollectObjectsAtom);
+    const hasFrames = objects.length > 0;
+
+    // fit the photo below the header row: full width, but never taller than
+    // the remaining space (matters on iPad / letterboxed formats)
+    const availableHeight = windowHeight - insets.top - insets.bottom - HEADER_HEIGHT;
+    const imageMaxWidth = image ? Math.min(windowWidth, availableHeight * (image.width / image.height)) : windowWidth;
 
     return (
         <View
@@ -27,66 +50,45 @@ function App(): React.ReactElement {
                 shadowColor: `${BLACK}aa`,
                 shadowOpacity: 0.5,
                 shadowRadius: 50,
+                paddingTop: insets.top + HEADER_HEIGHT,
+                paddingBottom: insets.bottom,
                 justifyContent: 'center',
-                alignItems: 'stretch',
+                alignItems: 'center',
             }}
         >
             {image && (
-                <>
+                <View style={{ width: '100%', maxWidth: imageMaxWidth }}>
                     <Image
                         source={{ uri: image.uri }}
-                        style={{ aspectRatio: image.width / image.height }}
+                        style={{ width: '100%', aspectRatio: image.width / image.height }}
                         onLayout={(e) =>
                             setImageSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })
                         }
                     />
                     <Segmentator width={imageSize.width} height={imageSize.height} image={image} />
-                </>
+                </View>
             )}
             <SafeAreaView
+                edges={['top']}
+                pointerEvents="box-none"
                 style={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
+                    right: 0,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                 }}
             >
-                <TouchableOpacity
-                    style={{
-                        margin: 18,
-                        padding: 14,
-                        width: 70,
-                        height: 70,
-                        backgroundColor: `${WHITE}33`,
-                        borderRadius: 35,
-                    }}
-                    onPress={() => {
-                        router.back();
-                    }}
-                >
+                <TouchableOpacity style={headerButtonStyle} onPress={() => router.back()}>
                     <ArrowLeftIcon color1={WHITE} />
                 </TouchableOpacity>
-            </SafeAreaView>
-            <SafeAreaView
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                }}
-            >
                 <TouchableOpacity
-                    style={{
-                        margin: 18,
-                        padding: 14,
-                        width: 70,
-                        height: 70,
-                        backgroundColor: `${WHITE}33`,
-                        borderRadius: 35,
-                    }}
-                    onPress={() => {
-                        router.push('/collect');
-                    }}
+                    style={[headerButtonStyle, !hasFrames && { opacity: 0.35 }]}
+                    disabled={!hasFrames}
+                    onPress={() => router.push('/collect')}
                 >
-                    <SegmentIcon color1={WHITE} />
+                    <SegmentNextIcon color1={WHITE} />
                 </TouchableOpacity>
             </SafeAreaView>
         </View>
