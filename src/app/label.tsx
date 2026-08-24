@@ -187,6 +187,9 @@ function App(): React.ReactElement {
                             <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
                             <TextInput
                                 keyboardType="number-pad"
+                                maxLength={2}
+                                placeholder="Nr."
+                                placeholderTextColor={`${WHITE}66`}
                                 style={{
                                     flex: 1,
                                     height: '100%',

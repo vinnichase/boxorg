@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Platform, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
@@ -22,6 +22,13 @@ function App(): React.ReactElement {
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
 
     const { image, boxId, objects } = useAtom(CollectObjectsAtom);
+    const boxInputRef = useRef<TextInput>(null);
+
+    // the box number must be assigned consciously on every collect run, so the
+    // field starts empty instead of inheriting the previous run's number
+    useEffect(() => {
+        CollectObjectsAtom.set((a) => setPath(['boxId'], undefined, a));
+    }, []);
 
     return (
         <View
@@ -111,7 +118,9 @@ function App(): React.ReactElement {
                             </TouchableOpacity>
                             <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
                             <TextInput
+                                ref={boxInputRef}
                                 keyboardType="number-pad"
+                                maxLength={2}
                                 style={{
                                     flex: 1,
                                     height: '100%',
@@ -126,7 +135,8 @@ function App(): React.ReactElement {
                                 }}
                                 autoComplete="off"
                                 spellCheck={false}
-                                defaultValue={boxId?.toString() ?? ''}
+                                placeholder="Nr."
+                                placeholderTextColor={`${WHITE}66`}
                                 onChange={(e) => {
                                     const nextBoxId = parseInt(e.nativeEvent.text);
                                     CollectObjectsAtom.set((a) =>
@@ -137,10 +147,13 @@ function App(): React.ReactElement {
                         </View>
                         <TouchableOpacity
                             onPress={() => {
-                                if (!boxId) return;
+                                if (!boxId) {
+                                    boxInputRef.current?.focus();
+                                    return;
+                                }
 
                                 saveObjects(boxId, objects);
-                                CollectObjectsAtom.set({ index: 0, boxId, objects: [] });
+                                CollectObjectsAtom.set({ index: 0, objects: [] });
                                 router.dismissTo('/');
                             }}
                         >

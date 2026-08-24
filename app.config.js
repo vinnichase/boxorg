@@ -7,7 +7,13 @@ module.exports = () => {
         expo: {
             name: isDev ? 'boxorg-dev' : 'boxorg',
             slug: isDev ? 'boxorg-dev' : 'boxorg',
-            version: '1.0.0',
+            version: '1.0.1',
+            runtimeVersion: {
+                policy: 'fingerprint',
+            },
+            updates: {
+                url: 'https://u.expo.dev/4f72c64f-5295-4c9a-b616-8fb6127c2eb9',
+            },
             orientation: 'portrait',
             icon: './assets/images/icon.png',
             scheme: 'myapp',

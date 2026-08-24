@@ -5,7 +5,14 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BLACK, RED, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { useRouter } from 'expo-router';
-import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+    Easing,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withTiming,
+} from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { ArrowLeftIcon, CrossIcon, SegmentNextIcon } from '../components/Icons';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
@@ -27,6 +34,83 @@ const headerButtonStyle: ViewStyle = {
     borderRadius: HEADER_BUTTON_SIZE / 2,
 };
 
+const GHOST_IDLE_MS = 3000;
+const GHOST_GROW_MS = 1400;
+const GHOST_HOLD_MS = 400;
+const GHOST_FADE_MS = 500;
+
+type GhostFrameHintProps = {
+    imageWidth: number;
+    imageHeight: number;
+    onDone: () => void;
+};
+
+// a sample frame draws itself once: a fingertip dot drags upwards while the
+// frame grows around it, then everything fades — explains the draw gesture
+// without words
+const GhostFrameHint = ({ imageWidth, imageHeight, onDone }: GhostFrameHintProps) => {
+    const progress = useSharedValue(0);
+    const fade = useSharedValue(1);
+
+    const size = Math.min(imageWidth, imageHeight) * 0.45;
+    const centerX = imageWidth * 0.5;
+    const centerY = imageHeight * 0.45;
+
+    useEffect(() => {
+        progress.value = withTiming(1, { duration: GHOST_GROW_MS, easing: Easing.out(Easing.cubic) });
+        fade.value = withDelay(
+            GHOST_GROW_MS + GHOST_HOLD_MS,
+            withTiming(0, { duration: GHOST_FADE_MS }, () => {
+                scheduleOnRN(onDone);
+            }),
+        );
+    }, [progress, fade, onDone]);
+
+    const frameAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: fade.value * interpolate(progress.value, [0, 0.15], [0, 0.9]),
+        transform: [{ scale: interpolate(progress.value, [0, 1], [0.15, 1]) }],
+    }));
+
+    const dotAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: fade.value * interpolate(progress.value, [0, 0.1, 0.9, 1], [0, 0.9, 0.9, 0]),
+        transform: [{ translateY: interpolate(progress.value, [0, 1], [0, -size * 0.4]) }],
+    }));
+
+    return (
+        <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 }}>
+            <Animated.View
+                style={[
+                    frameStyle,
+                    {
+                        left: centerX - size / 2,
+                        top: centerY - size / 2,
+                        width: size,
+                        height: size,
+                    },
+                    frameAnimatedStyle,
+                ]}
+            />
+            <Animated.View
+                style={[
+                    {
+                        position: 'absolute',
+                        left: centerX - 14,
+                        top: centerY + size * 0.15,
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: `${WHITE}cc`,
+                        shadowColor: BLACK,
+                        shadowOpacity: 0.6,
+                        shadowRadius: 8,
+                    },
+                    dotAnimatedStyle,
+                ]}
+            />
+        </View>
+    );
+};
+
 function App(): React.ReactElement {
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -37,6 +121,37 @@ function App(): React.ReactElement {
     const { image, objects } = useAtom(CollectObjectsAtom);
     const hasFrames = objects.length > 0;
 
+    // the draw-gesture hint plays after 3s without any touch (and on tapping
+    // the dimmed continue button) for as long as no frame exists
+    const [ghostTick, setGhostTick] = useState(0);
+    const ghostPlayingRef = useRef(false);
+    const lastActivityRef = useRef(Date.now());
+
+    const playGhost = () => {
+        if (ghostPlayingRef.current || hasFrames) return;
+        ghostPlayingRef.current = true;
+        setGhostTick((t) => t + 1);
+    };
+
+    const stopGhost = () => {
+        ghostPlayingRef.current = false;
+        setGhostTick(0);
+        lastActivityRef.current = Date.now();
+    };
+
+    useEffect(() => {
+        if (hasFrames || !image) return;
+
+        const interval = setInterval(() => {
+            if (!ghostPlayingRef.current && Date.now() - lastActivityRef.current >= GHOST_IDLE_MS) {
+                playGhost();
+            }
+        }, 250);
+
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasFrames, image]);
+
     // fit the photo below the header row: full width, but never taller than
     // the remaining space (matters on iPad / letterboxed formats)
     const availableHeight = windowHeight - insets.top - insets.bottom - HEADER_HEIGHT;
@@ -44,6 +159,7 @@ function App(): React.ReactElement {
 
     return (
         <View
+            onTouchStart={stopGhost}
             style={{
                 flex: 1,
                 backgroundColor: '#000',
@@ -66,6 +182,14 @@ function App(): React.ReactElement {
                         }
                     />
                     <Segmentator width={imageSize.width} height={imageSize.height} image={image} />
+                    {ghostTick > 0 && !hasFrames && imageSize.width > 0 && (
+                        <GhostFrameHint
+                            key={ghostTick}
+                            imageWidth={imageSize.width}
+                            imageHeight={imageSize.height}
+                            onDone={stopGhost}
+                        />
+                    )}
                 </View>
             )}
             <SafeAreaView
@@ -85,8 +209,13 @@ function App(): React.ReactElement {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[headerButtonStyle, !hasFrames && { opacity: 0.35 }]}
-                    disabled={!hasFrames}
-                    onPress={() => router.push('/collect')}
+                    onPress={() => {
+                        if (!hasFrames) {
+                            playGhost();
+                            return;
+                        }
+                        router.push('/collect');
+                    }}
                 >
                     <SegmentNextIcon color1={WHITE} />
                 </TouchableOpacity>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
     Image,
     ScrollView,
@@ -33,6 +33,7 @@ function App(): React.ReactElement {
 
     const { width, height: windowHeight } = useWindowDimensions();
     const object = useAtom(EditObjectAtom);
+    const boxInputRef = useRef<TextInput>(null);
     const headerOffset = HEADER_HEIGHT + insets.top;
     const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
     const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
@@ -192,7 +193,11 @@ function App(): React.ReactElement {
                             </TouchableOpacity>
                             <Text style={{ color: WHITE, fontSize: 35, fontWeight: 300, opacity: 0.9 }}>box</Text>
                             <TextInput
+                                ref={boxInputRef}
                                 keyboardType="number-pad"
+                                maxLength={2}
+                                placeholder="Nr."
+                                placeholderTextColor={`${WHITE}66`}
                                 style={{
                                     flex: 1,
                                     height: '100%',
@@ -207,15 +212,24 @@ function App(): React.ReactElement {
                                 }}
                                 autoComplete="off"
                                 spellCheck={false}
-                                defaultValue={object.box_id.toString() ?? ''}
+                                defaultValue={object.box_id?.toString() ?? ''}
                                 onChange={(e) => {
-                                    EditObjectAtom.set((a) => setPath(['box_id'], Number(e.nativeEvent.text), a));
+                                    const nextBoxId = parseInt(e.nativeEvent.text);
+                                    EditObjectAtom.set((a) =>
+                                        setPath(['box_id'], Number.isNaN(nextBoxId) ? undefined : nextBoxId, a),
+                                    );
                                 }}
                             />
                         </View>
                         <TouchableOpacity
                             onPress={() => {
-                                object.box_id && saveObject(object);
+                                const boxId = object.box_id;
+                                if (!boxId) {
+                                    boxInputRef.current?.focus();
+                                    return;
+                                }
+
+                                saveObject({ ...object, box_id: boxId });
                                 executeSearch();
                                 router.dismissTo('/');
                             }}
