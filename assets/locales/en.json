@@ -1,4 +1,6 @@
 {
-    "NSCameraUsageDescription": "boxorg uses the camera to take a photo of the items in a box. You then mark each item on the photo so it can be found later by searching for its tag or box number. Photos stay on your device only.",
-    "CFBundleDisplayName": "boxorg"
+    "ios": {
+        "NSCameraUsageDescription": "boxorg uses the camera to take a photo of the items in a box. You then mark each item on the photo so it can be found later by searching for its tag or box number. Photos stay on your device only.",
+        "CFBundleDisplayName": "boxorg"
+    }
 }
