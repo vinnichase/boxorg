@@ -1,5 +1,8 @@
 module.exports = () => {
     const isDev = process.env.BUILD_PROFILE === 'dev';
+    // IzzyOnDroid forbids apps that fetch executable code on their own, so
+    // the izzy build profile ships without OTA updates (repo updates instead)
+    const isIzzy = process.env.IZZY_BUILD === '1';
 
     console.log('Building for profile:', isDev ? 'dev' : 'prod');
 
@@ -11,9 +14,9 @@ module.exports = () => {
             runtimeVersion: {
                 policy: 'fingerprint',
             },
-            updates: {
-                url: 'https://u.expo.dev/4f72c64f-5295-4c9a-b616-8fb6127c2eb9',
-            },
+            updates: isIzzy
+                ? { enabled: false }
+                : { url: 'https://u.expo.dev/4f72c64f-5295-4c9a-b616-8fb6127c2eb9' },
             orientation: 'portrait',
             icon: './assets/images/icon.png',
             scheme: 'myapp',
@@ -79,6 +82,11 @@ module.exports = () => {
                         microphonePermission: false,
                     },
                 ],
+                // IzzyOnDroid caps APKs at ~30 MB; compressing the native libs
+                // (legacy packaging) keeps the izzy build under that limit
+                ...(isIzzy
+                    ? [['expo-build-properties', { android: { useLegacyPackaging: true } }]]
+                    : []),
             ],
             experiments: {
                 typedRoutes: true,

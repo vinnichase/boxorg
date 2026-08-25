@@ -14,7 +14,17 @@
         },
         "production": {
             "autoIncrement": true,
-            "channel": "production"
+            "channel": "production",
+            "android": {
+                "buildType": "apk"
+            }
+        },
+        "izzy": {
+            "extends": "production",
+            "env": {
+                "IZZY_BUILD": "1",
+                "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a"
+            }
         }
     },
     "submit": {
