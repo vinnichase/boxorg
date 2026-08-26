@@ -85,7 +85,10 @@ module.exports = () => {
                 // IzzyOnDroid caps APKs at ~30 MB; compressing the native libs
                 // (legacy packaging) keeps the izzy build under that limit
                 ...(isIzzy
-                    ? [['expo-build-properties', { android: { useLegacyPackaging: true } }]]
+                    ? [
+                          ['expo-build-properties', { android: { useLegacyPackaging: true } }],
+                          './plugins/withNoDependencyInfo',
+                      ]
                     : []),
             ],
             experiments: {
