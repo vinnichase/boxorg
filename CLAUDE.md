@@ -393,7 +393,3 @@ unshift(); // Animates back from 1 to 0
 - **Services**: `camelCase.ts` (e.g., `saveObjects.ts`)
 - **Database**: `camelCase.ts` (e.g., `accessLayer.ts`)
 - **Tests**: `*.test.ts` pattern
-
----
-
-
