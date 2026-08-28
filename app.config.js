@@ -4,6 +4,12 @@ module.exports = () => {
     // the izzy build profile ships without OTA updates (repo updates instead)
     const isIzzy = process.env.IZZY_BUILD === '1';
 
+    // Forks can build under their own identity without touching tracked files:
+    // set these in a local .env (see README) or the build environment.
+    const bundleId = process.env.BOXORG_BUNDLE_ID ?? 'io.gothub.boxorg';
+    const devBundleId = process.env.BOXORG_DEV_BUNDLE_ID ?? 'io.gothub.dev.boxorg';
+    const appBundleId = isDev ? devBundleId : bundleId;
+
     console.log('Building for profile:', isDev ? 'dev' : 'prod');
 
     return {
@@ -29,8 +35,8 @@ module.exports = () => {
                 en: './assets/locales/en.json',
             },
             ios: {
-                supportsTablet: true,
-                bundleIdentifier: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
+                supportsTablet: false,
+                bundleIdentifier: appBundleId,
                 infoPlist: {
                     CFBundleDevelopmentRegion: 'de',
                     CFBundleLocalizations: ['de', 'en'],
@@ -48,7 +54,7 @@ module.exports = () => {
                     backgroundColor: '#442871',
                     borderColor: '#442871',
                 },
-                package: isDev ? 'io.gothub.dev.boxorg' : 'io.gothub.boxorg',
+                package: appBundleId,
                 statusBar: {
                     barStyle: 'light-content',
                     backgroundColor: '#442871',
