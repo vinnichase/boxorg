@@ -37,6 +37,7 @@ module.exports = () => {
             ios: {
                 supportsTablet: false,
                 bundleIdentifier: appBundleId,
+                buildNumber: '10',
                 infoPlist: {
                     CFBundleDevelopmentRegion: 'de',
                     CFBundleLocalizations: ['de', 'en'],
@@ -55,6 +56,9 @@ module.exports = () => {
                     borderColor: '#442871',
                 },
                 package: appBundleId,
+                // versionCode lives in git so source builds (F-Droid) get the
+                // real value; bump together with version on every release
+                versionCode: 5,
                 statusBar: {
                     barStyle: 'light-content',
                     backgroundColor: '#442871',
