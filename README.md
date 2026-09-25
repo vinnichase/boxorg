@@ -8,6 +8,8 @@
 
 <p align="center"><a href="https://boxorg.app">boxorg.app</a></p>
 
+<p align="center"><a href="https://www.youtube.com/watch?v=CQMRFCfodpo">▶ Watch the release video on YouTube (German)</a></p>
+
 Take a photo of your things, frame each item with your finger, into the box,
 type in the number — with every frame your head gets a little clearer.
 
