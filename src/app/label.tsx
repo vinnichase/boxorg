@@ -14,7 +14,7 @@ import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
-import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
+import { CollectObjectsAtom, loadCollectBoxTags } from '../atoms/CollectObjectsAtom';
 import { useRouter } from 'expo-router';
 import { ArrowLeftIcon, CrossIcon } from '../components/Icons';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
@@ -28,8 +28,9 @@ function App(): React.ReactElement {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { width, height: windowHeight } = useWindowDimensions();
-    const { index, objects, boxId } = useAtom(CollectObjectsAtom);
+    const { index, objects, boxId, boxTags } = useAtom(CollectObjectsAtom);
     const object = objects[index];
+    const objectBoxId = object?.boxId ?? boxId;
     const headerOffset = HEADER_HEIGHT + insets.top;
     const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
     const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
@@ -82,7 +83,15 @@ function App(): React.ReactElement {
                             onTouchEnd={(e) => e.stopPropagation()}
                         >
                             <View style={{ marginHorizontal: 18 }}>
-                                <BoxTagsEditor boxId={object?.boxId ?? boxId} />
+                                <BoxTagsEditor
+                                    key={objectBoxId}
+                                    tags={objectBoxId === undefined ? [] : (boxTags[objectBoxId] ?? [])}
+                                    disabled={objectBoxId === undefined}
+                                    onChange={(tags) => {
+                                        if (objectBoxId === undefined) return;
+                                        CollectObjectsAtom.set((a) => setPath(['boxTags', objectBoxId], tags, a));
+                                    }}
+                                />
                             </View>
                             {object?.tags?.map((tag, i) => (
                                 <View
@@ -208,7 +217,7 @@ function App(): React.ReactElement {
                                 }}
                                 autoComplete="off"
                                 spellCheck={false}
-                                defaultValue={(object?.boxId ?? boxId)?.toString() ?? ''}
+                                defaultValue={objectBoxId?.toString() ?? ''}
                                 onChange={(e) => {
                                     const nextBoxId = parseInt(e.nativeEvent.text);
                                     CollectObjectsAtom.set((a) =>
@@ -218,6 +227,7 @@ function App(): React.ReactElement {
                                             a,
                                         ),
                                     );
+                                    if (!Number.isNaN(nextBoxId)) loadCollectBoxTags(nextBoxId);
                                 }}
                             />
                         </View>

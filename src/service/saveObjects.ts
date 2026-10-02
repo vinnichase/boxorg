@@ -1,10 +1,22 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { EditObject } from '../atoms/CollectObjectsAtom';
 import { assignTagToObject, createObject, openDb, updateObject } from '../db/accessLayer';
+import { saveBoxTags } from './boxTags';
 
-export const saveObjects = async (boxId: number, objects: EditObject[]): Promise<void> => {
+export const saveObjects = async (
+    boxId: number,
+    objects: EditObject[],
+    boxTags: Record<number, string[]>,
+): Promise<void> => {
     const docDir = FileSystem.documentDirectory;
     if (objects.length === 0 || !docDir) return;
+
+    // only boxes that actually receive an object get their tag draft saved
+    const savedBoxIds = new Set(objects.filter((o) => !o.deleted).map((o) => o.boxId ?? boxId));
+    for (const savedBoxId of savedBoxIds) {
+        const tags = boxTags[savedBoxId];
+        tags && saveBoxTags(savedBoxId, tags);
+    }
 
     const db = openDb();
 

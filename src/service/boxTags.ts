@@ -9,8 +9,8 @@ export const loadBoxTags = (boxId: number): string[] => {
     }
 };
 
-// box tags are independent of any object save: assignments are diffed
-// against the database and written right away
+// assignments are diffed against the database; the screens decide when to
+// call this (with their save button, or right away in the search overlay)
 export const saveBoxTags = (boxId: number, tags: string[]): void => {
     const db = openDb();
     try {

@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { loadBoxTags, saveBoxTags } from '../service/boxTags';
 import { WHITE } from '../util/constants';
 import { CrossIcon } from './Icons';
 
@@ -9,26 +8,32 @@ const CHIP_FONT = { fontSize: 16, fontWeight: 500 as const };
 
 const normalizeTag = (text: string) => text.toUpperCase().trim();
 
-type BoxTagsEditorProps = { boxId?: number };
+type BoxTagsEditorProps = {
+    tags: string[];
+    onChange: (tags: string[]) => void;
+    // no box number yet: chips are shown dimmed and nothing can be added
+    disabled?: boolean;
+    // rendered at the start of the chip flow, so a heading can share the
+    // first line with the chips and the chips wrap after it
+    children?: ReactNode;
+};
 
-// descriptive tags for the box number currently entered on the screen; they
-// are written to the database right away, independent of any object save
-export const BoxTagsEditor = (props: BoxTagsEditorProps) => (
-    // keying by box id remounts the chips, so each box loads its tags fresh
-    <BoxTagChips key={props.boxId ?? 'none'} {...props} />
-);
-
-const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
-    // chip texts as currently typed; renames are persisted when a chip loses focus
-    const [tags, setTags] = useState<string[]>(() => (boxId === undefined ? [] : loadBoxTags(boxId)));
+// chip editor for the descriptive tags of one box; the caller owns the tags
+// (a screen draft or the search result group) and decides when they are saved
+export const BoxTagsEditor = ({ tags, onChange, disabled, children }: BoxTagsEditorProps) => {
+    // text of the chip being renamed right now; handed over on blur
+    const [renaming, setRenaming] = useState<{ index: number; text: string }>();
     const [draft, setDraft] = useState('');
 
     const commitTags = (nextTags: string[]) => {
-        if (boxId === undefined) return;
         // normalize, drop emptied chips and keep the first of any duplicates
-        const cleanTags = nextTags.map(normalizeTag).filter((tag, i, all) => tag && all.indexOf(tag) === i);
-        setTags(cleanTags);
-        saveBoxTags(boxId, cleanTags);
+        onChange(nextTags.map(normalizeTag).filter((tag, i, all) => tag && all.indexOf(tag) === i));
+    };
+
+    const commitRename = () => {
+        if (!renaming) return;
+        setRenaming(undefined);
+        commitTags(tags.map((t, j) => (j === renaming.index ? renaming.text : t)));
     };
 
     const addDraft = () => {
@@ -44,9 +49,10 @@ const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 gap: 8,
-                opacity: boxId === undefined ? 0.5 : 1,
+                opacity: disabled ? 0.5 : 1,
             }}
         >
+            {children}
             {tags.map((tag, i) => (
                 <View
                     key={i}
@@ -69,7 +75,7 @@ const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
                             autoComplete="off"
                             spellCheck={false}
                             returnKeyType="done"
-                            value={tag}
+                            value={renaming?.index === i ? renaming.text : tag}
                             style={{
                                 ...CHIP_FONT,
                                 position: 'absolute',
@@ -81,8 +87,8 @@ const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
                                 color: WHITE,
                                 textAlignVertical: 'center',
                             }}
-                            onChangeText={(text) => setTags(tags.map((t, j) => (j === i ? text : t)))}
-                            onBlur={() => commitTags(tags)}
+                            onChangeText={(text) => setRenaming({ index: i, text })}
+                            onBlur={commitRename}
                         />
                     </View>
                     <TouchableOpacity
@@ -97,8 +103,8 @@ const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
                 autoCapitalize="characters"
                 autoComplete="off"
                 spellCheck={false}
-                editable={boxId !== undefined}
-                placeholder={boxId === undefined ? 'box tag (Nr. fehlt)' : '+ box tag'}
+                editable={!disabled}
+                placeholder={disabled ? 'box tag (Nr. fehlt)' : '+ box tag'}
                 placeholderTextColor={`${WHITE}66`}
                 returnKeyType="done"
                 submitBehavior="submit"

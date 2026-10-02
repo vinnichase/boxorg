@@ -518,6 +518,22 @@ export function deleteUnassignedBoxTags(db: SqLite.SQLiteDatabase): void {
  * Retrieves all box tags assigned to a box.
  * @param boxId The box number.
  */
+export function getBoxTagsForBoxes(db: SqLite.SQLiteDatabase, boxIds: number[]) {
+    if (boxIds.length === 0) return [];
+    try {
+        const stmt = db.prepareSync(sql`
+        SELECT bbt.box_id, bt.tag
+        FROM box_tags bt
+        INNER JOIN box_box_tags bbt ON bt.id = bbt.box_tag_id
+        WHERE bbt.box_id IN (${boxIds.map(() => '?').join(', ')})
+        ORDER BY bt.tag
+    `);
+        return stmt.executeSync<{ box_id: number; tag: string }>(...boxIds).getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 export function getBoxTags(db: SqLite.SQLiteDatabase, boxId: number) {
     try {
         const stmt = db.prepareSync(sql`

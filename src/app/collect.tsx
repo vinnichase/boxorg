@@ -3,7 +3,7 @@ import { Platform, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimen
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
-import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
+import { CollectObjectsAtom, loadCollectBoxTags } from '../atoms/CollectObjectsAtom';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
@@ -22,13 +22,14 @@ function App(): React.ReactElement {
     const { width } = useWindowDimensions();
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
 
-    const { image, boxId, objects } = useAtom(CollectObjectsAtom);
+    const { image, boxId, objects, boxTags } = useAtom(CollectObjectsAtom);
     const boxInputRef = useRef<TextInput>(null);
 
     // the box number must be assigned consciously on every collect run, so the
-    // field starts empty instead of inheriting the previous run's number
+    // field starts empty instead of inheriting the previous run's number; the
+    // box tag drafts go with it
     useEffect(() => {
-        CollectObjectsAtom.set((a) => setPath(['boxId'], undefined, a));
+        CollectObjectsAtom.set((a) => ({ ...a, boxId: undefined, boxTags: {} }));
     }, []);
 
     return (
@@ -49,7 +50,15 @@ function App(): React.ReactElement {
                     }}
                 >
                     <View style={{ marginTop: TILE_GAP, marginHorizontal: TILE_GAP }}>
-                        <BoxTagsEditor boxId={boxId} />
+                        <BoxTagsEditor
+                            key={boxId}
+                            tags={boxId === undefined ? [] : (boxTags[boxId] ?? [])}
+                            disabled={boxId === undefined}
+                            onChange={(tags) => {
+                                if (boxId === undefined) return;
+                                CollectObjectsAtom.set((a) => setPath(['boxTags', boxId], tags, a));
+                            }}
+                        />
                     </View>
                     <View
                         style={{
@@ -146,6 +155,7 @@ function App(): React.ReactElement {
                                     CollectObjectsAtom.set((a) =>
                                         setPath(['boxId'], Number.isNaN(nextBoxId) ? undefined : nextBoxId, a),
                                     );
+                                    if (!Number.isNaN(nextBoxId)) loadCollectBoxTags(nextBoxId);
                                 }}
                             />
                         </View>
@@ -156,8 +166,8 @@ function App(): React.ReactElement {
                                     return;
                                 }
 
-                                saveObjects(boxId, objects);
-                                CollectObjectsAtom.set({ index: 0, objects: [] });
+                                saveObjects(boxId, objects, boxTags);
+                                CollectObjectsAtom.set({ index: 0, objects: [], boxTags: {} });
                                 router.dismissTo('/');
                             }}
                         >

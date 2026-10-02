@@ -67,6 +67,7 @@ Home (/)
 ```typescript
 {
   boxId?: number;           // Current box being organized
+  boxTags: Record<number, string[]>; // Box tag drafts per entered box number
   image?: {
     uri: string;            // Full image URI from camera
     width: number;
@@ -86,8 +87,8 @@ Home (/)
 ```
 - Auto-executes search when atom changes
 - Populates `SearchResultsAtom` with database results, grouped by box:
-  `{ boxId: number; objects: ObjectWithTags[] }[]` in order of first appearance,
-  object order inside a group = query order
+  `{ boxId: number; boxTags: string[]; objects: ObjectWithTags[] }[]` in order of first appearance,
+  object order inside a group = query order; box tags come from one `getBoxTagsForBoxes` query
 
 **`EditObjectAtom.ts`** - Current object being edited from database
 ```typescript
@@ -96,8 +97,11 @@ Home (/)
   box_id: number;           // Box assignment
   thumb_path: string;       // Thumbnail path in documents
   tags: string[];           // Current tags
+  boxTags: Record<number, string[]>; // Box tag drafts per entered box number
 }
 ```
+
+Box tag drafts: each screen atom holds the box tags of every box number entered on that screen (loaded once via `loadCollectBoxTags` / `loadEditBoxTags`). The screen's save writes only the drafts of boxes that actually receive an object; drafts of boxes the user merely passed through are dropped. The search overlay has no save button and writes box tag edits immediately.
 
 ---
 
@@ -107,7 +111,7 @@ Home (/)
 
 - **`MainInputBox.tsx`** - Styled animated container for input fields (white rounded box with purple border)
 - **`ObjectTile.tsx`** - Grid item displaying segmented/saved objects with image, tags, and delete button
-- **`BoxTagsEditor.tsx`** - Chip editor for the descriptive tags of the box number entered on a screen (collect, label, edit); loads and persists via `service/boxTags.ts`
+- **`BoxTagsEditor.tsx`** - Controlled chip editor (`tags`, `onChange`, `disabled`) for the descriptive tags of one box; the caller owns the tags and decides when they are saved. Optional `children` lead the chip flow (the search overlay puts the box heading there so chips float after it)
 - **`AnimatedBlurView.tsx`** - Reanimated wrapper for expo-blur with smooth intensity transitions
 - **`SearchResults.tsx`** - Full-screen overlay showing search results grouped by box; each group has a "box NN" header with an editable `BoxTagsEditor`, followed by the object rows (tap-to-edit)
 - **`Icons.tsx`** - SVG icon library (SearchIcon, BoxIcon, ApertureIcon, CrossIcon, SaveIcon, etc.)
@@ -153,7 +157,7 @@ Home (/)
 - Tags CRUD: `createTag`, `getTagByName`, `updateTag`, `deleteTag`
 - Tag Assignments: `assignTagToObject`, `removeTagFromObject`, `getObjectTags`
 - Queries: `getObjects`, `searchObjects`, `getTags`
-- Box Tags: `createBoxTag`, `getBoxTagByName`, `assignTagToBox`, `removeTagFromBox`, `deleteUnassignedBoxTags`, `getBoxTags`
+- Box Tags: `createBoxTag`, `getBoxTagByName`, `assignTagToBox`, `removeTagFromBox`, `deleteUnassignedBoxTags`, `getBoxTags`, `getBoxTagsForBoxes`
 
 **Type Exports:**
 - `ObjectRecord`, `TagRecord`, `ObjectTagRecord`, `ObjectWithTags`, `BoxTagRecord`
@@ -166,6 +170,7 @@ Home (/)
 
 **`saveObjects.ts`** - Batch save for newly segmented objects
 ```
+Save the box tag drafts of every box that receives an object
 For each non-deleted object:
   1. Create object record in DB
   2. Assign box ID
@@ -179,6 +184,7 @@ For each non-deleted object:
 2. Calculate tag differences (new vs removed)
 3. Assign new tags
 4. Remove deleted tags
+5. Save the box tag draft of the object's final box
 ```
 
 **`boxTags.ts`** - Load and save the descriptive tags of a box number
@@ -186,7 +192,7 @@ For each non-deleted object:
 loadBoxTags(boxId): tags currently assigned to the box
 saveBoxTags(boxId, tags): diff against DB, assign/remove, drop unassigned box tags
 ```
-Box tags are written immediately by `BoxTagsEditor`, independent of any object save.
+Called by the screen saves (collect, edit) and directly by the search overlay.
 
 **Integration:** All services use `accessLayer.ts` functions and manage database connections (`openDb()` → operations → `closeSync()`).
 

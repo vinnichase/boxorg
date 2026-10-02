@@ -19,7 +19,7 @@ import { ArrowLeftIcon, CrossIcon, SaveIcon } from '../components/Icons';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
-import { EditObjectAtom } from '../atoms/EditObjectAtom';
+import { EditObjectAtom, loadEditBoxTags } from '../atoms/EditObjectAtom';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { saveObject } from '../service/saveObject';
@@ -94,7 +94,16 @@ function App(): React.ReactElement {
                             onTouchEnd={(e) => e.stopPropagation()}
                         >
                             <View style={{ marginHorizontal: 18 }}>
-                                <BoxTagsEditor boxId={object.box_id} />
+                                <BoxTagsEditor
+                                    key={object.box_id}
+                                    tags={object.box_id === undefined ? [] : (object.boxTags[object.box_id] ?? [])}
+                                    disabled={object.box_id === undefined}
+                                    onChange={(tags) => {
+                                        const boxId = object.box_id;
+                                        if (boxId === undefined) return;
+                                        EditObjectAtom.set((a) => setPath(['boxTags', boxId], tags, a));
+                                    }}
+                                />
                             </View>
                             {object.tags.map((tag, i) => (
                                 <View
@@ -222,6 +231,7 @@ function App(): React.ReactElement {
                                     EditObjectAtom.set((a) =>
                                         setPath(['box_id'], Number.isNaN(nextBoxId) ? undefined : nextBoxId, a),
                                     );
+                                    if (!Number.isNaN(nextBoxId)) loadEditBoxTags(nextBoxId);
                                 }}
                             />
                         </View>
@@ -233,7 +243,8 @@ function App(): React.ReactElement {
                                     return;
                                 }
 
-                                saveObject({ ...object, box_id: boxId });
+                                const { boxTags, ...record } = object;
+                                saveObject({ ...record, box_id: boxId }, boxTags[boxId]);
                                 executeSearch();
                                 router.dismissTo('/');
                             }}

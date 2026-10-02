@@ -1,5 +1,6 @@
 import { atom } from '@gothub-team/got-atom';
 import {
+    getBoxTagsForBoxes,
     getObjectsWithTags,
     getObjectsWithTagsByBoxId,
     ObjectWithTags,
@@ -18,6 +19,7 @@ export const SearchAtom = atom<Search>({ show: false, query: '' });
 // box that shows up again later is merged into its first group
 export type SearchResultGroup = {
     boxId: number;
+    boxTags: string[];
     objects: ObjectWithTags[];
 };
 
@@ -50,7 +52,6 @@ export function executeSearch() {
                 [o.id]: accO,
             };
         }, {} as Record<number, ObjectWithTags>) ?? {};
-    db.closeSync();
 
     const groups = Object.values(records).reduce((acc, object) => {
         const group = acc.find((g) => g.boxId === object.box_id);
@@ -58,7 +59,12 @@ export function executeSearch() {
             group.objects.push(object);
             return acc;
         }
-        return [...acc, { boxId: object.box_id, objects: [object] }];
+        return [...acc, { boxId: object.box_id, boxTags: [], objects: [object] }];
     }, [] as SearchResultGroup[]);
+    const boxTagRows = getBoxTagsForBoxes(db, groups.map((g) => g.boxId)) ?? [];
+    for (const row of boxTagRows) {
+        groups.find((g) => g.boxId === row.box_id)?.boxTags.push(row.tag);
+    }
+    db.closeSync();
     SearchResultsAtom.set(groups);
 }

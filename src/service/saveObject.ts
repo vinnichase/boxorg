@@ -6,8 +6,11 @@ import {
     removeTagFromObject,
     updateObjectBoxId,
 } from '../db/accessLayer';
+import { saveBoxTags } from './boxTags';
 
-export const saveObject = async (object: ObjectWithTags): Promise<void> => {
+// boxTags is the draft for the object's final box; a box the user only passed
+// through while editing is not touched
+export const saveObject = async (object: ObjectWithTags, boxTags: string[] | undefined): Promise<void> => {
     const db = openDb();
 
     updateObjectBoxId(db, object.id, object.box_id);
@@ -25,4 +28,6 @@ export const saveObject = async (object: ObjectWithTags): Promise<void> => {
     }
 
     db.closeSync();
+
+    boxTags && saveBoxTags(object.box_id, boxTags);
 };

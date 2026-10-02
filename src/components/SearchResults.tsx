@@ -14,6 +14,7 @@ import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
 import { setPath } from '../util/setPath';
 import { BoxTagsEditor } from './BoxTagsEditor';
+import { saveBoxTags } from '../service/boxTags';
 
 const MARGIN_TOP = 160;
 const BOTTOM_SPACER_HEIGHT = KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
@@ -128,15 +129,23 @@ export const SearchResults = () => {
                     >
                         {groups.map((group) => (
                             <View key={group.boxId} style={{ gap: ROW_GAP }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
-                                    <Text style={{ color: WHITE, fontSize: 22, fontWeight: 300, opacity: 0.9 }}>
+                                {/* no save button here, so box tag edits are written right away */}
+                                <BoxTagsEditor
+                                    tags={group.boxTags}
+                                    onChange={(tags) => {
+                                        SearchResultsAtom.set((gs) =>
+                                            gs.map((g) => (g.boxId === group.boxId ? { ...g, boxTags: tags } : g)),
+                                        );
+                                        saveBoxTags(group.boxId, tags);
+                                    }}
+                                >
+                                    <Text style={{ color: WHITE, fontSize: 26, fontWeight: 300, opacity: 0.9 }}>
                                         box
                                     </Text>
-                                    <Text style={{ color: WHITE, fontSize: 22, fontWeight: 'bold' }}>
+                                    <Text style={{ color: WHITE, fontSize: 26, fontWeight: 'bold', marginRight: 4 }}>
                                         {group.boxId}
                                     </Text>
-                                </View>
-                                <BoxTagsEditor boxId={group.boxId} />
+                                </BoxTagsEditor>
                                 {group.objects.map((record) => (
                                     <TouchableOpacity
                                         key={record.id}
@@ -145,7 +154,10 @@ export const SearchResults = () => {
                                         onPress={() => {
                                             void KeyboardController.dismiss({ keepFocus: false });
                                             Keyboard.dismiss();
-                                            EditObjectAtom.set(record);
+                                            EditObjectAtom.set({
+                                                ...record,
+                                                boxTags: { [group.boxId]: group.boxTags },
+                                            });
                                             router.push('/edit');
                                         }}
                                     >
