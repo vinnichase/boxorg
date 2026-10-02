@@ -14,7 +14,14 @@ type Search = {
 
 export const SearchAtom = atom<Search>({ show: false, query: '' });
 
-export const SearchResultsAtom = atom<ObjectWithTags[]>([]);
+// results stay in query order; consecutive hits of one box form a group, and a
+// box that shows up again later is merged into its first group
+export type SearchResultGroup = {
+    boxId: number;
+    objects: ObjectWithTags[];
+};
+
+export const SearchResultsAtom = atom<SearchResultGroup[]>([]);
 
 SearchAtom.subscribe({
     next: (a) => {
@@ -44,5 +51,14 @@ export function executeSearch() {
             };
         }, {} as Record<number, ObjectWithTags>) ?? {};
     db.closeSync();
-    SearchResultsAtom.set(Object.values(records));
+
+    const groups = Object.values(records).reduce((acc, object) => {
+        const group = acc.find((g) => g.boxId === object.box_id);
+        if (group) {
+            group.objects.push(object);
+            return acc;
+        }
+        return [...acc, { boxId: object.box_id, objects: [object] }];
+    }, [] as SearchResultGroup[]);
+    SearchResultsAtom.set(groups);
 }

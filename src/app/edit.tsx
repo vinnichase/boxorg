@@ -93,7 +93,9 @@ function App(): React.ReactElement {
                             }}
                             onTouchEnd={(e) => e.stopPropagation()}
                         >
-                            <BoxTagsEditor boxId={object.box_id} />
+                            <View style={{ marginHorizontal: 18 }}>
+                                <BoxTagsEditor boxId={object.box_id} />
+                            </View>
                             {object.tags.map((tag, i) => (
                                 <View
                                     key={i}

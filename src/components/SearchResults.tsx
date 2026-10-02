@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Image, Keyboard, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardController } from 'react-native-keyboard-controller';
-import { BLACK, PURPLE_DARK, PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
+import { PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useAtom } from '@gothub-team/got-atom';
@@ -13,14 +13,17 @@ import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
 import { setPath } from '../util/setPath';
+import { BoxTagsEditor } from './BoxTagsEditor';
 
 const MARGIN_TOP = 160;
 const BOTTOM_SPACER_HEIGHT = KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
 const SEARCH_RESULTS_LOAD_DELAY = 300;
+const GROUP_GAP = 30;
+const ROW_GAP = 10;
 
 export const SearchResults = () => {
     const { show } = useAtom(SearchAtom);
-    const results = useAtom(SearchResultsAtom);
+    const groups = useAtom(SearchResultsAtom);
     const focus = useAtom(HomeFocusAtom);
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
     // worklets copy whole captured objects, so only the shared value may be closed over
@@ -58,7 +61,7 @@ export const SearchResults = () => {
     );
 
     useEffect(() => {
-        const currentResultCount = results.length;
+        const currentResultCount = groups.length;
 
         if (!show) {
             previousResultCount.current = 0;
@@ -82,7 +85,7 @@ export const SearchResults = () => {
         }
 
         sharedOpacity.value = 1;
-    }, [results.length, show]);
+    }, [groups.length, show]);
 
     return (
         <KeyboardAvoidingView
@@ -115,7 +118,7 @@ export const SearchResults = () => {
                 >
                     <View
                         style={{
-                            gap: 10,
+                            gap: GROUP_GAP,
                             paddingHorizontal: 30,
                             paddingBottom: 30,
                             shadowColor: `${PURPLE_LIGHT}`,
@@ -123,79 +126,72 @@ export const SearchResults = () => {
                             shadowRadius: 20,
                         }}
                     >
-                        {results.map((record) => (
-                            <TouchableOpacity
-                                key={record.id}
-                                delayPressIn={16}
-                                style={{ height: 100, flexDirection: 'row', gap: 20 }}
-                                onPress={() => {
-                                    void KeyboardController.dismiss({ keepFocus: false });
-                                    Keyboard.dismiss();
-                                    EditObjectAtom.set(record);
-                                    router.push('/edit');
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        overflow: 'hidden',
-                                        borderRadius: 10,
-                                        width: 100,
-                                        height: 100,
-                                        borderWidth: 2,
-                                        borderColor: WHITE,
-                                    }}
-                                >
-                                    <Image
-                                        source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
-                                        style={{ width: '100%', height: '100%' }}
-                                    />
-                                </View>
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        maxWidth: '100%',
-                                        flexWrap: 'wrap',
-                                        gap: 5,
-                                        paddingVertical: 5,
-                                        // backgroundColor: `#ff000033`,
-                                        overflow: 'hidden',
-                                        alignItems: 'baseline',
-                                        flexDirection: 'row',
-                                    }}
-                                >
-                                    {record.tags.map((tag) => (
-                                        <View
-                                            key={tag}
-                                            style={{ padding: 5, backgroundColor: `${WHITE}22`, borderRadius: 5 }}
-                                        >
-                                            <Text style={{ color: WHITE }}>{tag}</Text>
-                                        </View>
-                                    ))}
-                                </View>
-                                <View
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: 0,
-                                        right: 0,
-                                        backgroundColor: `${WHITE}66`,
-                                        padding: 5,
-                                        aspectRatio: 1,
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 20,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        flexDirection: 'column',
-                                        shadowColor: `${BLACK}`,
-                                        shadowOpacity: 1,
-                                        shadowRadius: 10,
-                                    }}
-                                >
-                                    <Text style={{ fontSize: 25, color: PURPLE_DARK, fontWeight: 600, opacity: 0.9 }}>
-                                        {record.box_id}
+                        {groups.map((group) => (
+                            <View key={group.boxId} style={{ gap: ROW_GAP }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
+                                    <Text style={{ color: WHITE, fontSize: 22, fontWeight: 300, opacity: 0.9 }}>
+                                        box
+                                    </Text>
+                                    <Text style={{ color: WHITE, fontSize: 22, fontWeight: 'bold' }}>
+                                        {group.boxId}
                                     </Text>
                                 </View>
-                            </TouchableOpacity>
+                                <BoxTagsEditor boxId={group.boxId} />
+                                {group.objects.map((record) => (
+                                    <TouchableOpacity
+                                        key={record.id}
+                                        delayPressIn={16}
+                                        style={{ height: 100, flexDirection: 'row', gap: 20 }}
+                                        onPress={() => {
+                                            void KeyboardController.dismiss({ keepFocus: false });
+                                            Keyboard.dismiss();
+                                            EditObjectAtom.set(record);
+                                            router.push('/edit');
+                                        }}
+                                    >
+                                        <View
+                                            style={{
+                                                overflow: 'hidden',
+                                                borderRadius: 10,
+                                                width: 100,
+                                                height: 100,
+                                                borderWidth: 2,
+                                                borderColor: WHITE,
+                                            }}
+                                        >
+                                            <Image
+                                                source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
+                                                style={{ width: '100%', height: '100%' }}
+                                            />
+                                        </View>
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                maxWidth: '100%',
+                                                flexWrap: 'wrap',
+                                                gap: 5,
+                                                paddingVertical: 5,
+                                                overflow: 'hidden',
+                                                alignItems: 'baseline',
+                                                flexDirection: 'row',
+                                            }}
+                                        >
+                                            {record.tags.map((tag) => (
+                                                <View
+                                                    key={tag}
+                                                    style={{
+                                                        padding: 5,
+                                                        backgroundColor: `${WHITE}22`,
+                                                        borderRadius: 5,
+                                                    }}
+                                                >
+                                                    <Text style={{ color: WHITE }}>{tag}</Text>
+                                                </View>
+                                            ))}
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         ))}
                     </View>
                     <View style={{ height: BOTTOM_SPACER_HEIGHT }} />

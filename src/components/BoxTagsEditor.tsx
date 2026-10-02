@@ -44,7 +44,6 @@ const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 gap: 8,
-                marginHorizontal: 18,
                 opacity: boxId === undefined ? 0.5 : 1,
             }}
         >

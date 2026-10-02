@@ -85,7 +85,9 @@ Home (/)
 }
 ```
 - Auto-executes search when atom changes
-- Populates `SearchResultsAtom` with database results
+- Populates `SearchResultsAtom` with database results, grouped by box:
+  `{ boxId: number; objects: ObjectWithTags[] }[]` in order of first appearance,
+  object order inside a group = query order
 
 **`EditObjectAtom.ts`** - Current object being edited from database
 ```typescript
@@ -107,7 +109,7 @@ Home (/)
 - **`ObjectTile.tsx`** - Grid item displaying segmented/saved objects with image, tags, and delete button
 - **`BoxTagsEditor.tsx`** - Chip editor for the descriptive tags of the box number entered on a screen (collect, label, edit); loads and persists via `service/boxTags.ts`
 - **`AnimatedBlurView.tsx`** - Reanimated wrapper for expo-blur with smooth intensity transitions
-- **`SearchResults.tsx`** - Full-screen overlay showing search results with tap-to-edit functionality
+- **`SearchResults.tsx`** - Full-screen overlay showing search results grouped by box; each group has a "box NN" header with an editable `BoxTagsEditor`, followed by the object rows (tap-to-edit)
 - **`Icons.tsx`** - SVG icon library (SearchIcon, BoxIcon, ApertureIcon, CrossIcon, SaveIcon, etc.)
 
 ---

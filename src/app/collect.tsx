@@ -48,7 +48,7 @@ function App(): React.ReactElement {
                         ...(Platform.OS !== 'android' && { overflow: 'visible' }),
                     }}
                 >
-                    <View style={{ marginTop: TILE_GAP }}>
+                    <View style={{ marginTop: TILE_GAP, marginHorizontal: TILE_GAP }}>
                         <BoxTagsEditor boxId={boxId} />
                     </View>
                     <View
