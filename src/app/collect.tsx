@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
+import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
 import { ArrowLeftIcon, SaveIcon } from '../components/Icons';
@@ -47,6 +48,9 @@ function App(): React.ReactElement {
                         ...(Platform.OS !== 'android' && { overflow: 'visible' }),
                     }}
                 >
+                    <View style={{ marginTop: TILE_GAP }}>
+                        <BoxTagsEditor boxId={boxId} />
+                    </View>
                     <View
                         style={{
                             gap: TILE_GAP,

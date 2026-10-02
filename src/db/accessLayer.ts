@@ -46,15 +46,40 @@ const createObjectTagsTable = sql`
     )
 `;
 
+export type BoxTagRecord = {
+    id: number;
+    tag: string;
+};
+// Box tags are a separate pool from object tags: purely descriptive, not searchable.
+const createBoxTagsTable = sql`
+    CREATE TABLE IF NOT EXISTS box_tags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tag TEXT UNIQUE NOT NULL
+    )
+`;
+// Boxes have no table of their own; the junction table keys on the plain box_id.
+const createBoxBoxTagsTable = sql`
+    CREATE TABLE IF NOT EXISTS box_box_tags (
+        box_id INTEGER NOT NULL,
+        box_tag_id INTEGER NOT NULL,
+        PRIMARY KEY (box_id, box_tag_id),
+        FOREIGN KEY (box_tag_id) REFERENCES box_tags(id) ON DELETE CASCADE
+    )
+`;
+
 // Execute table creation.
 db.execSync(createObjectsTable);
 db.execSync(createTagsTable);
 db.execSync(createObjectTagsTable);
+db.execSync(createBoxTagsTable);
+db.execSync(createBoxBoxTagsTable);
 
 // Create indexes for fast lookups.
 db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_object_tags_object ON object_tags(object_id)`);
 db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_object_tags_tag ON object_tags(tag_id)`);
 db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_tags_tag ON tags(tag)`);
+db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_box_box_tags_box ON box_box_tags(box_id)`);
+db.execSync(sql`CREATE INDEX IF NOT EXISTS idx_box_box_tags_tag ON box_box_tags(box_tag_id)`);
 
 db.closeSync();
 // ===========================================================================
@@ -402,6 +427,107 @@ export function getObjectsForTag(db: SqLite.SQLiteDatabase, tag: string) {
         WHERE t.tag = ?
     `);
         return stmt.executeSync<ObjectRecord>(tag).getAllSync();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// ===========================================================================
+// Box Tags (separate pool, assigned directly to box_id)
+// ===========================================================================
+
+/**
+ * Creates a box tag if it does not exist and returns its ID.
+ * @param tag The box tag text.
+ */
+export function createBoxTag(db: SqLite.SQLiteDatabase, tag: string) {
+    try {
+        db.prepareSync(sql`INSERT INTO box_tags (tag) VALUES (?)`).executeSync(tag);
+    } catch {
+        // The tag already exists; fall through to the lookup.
+    }
+    try {
+        const stmt = db.prepareSync(sql`SELECT id FROM box_tags WHERE tag = ?`);
+        return stmt.executeSync<BoxTagRecord>(tag).getFirstSync()?.id;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Retrieves a box tag by its text.
+ * @param tag The box tag text.
+ */
+export function getBoxTagByName(db: SqLite.SQLiteDatabase, tag: string) {
+    try {
+        const stmt = db.prepareSync(sql`SELECT * FROM box_tags WHERE tag = ?`);
+        return stmt.executeSync<BoxTagRecord>(tag).getFirstSync();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Assigns a box tag to a box. Creates the box tag if it does not exist.
+ * @param boxId The box number.
+ * @param tag The box tag text.
+ */
+export function assignTagToBox(db: SqLite.SQLiteDatabase, boxId: number, tag: string) {
+    const boxTagId = createBoxTag(db, tag);
+    if (!boxTagId) {
+        return;
+    }
+    try {
+        const stmt = db.prepareSync(sql`INSERT OR IGNORE INTO box_box_tags (box_id, box_tag_id) VALUES (?, ?)`);
+        stmt.executeSync(boxId, boxTagId);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Removes a box tag assignment from a box.
+ * @param boxId The box number.
+ * @param tag The box tag text.
+ */
+export function removeTagFromBox(db: SqLite.SQLiteDatabase, boxId: number, tag: string): void {
+    const boxTagRow = getBoxTagByName(db, tag);
+    if (!boxTagRow) {
+        return;
+    }
+    try {
+        const stmt = db.prepareSync(sql`DELETE FROM box_box_tags WHERE box_id = ? AND box_tag_id = ?`);
+        stmt.executeSync(boxId, boxTagRow.id);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Deletes box tags that are no longer assigned to any box.
+ */
+export function deleteUnassignedBoxTags(db: SqLite.SQLiteDatabase): void {
+    try {
+        db.execSync(sql`DELETE FROM box_tags WHERE id NOT IN (SELECT box_tag_id FROM box_box_tags)`);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Retrieves all box tags assigned to a box.
+ * @param boxId The box number.
+ */
+export function getBoxTags(db: SqLite.SQLiteDatabase, boxId: number) {
+    try {
+        const stmt = db.prepareSync(sql`
+        SELECT bt.id, bt.tag
+        FROM box_tags bt
+        INNER JOIN box_box_tags bbt ON bt.id = bbt.box_tag_id
+        WHERE bbt.box_id = ?
+        ORDER BY bt.tag
+    `);
+        return stmt.executeSync<BoxTagRecord>(boxId).getAllSync();
     } catch (e) {
         console.error(e);
     }

@@ -105,6 +105,7 @@ Home (/)
 
 - **`MainInputBox.tsx`** - Styled animated container for input fields (white rounded box with purple border)
 - **`ObjectTile.tsx`** - Grid item displaying segmented/saved objects with image, tags, and delete button
+- **`BoxTagsEditor.tsx`** - Chip editor for the descriptive tags of the box number entered on a screen (collect, label, edit); loads and persists via `service/boxTags.ts`
 - **`AnimatedBlurView.tsx`** - Reanimated wrapper for expo-blur with smooth intensity transitions
 - **`SearchResults.tsx`** - Full-screen overlay showing search results with tap-to-edit functionality
 - **`Icons.tsx`** - SVG icon library (SearchIcon, BoxIcon, ApertureIcon, CrossIcon, SaveIcon, etc.)
@@ -138,15 +139,22 @@ Home (/)
 3. **`object_tags`** junction table - Many-to-many relationships
    - `object_id`, `tag_id` (composite primary key, cascading deletes)
 
+4. **`box_tags`** table - Unique, purely descriptive box tags (separate pool from object tags, not searchable)
+   - `id`, `tag` (UNIQUE)
+
+5. **`box_box_tags`** junction table - Assigns box tags to a plain `box_id` (there is no boxes table)
+   - `box_id`, `box_tag_id` (composite primary key, cascading delete on the tag)
+
 **Core Operations:**
 
 - Objects CRUD: `createObject`, `getObjectById`, `updateObject`, `deleteObject`
 - Tags CRUD: `createTag`, `getTagByName`, `updateTag`, `deleteTag`
 - Tag Assignments: `assignTagToObject`, `removeTagFromObject`, `getObjectTags`
 - Queries: `getObjects`, `searchObjects`, `getTags`
+- Box Tags: `createBoxTag`, `getBoxTagByName`, `assignTagToBox`, `removeTagFromBox`, `deleteUnassignedBoxTags`, `getBoxTags`
 
 **Type Exports:**
-- `ObjectRecord`, `TagRecord`, `ObjectTagRecord`, `ObjectWithTags`
+- `ObjectRecord`, `TagRecord`, `ObjectTagRecord`, `ObjectWithTags`, `BoxTagRecord`
 
 ---
 
@@ -171,7 +179,14 @@ For each non-deleted object:
 4. Remove deleted tags
 ```
 
-**Integration:** Both services use `accessLayer.ts` functions and manage database connections (`openDb()` → operations → `closeSync()`).
+**`boxTags.ts`** - Load and save the descriptive tags of a box number
+```
+loadBoxTags(boxId): tags currently assigned to the box
+saveBoxTags(boxId, tags): diff against DB, assign/remove, drop unassigned box tags
+```
+Box tags are written immediately by `BoxTagsEditor`, independent of any object save.
+
+**Integration:** All services use `accessLayer.ts` functions and manage database connections (`openDb()` → operations → `closeSync()`).
 
 ---
 

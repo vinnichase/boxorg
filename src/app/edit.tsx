@@ -16,6 +16,7 @@ import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/co
 import { useAtom } from '@gothub-team/got-atom';
 
 import { ArrowLeftIcon, CrossIcon, SaveIcon } from '../components/Icons';
+import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 import { EditObjectAtom } from '../atoms/EditObjectAtom';
@@ -92,6 +93,7 @@ function App(): React.ReactElement {
                             }}
                             onTouchEnd={(e) => e.stopPropagation()}
                         >
+                            <BoxTagsEditor boxId={object.box_id} />
                             {object.tags.map((tag, i) => (
                                 <View
                                     key={i}

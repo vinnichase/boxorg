@@ -17,6 +17,7 @@ import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom } from '../atoms/CollectObjectsAtom';
 import { useRouter } from 'expo-router';
 import { ArrowLeftIcon, CrossIcon } from '../components/Icons';
+import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 
@@ -80,6 +81,7 @@ function App(): React.ReactElement {
                             }}
                             onTouchEnd={(e) => e.stopPropagation()}
                         >
+                            <BoxTagsEditor boxId={object?.boxId ?? boxId} />
                             {object?.tags?.map((tag, i) => (
                                 <View
                                     key={i}
