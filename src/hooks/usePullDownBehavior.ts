@@ -60,17 +60,19 @@ export function usePullDownBehavior(
             cancelAnimation(progress);
 
             const nextProgress = clamp01(targetProgress);
-            progress.value = withSpring(
-                nextProgress,
-                {
-                    ...PULL_DOWN_SPRING,
-                    velocity,
-                },
-                (finished) => {
-                    if (finished && onSettled) {
-                        scheduleOnRN(onSettled);
-                    }
-                },
+            progress.set(
+                withSpring(
+                    nextProgress,
+                    {
+                        ...PULL_DOWN_SPRING,
+                        velocity,
+                    },
+                    (finished) => {
+                        if (finished && onSettled) {
+                            scheduleOnRN(onSettled);
+                        }
+                    },
+                ),
             );
         },
         [progress],
@@ -102,19 +104,19 @@ export function usePullDownBehavior(
                 .activeOffsetY([-8, 8])
                 .onBegin(() => {
                     cancelAnimation(progress);
-                    gestureStartProgress.value = progress.value;
+                    gestureStartProgress.set(progress.get());
 
                     if (onBegin) {
                         scheduleOnRN(onBegin);
                     }
                 })
                 .onUpdate((event) => {
-                    const nextProgress = clamp01(gestureStartProgress.value + event.translationY / pullDistance);
+                    const nextProgress = clamp01(gestureStartProgress.get() + event.translationY / pullDistance);
 
-                    progress.value = nextProgress;
+                    progress.set(nextProgress);
                 })
                 .onEnd((event) => {
-                    const projectedProgress = progress.value + event.velocityY / 2800;
+                    const projectedProgress = progress.get() + event.velocityY / 2800;
                     const shouldComplete =
                         event.velocityY > PULL_DOWN_VELOCITY ||
                         (event.velocityY > -PULL_DOWN_VELOCITY && projectedProgress > PULL_DOWN_COMPLETE_PROGRESS);
@@ -125,12 +127,11 @@ export function usePullDownBehavior(
                         scheduleOnRN(endCallback);
                     }
 
-                    progress.value = withSpring(
-                        targetProgress,
-                        {
+                    progress.set(
+                        withSpring(targetProgress, {
                             ...PULL_DOWN_SPRING,
                             velocity: event.velocityY / pullDistance,
-                        },
+                        }),
                     );
                 });
         },

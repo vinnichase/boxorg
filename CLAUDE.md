@@ -19,7 +19,7 @@ This is not optional and not a final-summary-only check:
 **BoxOrg** is a React Native mobile application built with Expo that helps users organize objects in boxes by capturing images, segmenting them into individual items, tagging them, and storing them in a SQLite database with search capabilities.
 
 **Tech Stack:**
-- Framework: Expo (React Native 0.81.5)
+- Framework: Expo SDK 57 (React Native 0.86)
 - Navigation: Expo Router (file-based routing)
 - State Management: Got-Atom (reactive state library)
 - Database: SQLite (expo-sqlite)

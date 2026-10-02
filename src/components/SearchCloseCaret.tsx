@@ -12,6 +12,8 @@ export const SearchCloseCaret = () => {
     const { height: windowHeight } = useWindowDimensions();
     const visible = focus === 'search';
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
+    // worklets copy whole captured objects, so only the shared value may be closed over
+    const searchPullDownProgress = searchPullDownBehavior.progress;
 
     return (
         <Reanimated.View
@@ -26,7 +28,7 @@ export const SearchCloseCaret = () => {
                     justifyContent: 'center',
                 },
                 useAnimatedStyle(() => {
-                    const fadeProgress = Math.min(Math.max(searchPullDownBehavior.progress.value / 0.3, 0), 1);
+                    const fadeProgress = Math.min(Math.max(searchPullDownProgress.value / 0.3, 0), 1);
 
                     return {
                         opacity: visible ? 0.6 * (1 - fadeProgress) : 0,

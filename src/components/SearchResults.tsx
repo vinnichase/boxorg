@@ -23,6 +23,8 @@ export const SearchResults = () => {
     const results = useAtom(SearchResultsAtom);
     const focus = useAtom(HomeFocusAtom);
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
+    // worklets copy whole captured objects, so only the shared value may be closed over
+    const searchPullDownProgress = searchPullDownBehavior.progress;
     const [acceptsTouches, setAcceptsTouches] = useState(false);
 
     const sharedOpacity = useSharedValue(0);
@@ -46,7 +48,7 @@ export const SearchResults = () => {
     }, [focus, show]);
 
     useAnimatedReaction(
-        () => show && searchPullDownBehavior.progress.value < 0.3,
+        () => show && searchPullDownProgress.value < 0.3,
         (nextAcceptsTouches, previousAcceptsTouches) => {
             if (nextAcceptsTouches !== previousAcceptsTouches) {
                 scheduleOnRN(setAcceptsTouches, nextAcceptsTouches);
@@ -104,7 +106,7 @@ export const SearchResults = () => {
             >
                 <Animated.View
                     style={useAnimatedStyle(() => {
-                        const fadeProgress = Math.min(Math.max(searchPullDownBehavior.progress.value / 0.3, 0), 1);
+                        const fadeProgress = Math.min(Math.max(searchPullDownProgress.value / 0.3, 0), 1);
 
                         return {
                             opacity: sharedOpacity.value * (1 - fadeProgress),

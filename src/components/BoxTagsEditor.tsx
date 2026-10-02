@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { loadBoxTags, saveBoxTags } from '../service/boxTags';
 import { WHITE } from '../util/constants';
@@ -9,16 +9,19 @@ const CHIP_FONT = { fontSize: 16, fontWeight: 500 as const };
 
 const normalizeTag = (text: string) => text.toUpperCase().trim();
 
+type BoxTagsEditorProps = { boxId?: number };
+
 // descriptive tags for the box number currently entered on the screen; they
 // are written to the database right away, independent of any object save
-export const BoxTagsEditor = ({ boxId }: { boxId?: number }) => {
-    // chip texts as currently typed; renames are persisted when a chip loses focus
-    const [tags, setTags] = useState<string[]>([]);
-    const [draft, setDraft] = useState('');
+export const BoxTagsEditor = (props: BoxTagsEditorProps) => (
+    // keying by box id remounts the chips, so each box loads its tags fresh
+    <BoxTagChips key={props.boxId ?? 'none'} {...props} />
+);
 
-    useEffect(() => {
-        setTags(boxId === undefined ? [] : loadBoxTags(boxId));
-    }, [boxId]);
+const BoxTagChips = ({ boxId }: BoxTagsEditorProps) => {
+    // chip texts as currently typed; renames are persisted when a chip loses focus
+    const [tags, setTags] = useState<string[]>(() => (boxId === undefined ? [] : loadBoxTags(boxId)));
+    const [draft, setDraft] = useState('');
 
     const commitTags = (nextTags: string[]) => {
         if (boxId === undefined) return;

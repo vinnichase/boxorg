@@ -19,6 +19,8 @@ export const CaptureButton = () => {
     const { image, launchCamera } = useImage();
     const focus = useAtom(HomeFocusAtom);
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
+    // worklets copy whole captured objects, so only the shared value may be closed over
+    const searchPullDownProgress = searchPullDownBehavior.progress;
     const visibility = useSharedValue(CONTROL_VISIBLE_OPACITY);
 
     useEffect(() => {
@@ -51,10 +53,7 @@ export const CaptureButton = () => {
                     alignSelf: 'center',
                 },
                 useAnimatedStyle(() => {
-                    const fadeInProgress = Math.min(
-                        Math.max((searchPullDownBehavior.progress.value - 0.3) / (1 - 0.3), 0),
-                        1,
-                    );
+                    const fadeInProgress = Math.min(Math.max((searchPullDownProgress.value - 0.3) / (1 - 0.3), 0), 1);
                     const pullDownOpacity = CONTROL_VISIBLE_OPACITY * fadeInProgress;
 
                     return {

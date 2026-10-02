@@ -62,6 +62,8 @@ export const SearchInput = () => {
         onCancel: cancelSearchPullDown,
         onComplete: completeSearchPullDown,
     });
+    // worklets copy whole captured objects, so only the shared value may be closed over
+    const searchPullDownProgress = searchPullDownBehavior.progress;
 
     useEffect(() => {
         if (focus === 'search') {
@@ -96,7 +98,7 @@ export const SearchInput = () => {
                             top: windowHeight * SEARCH_RESTING_TOP_RATIO,
                         },
                         useAnimatedStyle(() => ({
-                            transform: [{ translateY: searchOpenShift * (1 - searchPullDownBehavior.progress.value) }],
+                            transform: [{ translateY: searchOpenShift * (1 - searchPullDownProgress.value) }],
                         })),
                     ]}
                 >

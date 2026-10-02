@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
@@ -14,27 +14,18 @@ const HOME_BLUR_OPEN_INTENSITY = 70;
 
 export const HomeBlurBackground = ({ children }: HomeBlurBackgroundProps) => {
     const focus = useAtom(HomeFocusAtom);
-    const [blur, setBlur] = useState(0);
+    const blur = focus === 'search' ? HOME_BLUR_OPEN_INTENSITY : 0;
     const animatedBlur = useSharedValue(0);
     const searchPullDownBehavior = usePullDownBehavior(SearchPullDownGestureAtom);
+    // worklets copy whole captured objects, so only the shared value may be closed over
+    const searchPullDownProgress = searchPullDownBehavior.progress;
 
     useEffect(() => {
         animatedBlur.value = withTiming(blur, { duration: 300 });
     }, [animatedBlur, blur]);
 
-    useEffect(() => {
-        switch (focus) {
-            case 'search':
-                blur !== HOME_BLUR_OPEN_INTENSITY && setBlur(HOME_BLUR_OPEN_INTENSITY);
-                break;
-            case 'none':
-                blur !== 0 && setBlur(0);
-                break;
-        }
-    }, [focus, blur]);
-
     const controlledBlurIntensity = useDerivedValue(() => {
-        return animatedBlur.value * (1 - searchPullDownBehavior.progress.value);
+        return animatedBlur.value * (1 - searchPullDownProgress.value);
     });
 
     return (

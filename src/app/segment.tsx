@@ -125,7 +125,7 @@ function App(): React.ReactElement {
     // the dimmed continue button) for as long as no frame exists
     const [ghostTick, setGhostTick] = useState(0);
     const ghostPlayingRef = useRef(false);
-    const lastActivityRef = useRef(Date.now());
+    const lastActivityRef = useRef(0);
 
     const playGhost = () => {
         if (ghostPlayingRef.current || hasFrames) return;
@@ -142,6 +142,7 @@ function App(): React.ReactElement {
     useEffect(() => {
         if (hasFrames || !image) return;
 
+        lastActivityRef.current = Date.now();
         const interval = setInterval(() => {
             if (!ghostPlayingRef.current && Date.now() - lastActivityRef.current >= GHOST_IDLE_MS) {
                 playGhost();
@@ -434,17 +435,19 @@ const Segmentator = ({ width, height, image }: SegmentatorProps) => {
     });
 
     const drawGesture = Gesture.Pan()
+        // eslint-disable-next-line react-hooks/refs -- gesture callbacks run on the UI thread, not during render
         .onBegin((e) => {
-            drawX.value = e.x;
-            drawY.value = e.y;
-            drawW.value = DRAW_START_SIZE;
+            drawX.set(e.x);
+            drawY.set(e.y);
+            drawW.set(DRAW_START_SIZE);
             scheduleOnRN(startDraw, e.x, e.y);
         })
         .onUpdate((e) => {
-            drawW.value = drawW.value - e.velocityY / 100;
+            drawW.set((w) => w - e.velocityY / 100);
         })
+        // eslint-disable-next-line react-hooks/refs -- gesture callbacks run on the UI thread, not during render
         .onEnd(() => {
-            const [x, y, w] = translateRect(drawX.value, drawY.value, Math.abs(drawW.value), width, height);
+            const [x, y, w] = translateRect(drawX.get(), drawY.get(), Math.abs(drawW.get()), width, height);
             scheduleOnRN(addRect, x, y, w);
         });
 
