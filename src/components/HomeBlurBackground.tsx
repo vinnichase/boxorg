@@ -30,7 +30,7 @@ export const HomeBlurBackground = ({ children }: HomeBlurBackgroundProps) => {
 
     return (
         <AnimatedBlurView
-            experimentalBlurMethod="dimezisBlurView"
+            blurMethod="dimezisBlurView"
             tint="dark"
             style={{
                 flex: 1,
