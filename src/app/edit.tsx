@@ -1,18 +1,9 @@
-import React, { useRef } from 'react';
-import {
-    Image,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
-} from 'react-native';
-import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import React, { useRef, useState } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as FileSystem from 'expo-file-system/legacy';
-import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
-import { BLACK, GREEN_LIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
+import { BLACK, GREEN_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 
 import { ArrowLeftIcon, CrossIcon, SaveIcon } from '../components/Icons';
@@ -26,7 +17,6 @@ import { saveObject } from '../service/saveObject';
 import { executeSearch } from '../atoms/SearchAtom';
 
 const HEADER_HEIGHT = 90;
-const KEYBOARD_SHIFT_REFERENCE_HEIGHT = 844;
 
 function App(): React.ReactElement {
     const router = useRouter();
@@ -35,9 +25,9 @@ function App(): React.ReactElement {
     const { width, height: windowHeight } = useWindowDimensions();
     const object = useAtom(EditObjectAtom);
     const boxInputRef = useRef<TextInput>(null);
-    const headerOffset = HEADER_HEIGHT + insets.top;
-    const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
-    const keyboardShiftScale = Math.min(windowHeight / KEYBOARD_SHIFT_REFERENCE_HEIGHT, 1);
+    // the blurred header holds the box tags below the title row and grows with
+    // their chips, so the scroll view starts at its measured height
+    const [headerHeight, setHeaderHeight] = useState(HEADER_HEIGHT + insets.top);
 
     return (
         <View
@@ -49,144 +39,105 @@ function App(): React.ReactElement {
                 shadowRadius: 50,
             }}
         >
-            <Reanimated.View
-                style={[
-                    {
-                        flex: 1,
-                        overflow: 'hidden',
-                    },
-                    useAnimatedStyle(() => ({
-                        transform: [{ translateY: (keyboardHeight.value / 2) * keyboardShiftScale }],
-                    })),
-                ]}
+            <KeyboardAwareScrollView
+                bottomOffset={KEYBOARD_TOOLBAR_HEIGHT + 18}
+                extraKeyboardSpace={KEYBOARD_TOOLBAR_HEIGHT}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}
+                scrollIndicatorInsets={{ top: headerHeight }}
             >
                 <View
                     style={{
-                        flex: 1,
-                        paddingTop: headerOffset,
+                        gap: 18,
+                        paddingBottom: 18,
                         shadowColor: `${PURPLE_LIGHT}`,
                         shadowOpacity: 1,
                         shadowRadius: 100,
                     }}
+                    onTouchEnd={(e) => e.stopPropagation()}
                 >
-                    <View
-                        style={{
-                            width,
-                            height: '50%',
-                            maxHeight: width,
-                        }}
-                    >
-                        <Image
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                            }}
-                            source={{ uri: object ? FileSystem.documentDirectory + object.thumb_path : undefined }}
-                        ></Image>
-                    </View>
-                    <ScrollView style={{ flex: 1 }}>
+                    <Image
+                        style={{ width, height: Math.min(windowHeight / 2, width) }}
+                        source={{ uri: object ? FileSystem.documentDirectory + object.thumb_path : undefined }}
+                    />
+                    {object.tags.map((tag, i) => (
                         <View
+                            key={i}
                             style={{
-                                flex: 1,
+                                height: 45,
+                                flexDirection: 'row',
                                 gap: 18,
-                                marginVertical: 18,
+                                marginHorizontal: 18,
                             }}
-                            onTouchEnd={(e) => e.stopPropagation()}
                         >
-                            <View style={{ marginHorizontal: 18 }}>
-                                <BoxTagsEditor
-                                    key={object.box_id}
-                                    tags={object.box_id === undefined ? [] : (object.boxTags[object.box_id] ?? [])}
-                                    disabled={object.box_id === undefined}
-                                    onChange={(tags) => {
-                                        const boxId = object.box_id;
-                                        if (boxId === undefined) return;
-                                        EditObjectAtom.set((a) => setPath(['boxTags', boxId], tags, a));
+                            <TouchableOpacity
+                                style={{ paddingVertical: 10 }}
+                                onPress={() => {
+                                    EditObjectAtom.set((a) =>
+                                        setPath(
+                                            ['tags'],
+                                            object.tags.filter((_, j) => i !== j),
+                                            a,
+                                        ),
+                                    );
+                                }}
+                            >
+                                <CrossIcon color1={PURPLE_LIGHT}></CrossIcon>
+                            </TouchableOpacity>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    padding: 10,
+                                    paddingHorizontal: 18,
+                                    backgroundColor: PURPLE_LIGHT,
+                                    opacity: 0.9,
+                                    borderRadius: 14,
+                                }}
+                            >
+                                <TextInput
+                                    autoCapitalize="characters"
+                                    style={{
+                                        flex: 1,
+                                        height: '100%',
+                                        fontSize: 20,
+                                        color: WHITE,
+                                        textAlignVertical: 'center',
+                                        paddingVertical: 0,
+                                    }}
+                                    autoComplete="off"
+                                    spellCheck={false}
+                                    defaultValue={tag}
+                                    onChange={(e) => {
+                                        EditObjectAtom.set((a) =>
+                                            setPath(['tags', i], e.nativeEvent.text.toUpperCase(), a),
+                                        );
                                     }}
                                 />
                             </View>
-                            {object.tags.map((tag, i) => (
-                                <View
-                                    key={i}
-                                    style={{
-                                        flex: 1,
-                                        height: 45,
-                                        flexDirection: 'row',
-                                        gap: 18,
-                                        marginHorizontal: 18,
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        style={{ paddingVertical: 10 }}
-                                        onPress={() => {
-                                            EditObjectAtom.set((a) =>
-                                                setPath(
-                                                    ['tags'],
-                                                    object.tags.filter((_, j) => i !== j),
-                                                    a,
-                                                ),
-                                            );
-                                        }}
-                                    >
-                                        <CrossIcon color1={PURPLE_LIGHT}></CrossIcon>
-                                    </TouchableOpacity>
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            padding: 10,
-                                            paddingHorizontal: 18,
-                                            backgroundColor: PURPLE_LIGHT,
-                                            opacity: 0.9,
-                                            borderRadius: 14,
-                                        }}
-                                    >
-                                        <TextInput
-                                            autoCapitalize="characters"
-                                            style={{
-                                                flex: 1,
-                                                height: '100%',
-                                                fontSize: 20,
-                                                color: WHITE,
-                                                textAlignVertical: 'center',
-                                                paddingVertical: 0,
-                                            }}
-                                            autoComplete="off"
-                                            spellCheck={false}
-                                            defaultValue={tag}
-                                            onChange={(e) => {
-                                                EditObjectAtom.set((a) =>
-                                                    setPath(['tags', i], e.nativeEvent.text.toUpperCase(), a),
-                                                );
-                                            }}
-                                        />
-                                    </View>
-                                </View>
-                            ))}
-                            <TouchableOpacity
-                                style={{ width: '100%', alignItems: 'center' }}
-                                onPress={() => {
-                                    EditObjectAtom.set((a) => setPath(['tags', object.tags.length ?? 0], '', a));
-                                }}
-                            >
-                                <View style={{ height: 25, transform: [{ rotate: '45deg' }] }}>
-                                    <CrossIcon color1={GREEN_LIGHT}></CrossIcon>
-                                </View>
-                            </TouchableOpacity>
                         </View>
-                    </ScrollView>
+                    ))}
+                    <TouchableOpacity
+                        style={{ width: '100%', alignItems: 'center' }}
+                        onPress={() => {
+                            EditObjectAtom.set((a) => setPath(['tags', object.tags.length ?? 0], '', a));
+                        }}
+                    >
+                        <View style={{ height: 25, transform: [{ rotate: '45deg' }] }}>
+                            <CrossIcon color1={GREEN_LIGHT}></CrossIcon>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-            </Reanimated.View>
+            </KeyboardAwareScrollView>
             <BlurView
-                intensity={30}
+                intensity={80}
                 tint="dark"
                 blurMethod="dimezisBlurView"
+                onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
                 style={{
                     position: 'absolute',
                     width: '100%',
                     left: 0,
                     top: 0,
-                    borderBottomColor: `${WHITE}22`,
-                    borderBottomWidth: 1,
                 }}
             >
                 <SafeAreaView edges={['top']} style={{ backgroundColor: `${PURPLE_DARK}33` }}>
@@ -198,6 +149,8 @@ function App(): React.ReactElement {
                             justifyContent: 'space-between',
                             gap: 20,
                             padding: 20,
+                            borderBottomColor: `${WHITE}22`,
+                            borderBottomWidth: 1,
                         }}
                     >
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -251,6 +204,18 @@ function App(): React.ReactElement {
                         >
                             <SaveIcon color1={`${WHITE}`} />
                         </TouchableOpacity>
+                    </View>
+                    <View style={{ margin: 18 }}>
+                        <BoxTagsEditor
+                            key={object.box_id}
+                            tags={object.box_id === undefined ? [] : (object.boxTags[object.box_id] ?? [])}
+                            disabled={object.box_id === undefined}
+                            onChange={(tags) => {
+                                const boxId = object.box_id;
+                                if (boxId === undefined) return;
+                                EditObjectAtom.set((a) => setPath(['boxTags', boxId], tags, a));
+                            }}
+                        />
                     </View>
                 </SafeAreaView>
             </BlurView>
