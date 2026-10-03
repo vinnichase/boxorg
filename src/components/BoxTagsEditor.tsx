@@ -53,52 +53,62 @@ export const BoxTagsEditor = ({ tags, onChange, disabled, children }: BoxTagsEdi
             }}
         >
             {children}
-            {tags.map((tag, i) => (
-                <View
-                    key={i}
-                    style={{
-                        height: CHIP_HEIGHT,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 6,
-                        paddingLeft: 12,
-                        paddingRight: 6,
-                        borderRadius: CHIP_HEIGHT / 2,
-                        backgroundColor: `${WHITE}33`,
-                    }}
-                >
-                    {/* the invisible text sizes the chip to its content, the input lies on top */}
-                    <View style={{ justifyContent: 'center' }}>
-                        <Text style={{ ...CHIP_FONT, color: WHITE, opacity: 0 }}>{tag || ' '}</Text>
-                        <TextInput
-                            autoCapitalize="characters"
-                            autoComplete="off"
-                            spellCheck={false}
-                            returnKeyType="done"
-                            value={renaming?.index === i ? renaming.text : tag}
-                            style={{
-                                ...CHIP_FONT,
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                                top: 0,
-                                bottom: 0,
-                                padding: 0,
-                                color: WHITE,
-                                textAlignVertical: 'center',
-                            }}
-                            onChangeText={(text) => setRenaming({ index: i, text })}
-                            onBlur={commitRename}
-                        />
-                    </View>
-                    <TouchableOpacity
-                        style={{ width: 24, height: 24, padding: 5 }}
-                        onPress={() => commitTags(tags.filter((_, j) => j !== i))}
+            {tags.map((tag, i) => {
+                const chipText = renaming?.index === i ? renaming.text : tag;
+                return (
+                    <View
+                        key={i}
+                        style={{
+                            maxWidth: '100%',
+                            minHeight: CHIP_HEIGHT,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 6,
+                            paddingLeft: 12,
+                            paddingRight: 6,
+                            paddingVertical: 6,
+                            borderRadius: CHIP_HEIGHT / 2,
+                            backgroundColor: `${WHITE}33`,
+                        }}
                     >
-                        <CrossIcon color1={`${WHITE}aa`} />
-                    </TouchableOpacity>
-                </View>
-            ))}
+                        {/* the invisible text sizes the chip to its content and wraps long tags onto
+                        further lines; the multiline input on top wraps at the same width */}
+                        <View style={{ flexShrink: 1, justifyContent: 'center' }}>
+                            <Text style={{ ...CHIP_FONT, color: WHITE, opacity: 0 }}>{chipText || ' '}</Text>
+                            <TextInput
+                                autoCapitalize="characters"
+                                autoComplete="off"
+                                spellCheck={false}
+                                multiline
+                                scrollEnabled={false}
+                                returnKeyType="done"
+                                submitBehavior="blurAndSubmit"
+                                value={chipText}
+                                style={{
+                                    ...CHIP_FONT,
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    top: 0,
+                                    bottom: 0,
+                                    padding: 0,
+                                    paddingTop: 0,
+                                    color: WHITE,
+                                    textAlignVertical: 'center',
+                                }}
+                                onChangeText={(text) => setRenaming({ index: i, text })}
+                                onBlur={commitRename}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            style={{ width: 24, height: 24, padding: 5 }}
+                            onPress={() => commitTags(tags.filter((_, j) => j !== i))}
+                        >
+                            <CrossIcon color1={`${WHITE}aa`} />
+                        </TouchableOpacity>
+                    </View>
+                );
+            })}
             <TextInput
                 autoCapitalize="characters"
                 autoComplete="off"
