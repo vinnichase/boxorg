@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
+import { BLACK, KEYBOARD_TOOLBAR_HEIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom, loadCollectBoxTags } from '../atoms/CollectObjectsAtom';
 import { BoxTagsDrawer } from '../components/BoxTagsDrawer';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { BoxTagsToggle } from '../components/BoxTagsToggle';
 import { useBoxTagsDrawer } from '../hooks/useBoxTagsDrawer';
+import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -58,7 +59,8 @@ function App(): React.ReactElement {
                 it scrolls underneath the blur; keyboard aware so the tiles stay
                 reachable while the box number or box tags are being typed */}
             <KeyboardAwareScrollView
-                bottomOffset={TILE_GAP}
+                bottomOffset={KEYBOARD_TOOLBAR_HEIGHT + TILE_GAP}
+                extraKeyboardSpace={KEYBOARD_TOOLBAR_HEIGHT}
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: insets.bottom }}
                 scrollIndicatorInsets={{ top: headerOffset }}
@@ -198,6 +200,7 @@ function App(): React.ReactElement {
                     </BoxTagsDrawer>
                 </SafeAreaView>
             </BlurView>
+            <KeyboardToolbarDismiss />
         </View>
     );
 }

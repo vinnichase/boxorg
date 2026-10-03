@@ -1,16 +1,18 @@
-import { Keyboard, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAtom } from '@gothub-team/got-atom';
 import { SearchAtom } from '../atoms/SearchAtom';
 import { setPath } from '../util/setPath';
 import { PURPLE_DARK, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
-import { BoxIcon, KeyboardDownIcon, TextIcon } from './Icons';
+import { BoxIcon, TextIcon } from './Icons';
 
 type KeyboardToolbarSearchProps = {
     visible: boolean;
 };
 
+// box search switch beside the keyboard dismiss button of the home screen,
+// shown only while the search field itself is focused
 export const KeyboardToolbarSearch = ({ visible }: KeyboardToolbarSearchProps) => {
     const insets = useSafeAreaInsets();
     const search = useAtom(SearchAtom);
@@ -34,10 +36,6 @@ export const KeyboardToolbarSearch = ({ visible }: KeyboardToolbarSearchProps) =
         setSearchQuery(`#${digits}`);
     };
 
-    const dismissSearchKeyboard = () => {
-        Keyboard.dismiss();
-    };
-
     return (
         <KeyboardStickyView
             enabled={visible}
@@ -57,9 +55,7 @@ export const KeyboardToolbarSearch = ({ visible }: KeyboardToolbarSearchProps) =
                     height: KEYBOARD_TOOLBAR_HEIGHT,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
                     paddingLeft: 16 + insets.left,
-                    paddingRight: 16 + insets.right,
                 }}
             >
                 <TouchableOpacity
@@ -76,29 +72,6 @@ export const KeyboardToolbarSearch = ({ visible }: KeyboardToolbarSearchProps) =
                 >
                     <View style={{ width: 28, height: 28 }}>
                         {boxSearchActive ? <TextIcon color1={PURPLE_DARK} /> : <BoxIcon color1={PURPLE_DARK} />}
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    accessibilityLabel="Dismiss keyboard"
-                    style={{
-                        width: 44,
-                        height: 44,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 12,
-                        backgroundColor: `${WHITE}CC`,
-                    }}
-                    onPress={dismissSearchKeyboard}
-                >
-                    <View
-                        style={{
-                            width: 28,
-                            height: 28,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <KeyboardDownIcon color1={PURPLE_DARK} />
                     </View>
                 </TouchableOpacity>
             </View>

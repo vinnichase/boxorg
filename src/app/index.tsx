@@ -7,6 +7,7 @@ import { CaptureButton } from '../components/CaptureButton';
 import { SearchCloseCaret } from '../components/SearchCloseCaret';
 import { SearchInput } from '../components/SearchInput';
 import { HomeBlurBackground } from '../components/HomeBlurBackground';
+import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 
 function App(): React.ReactElement {
     const { height: windowHeight } = useWindowDimensions();
@@ -34,6 +35,10 @@ function App(): React.ReactElement {
             {/* above the results so the blurred top band does not cover it */}
             <SearchCloseCaret />
             <SearchInput />
+            {/* dismisses the keyboard of every input on this screen, the box tag
+                chips in the search results included; the search field adds its
+                own box search button next to it */}
+            <KeyboardToolbarDismiss />
         </ImageBackground>
     );
 }
