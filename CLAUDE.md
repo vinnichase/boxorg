@@ -113,7 +113,8 @@ Box tag drafts: each screen atom holds the box tags of every box number entered 
 - **`ObjectTile.tsx`** - Grid item displaying segmented/saved objects with image, tags, and delete button
 - **`BoxTagsEditor.tsx`** - Controlled chip editor (`tags`, `onChange`, `disabled`) for the descriptive tags of one box; the caller owns the tags and decides when they are saved. Optional `children` lead the chip flow (the search overlay puts the box heading there so chips float after it)
 - **`AnimatedBlurView.tsx`** - Reanimated wrapper for expo-blur with smooth intensity transitions
-- **`SearchResults.tsx`** - Full-screen overlay showing search results grouped by box; each group has a "box NN" header with an editable `BoxTagsEditor`, followed by the object rows (tap-to-edit)
+- **`SearchResults.tsx`** - Full-screen overlay showing search results grouped by box; the list spans the screen with top padding so rows scroll under a blurred band behind the search field; object rows are tap-to-edit
+- **`SearchResultBoxHeader.tsx`** - "box NN" heading with editable `BoxTagsEditor` per result group; sticks below the search field via its own scroll-offset translation (RN's `stickyHeaderIndices` would stick at the list top) and is pushed away by the next header
 - **`Icons.tsx`** - SVG icon library (SearchIcon, BoxIcon, ApertureIcon, CrossIcon, SaveIcon, etc.)
 
 ---

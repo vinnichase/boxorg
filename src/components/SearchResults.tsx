@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Image, Keyboard, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardController } from 'react-native-keyboard-controller';
-import { PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
-import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { BLACK, PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
+import Animated, {
+    useAnimatedReaction,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useAtom } from '@gothub-team/got-atom';
 import { SearchAtom, SearchResultsAtom } from '../atoms/SearchAtom';
@@ -13,13 +19,19 @@ import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
 import { setPath } from '../util/setPath';
-import { BoxTagsEditor } from './BoxTagsEditor';
-import { saveBoxTags } from '../service/boxTags';
+import { BlurView } from 'expo-blur';
+import { HeaderLayouts, SearchResultBoxHeader } from './SearchResultBoxHeader';
 
 const MARGIN_TOP = 160;
 const BOTTOM_SPACER_HEIGHT = KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
 const SEARCH_RESULTS_LOAD_DELAY = 300;
 const GROUP_GAP = 30;
+// shared by the top band behind the search field and the sticky box headers
+const BLUR_INTENSITY = 50;
+// soft shadow below the top band onto the header stuck underneath it, plus the
+// hairline the other screen headers end with
+const BAND_SHADOW = `0 0 24px ${BLACK}aa`;
+const BAND_HAIRLINE = `${WHITE}22`;
 const ROW_GAP = 10;
 
 export const SearchResults = () => {
@@ -32,6 +44,8 @@ export const SearchResults = () => {
     const [acceptsTouches, setAcceptsTouches] = useState(false);
 
     const sharedOpacity = useSharedValue(0);
+    const scrollY = useSharedValue(0);
+    const headerLayouts = useSharedValue<HeaderLayouts>({});
     const previousResultCount = useRef(0);
 
     useEffect(() => {
@@ -93,122 +107,143 @@ export const SearchResults = () => {
             behavior="height"
             style={{
                 position: 'absolute',
-                top: MARGIN_TOP,
+                top: 0,
                 bottom: 0,
                 width: '100%',
-                overflow: 'visible',
             }}
             pointerEvents={acceptsTouches ? 'auto' : 'none'}
         >
-            <ScrollView
-                automaticallyAdjustKeyboardInsets={false}
-                automaticallyAdjustsScrollIndicatorInsets={false}
-                contentInsetAdjustmentBehavior="never"
-                keyboardShouldPersistTaps="handled"
-                scrollIndicatorInsets={{ top: 0, bottom: BOTTOM_SPACER_HEIGHT }}
-                style={{ flex: 1, overflow: 'visible' }}
-            >
-                <Animated.View
-                    style={useAnimatedStyle(() => {
+            <Animated.View
+                style={[
+                    { flex: 1 },
+                    useAnimatedStyle(() => {
                         const fadeProgress = Math.min(Math.max(searchPullDownProgress.value / 0.3, 0), 1);
 
                         return {
                             opacity: sharedOpacity.value * (1 - fadeProgress),
                         };
+                    }),
+                ]}
+            >
+                {/* the list spans the whole screen and starts below the search field via
+                    padding, so scrolled-away rows pass underneath the blurred top band */}
+                <Animated.ScrollView
+                    automaticallyAdjustKeyboardInsets={false}
+                    automaticallyAdjustsScrollIndicatorInsets={false}
+                    contentInsetAdjustmentBehavior="never"
+                    keyboardShouldPersistTaps="handled"
+                    scrollIndicatorInsets={{ top: MARGIN_TOP, bottom: BOTTOM_SPACER_HEIGHT }}
+                    contentContainerStyle={{ paddingTop: MARGIN_TOP }}
+                    onScroll={useAnimatedScrollHandler((e) => {
+                        scrollY.set(e.contentOffset.y);
                     })}
+                    scrollEventThrottle={16}
+                    style={{ flex: 1 }}
                 >
-                    <View
-                        style={{
-                            gap: GROUP_GAP,
-                            paddingHorizontal: 30,
-                            paddingBottom: 30,
-                            shadowColor: `${PURPLE_LIGHT}`,
-                            shadowOpacity: 1,
-                            shadowRadius: 20,
-                        }}
-                    >
-                        {groups.map((group) => (
-                            <View key={group.boxId} style={{ gap: ROW_GAP }}>
-                                {/* no save button here, so box tag edits are written right away */}
-                                <BoxTagsEditor
-                                    tags={group.boxTags}
-                                    onChange={(tags) => {
-                                        SearchResultsAtom.set((gs) =>
-                                            gs.map((g) => (g.boxId === group.boxId ? { ...g, boxTags: tags } : g)),
-                                        );
-                                        saveBoxTags(group.boxId, tags);
+                    {groups.flatMap((group, i) => [
+                        <SearchResultBoxHeader
+                            key={`header-${group.boxId}`}
+                            group={group}
+                            nextBoxId={groups[i + 1]?.boxId}
+                            stickyTop={MARGIN_TOP}
+                            blurIntensity={BLUR_INTENSITY}
+                            verticalPadding={ROW_GAP}
+                            scrollY={scrollY}
+                            headerLayouts={headerLayouts}
+                        />,
+                        <View
+                            key={`objects-${group.boxId}`}
+                            style={{
+                                gap: ROW_GAP,
+                                paddingHorizontal: 30,
+                                // same distance below the blurred header as inside it
+                                paddingTop: ROW_GAP,
+                                paddingBottom: GROUP_GAP,
+                                shadowColor: `${PURPLE_LIGHT}`,
+                                shadowOpacity: 1,
+                                shadowRadius: 20,
+                            }}
+                        >
+                            {group.objects.map((record) => (
+                                <TouchableOpacity
+                                    key={record.id}
+                                    delayPressIn={16}
+                                    style={{ height: 100, flexDirection: 'row', gap: 20 }}
+                                    onPress={() => {
+                                        void KeyboardController.dismiss({ keepFocus: false });
+                                        Keyboard.dismiss();
+                                        EditObjectAtom.set({
+                                            ...record,
+                                            boxTags: { [group.boxId]: group.boxTags },
+                                        });
+                                        router.push('/edit');
                                     }}
                                 >
-                                    <Text style={{ color: WHITE, fontSize: 26, fontWeight: 300, opacity: 0.9 }}>
-                                        box
-                                    </Text>
-                                    <Text style={{ color: WHITE, fontSize: 26, fontWeight: 'bold', marginRight: 4 }}>
-                                        {group.boxId}
-                                    </Text>
-                                </BoxTagsEditor>
-                                {group.objects.map((record) => (
-                                    <TouchableOpacity
-                                        key={record.id}
-                                        delayPressIn={16}
-                                        style={{ height: 100, flexDirection: 'row', gap: 20 }}
-                                        onPress={() => {
-                                            void KeyboardController.dismiss({ keepFocus: false });
-                                            Keyboard.dismiss();
-                                            EditObjectAtom.set({
-                                                ...record,
-                                                boxTags: { [group.boxId]: group.boxTags },
-                                            });
-                                            router.push('/edit');
+                                    <View
+                                        style={{
+                                            overflow: 'hidden',
+                                            borderRadius: 10,
+                                            width: 100,
+                                            height: 100,
+                                            borderWidth: 2,
+                                            borderColor: WHITE,
                                         }}
                                     >
-                                        <View
-                                            style={{
-                                                overflow: 'hidden',
-                                                borderRadius: 10,
-                                                width: 100,
-                                                height: 100,
-                                                borderWidth: 2,
-                                                borderColor: WHITE,
-                                            }}
-                                        >
-                                            <Image
-                                                source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
-                                                style={{ width: '100%', height: '100%' }}
-                                            />
-                                        </View>
-                                        <View
-                                            style={{
-                                                flex: 1,
-                                                maxWidth: '100%',
-                                                flexWrap: 'wrap',
-                                                gap: 5,
-                                                paddingVertical: 5,
-                                                overflow: 'hidden',
-                                                alignItems: 'baseline',
-                                                flexDirection: 'row',
-                                            }}
-                                        >
-                                            {record.tags.map((tag) => (
-                                                <View
-                                                    key={tag}
-                                                    style={{
-                                                        padding: 5,
-                                                        backgroundColor: `${WHITE}22`,
-                                                        borderRadius: 5,
-                                                    }}
-                                                >
-                                                    <Text style={{ color: WHITE }}>{tag}</Text>
-                                                </View>
-                                            ))}
-                                        </View>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        ))}
-                    </View>
+                                        <Image
+                                            source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
+                                            style={{ width: '100%', height: '100%' }}
+                                        />
+                                    </View>
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            maxWidth: '100%',
+                                            flexWrap: 'wrap',
+                                            gap: 5,
+                                            paddingVertical: 5,
+                                            overflow: 'hidden',
+                                            alignItems: 'baseline',
+                                            flexDirection: 'row',
+                                        }}
+                                    >
+                                        {record.tags.map((tag) => (
+                                            <View
+                                                key={tag}
+                                                style={{
+                                                    padding: 5,
+                                                    backgroundColor: `${WHITE}22`,
+                                                    borderRadius: 5,
+                                                }}
+                                            >
+                                                <Text style={{ color: WHITE }}>{tag}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </View>,
+                    ])}
                     <View style={{ height: BOTTOM_SPACER_HEIGHT }} />
-                </Animated.View>
-            </ScrollView>
+                </Animated.ScrollView>
+                <BlurView
+                    intensity={BLUR_INTENSITY}
+                    tint="dark"
+                    blurMethod="dimezisBlurView"
+                    pointerEvents="none"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: MARGIN_TOP,
+                        boxShadow: BAND_SHADOW,
+                        justifyContent: 'flex-end',
+                    }}
+                >
+                    {/* a child view instead of a border, which would leave its strip unblurred */}
+                    <View style={{ height: 1, backgroundColor: BAND_HAIRLINE }} />
+                </BlurView>
+            </Animated.View>
         </KeyboardAvoidingView>
     );
 };
