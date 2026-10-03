@@ -30,8 +30,9 @@ function App(): React.ReactElement {
                     <View style={{ flex: 1 }} />
                 </SafeAreaView>
             </HomeBlurBackground>
-            <SearchCloseCaret />
             <SearchResults />
+            {/* above the results so the blurred top band does not cover it */}
+            <SearchCloseCaret />
             <SearchInput />
         </ImageBackground>
     );

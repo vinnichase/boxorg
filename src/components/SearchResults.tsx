@@ -227,7 +227,6 @@ export const SearchResults = () => {
                     intensity={BLUR_INTENSITY}
                     tint="dark"
                     blurMethod="dimezisBlurView"
-                    pointerEvents="none"
                     style={{
                         position: 'absolute',
                         top: 0,
