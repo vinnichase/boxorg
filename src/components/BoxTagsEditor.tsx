@@ -1,10 +1,16 @@
 import { ReactNode, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import { WHITE } from '../util/constants';
-import { CrossIcon } from './Icons';
+import { CrossIcon, TagPlusIcon } from './Icons';
 
 const CHIP_HEIGHT = 36;
 const CHIP_FONT = { fontSize: 16, fontWeight: 500 as const };
+// the add button grows from a circle into a pill over the remaining line width
+const ADD_TRANSITION_DURATION = 200;
+// the icon keeps this size and position whether the add button is a circle or open
+const ADD_ICON_SIZE = 24;
+const ADD_ICON_PADDING = (CHIP_HEIGHT - 2 - ADD_ICON_SIZE) / 2;
 
 const normalizeTag = (text: string) => text.toUpperCase().trim();
 
@@ -24,6 +30,8 @@ export const BoxTagsEditor = ({ tags, onChange, disabled, children }: BoxTagsEdi
     // text of the chip being renamed right now; handed over on blur
     const [renaming, setRenaming] = useState<{ index: number; text: string }>();
     const [draft, setDraft] = useState('');
+    // the add button is open as a text field until it loses focus
+    const [adding, setAdding] = useState(false);
 
     const commitTags = (nextTags: string[]) => {
         // normalize, drop emptied chips and keep the first of any duplicates
@@ -109,33 +117,60 @@ export const BoxTagsEditor = ({ tags, onChange, disabled, children }: BoxTagsEdi
                     </View>
                 );
             })}
-            <TextInput
-                autoCapitalize="characters"
-                autoComplete="off"
-                spellCheck={false}
-                editable={!disabled}
-                placeholder={disabled ? 'box tag (Nr. fehlt)' : '+ box tag'}
-                placeholderTextColor={`${WHITE}66`}
-                returnKeyType="done"
-                submitBehavior="submit"
-                value={draft}
+            <Animated.View
+                layout={LinearTransition.duration(ADD_TRANSITION_DURATION)}
                 style={{
-                    ...CHIP_FONT,
-                    flexGrow: 1,
-                    minWidth: 120,
                     height: CHIP_HEIGHT,
-                    paddingHorizontal: 12,
-                    paddingVertical: 0,
+                    flexDirection: 'row',
+                    alignItems: 'center',
                     borderRadius: CHIP_HEIGHT / 2,
                     borderWidth: 1,
                     borderColor: `${WHITE}33`,
-                    color: WHITE,
-                    textAlignVertical: 'center',
+                    ...(adding
+                        ? { flexGrow: 1, minWidth: 120, paddingLeft: ADD_ICON_PADDING, paddingRight: 12 }
+                        : { width: CHIP_HEIGHT, justifyContent: 'center' }),
                 }}
-                onChangeText={setDraft}
-                onSubmitEditing={addDraft}
-                onBlur={addDraft}
-            />
+            >
+                {adding ? (
+                    <>
+                        <View style={{ width: ADD_ICON_SIZE, height: ADD_ICON_SIZE }}>
+                            <TagPlusIcon color1={`${WHITE}aa`} />
+                        </View>
+                        <TextInput
+                            autoFocus
+                            autoCapitalize="characters"
+                            autoComplete="off"
+                            spellCheck={false}
+                            returnKeyType="done"
+                            submitBehavior="submit"
+                            value={draft}
+                            style={{
+                                ...CHIP_FONT,
+                                flex: 1,
+                                height: '100%',
+                                paddingHorizontal: 8,
+                                paddingVertical: 0,
+                                color: WHITE,
+                                textAlignVertical: 'center',
+                            }}
+                            onChangeText={setDraft}
+                            onSubmitEditing={addDraft}
+                            onBlur={() => {
+                                addDraft();
+                                setAdding(false);
+                            }}
+                        />
+                    </>
+                ) : (
+                    <TouchableOpacity
+                        disabled={disabled}
+                        style={{ width: CHIP_HEIGHT - 2, height: CHIP_HEIGHT - 2, padding: ADD_ICON_PADDING }}
+                        onPress={() => setAdding(true)}
+                    >
+                        <TagPlusIcon color1={`${WHITE}aa`} />
+                    </TouchableOpacity>
+                )}
+            </Animated.View>
         </View>
     );
 };

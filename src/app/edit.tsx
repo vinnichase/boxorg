@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,11 +7,15 @@ import { BLACK, GREEN_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, PURPLE_DARK, PURPLE_LIGHT,
 import { useAtom } from '@gothub-team/got-atom';
 
 import { ArrowLeftIcon, CrossIcon, SaveIcon } from '../components/Icons';
+import { BoxTagsDrawer } from '../components/BoxTagsDrawer';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
+import { BoxTagsToggle } from '../components/BoxTagsToggle';
+import { useBoxTagsDrawer } from '../hooks/useBoxTagsDrawer';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 import { EditObjectAtom, loadEditBoxTags } from '../atoms/EditObjectAtom';
 import { BlurView } from 'expo-blur';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { saveObject } from '../service/saveObject';
 import { executeSearch } from '../atoms/SearchAtom';
@@ -25,9 +29,12 @@ function App(): React.ReactElement {
     const { width, height: windowHeight } = useWindowDimensions();
     const object = useAtom(EditObjectAtom);
     const boxInputRef = useRef<TextInput>(null);
-    // the blurred header holds the box tags below the title row and grows with
-    // their chips, so the scroll view starts at its measured height
-    const [headerHeight, setHeaderHeight] = useState(HEADER_HEIGHT + insets.top);
+    const boxTags = object.box_id === undefined ? [] : (object.boxTags[object.box_id] ?? []);
+    const drawer = useBoxTagsDrawer(boxTags.length > 0, object.box_id !== undefined);
+    // worklets copy whole captured objects, so only the shared values may be closed over
+    const drawerProgress = drawer.progress;
+    const drawerContentHeight = drawer.contentHeight;
+    const headerOffset = HEADER_HEIGHT + insets.top;
 
     return (
         <View
@@ -43,9 +50,15 @@ function App(): React.ReactElement {
                 bottomOffset={KEYBOARD_TOOLBAR_HEIGHT + 18}
                 extraKeyboardSpace={KEYBOARD_TOOLBAR_HEIGHT}
                 style={{ flex: 1 }}
-                contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}
-                scrollIndicatorInsets={{ top: headerHeight }}
+                contentContainerStyle={{ paddingBottom: insets.bottom }}
+                scrollIndicatorInsets={{ top: headerOffset }}
             >
+                {/* keeps the content below the header, following the box tag drawer */}
+                <Animated.View
+                    style={useAnimatedStyle(() => ({
+                        height: headerOffset + drawerProgress.value * drawerContentHeight.value,
+                    }))}
+                />
                 <View
                     style={{
                         gap: 18,
@@ -132,7 +145,6 @@ function App(): React.ReactElement {
                 intensity={80}
                 tint="dark"
                 blurMethod="dimezisBlurView"
-                onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
                 style={{
                     position: 'absolute',
                     width: '100%',
@@ -188,6 +200,7 @@ function App(): React.ReactElement {
                                 }}
                             />
                         </View>
+                        <BoxTagsToggle drawer={drawer} />
                         <TouchableOpacity
                             onPress={() => {
                                 const boxId = object.box_id;
@@ -205,18 +218,20 @@ function App(): React.ReactElement {
                             <SaveIcon color1={`${WHITE}`} />
                         </TouchableOpacity>
                     </View>
-                    <View style={{ margin: 18 }}>
-                        <BoxTagsEditor
-                            key={object.box_id}
-                            tags={object.box_id === undefined ? [] : (object.boxTags[object.box_id] ?? [])}
-                            disabled={object.box_id === undefined}
-                            onChange={(tags) => {
-                                const boxId = object.box_id;
-                                if (boxId === undefined) return;
-                                EditObjectAtom.set((a) => setPath(['boxTags', boxId], tags, a));
-                            }}
-                        />
-                    </View>
+                    <BoxTagsDrawer drawer={drawer}>
+                        <View style={{ margin: 18 }}>
+                            <BoxTagsEditor
+                                key={object.box_id}
+                                tags={boxTags}
+                                disabled={object.box_id === undefined}
+                                onChange={(tags) => {
+                                    const boxId = object.box_id;
+                                    if (boxId === undefined) return;
+                                    EditObjectAtom.set((a) => setPath(['boxTags', boxId], tags, a));
+                                }}
+                            />
+                        </View>
+                    </BoxTagsDrawer>
                 </SafeAreaView>
             </BlurView>
             <KeyboardToolbarDismiss />

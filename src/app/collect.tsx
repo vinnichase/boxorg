@@ -1,13 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BLACK, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
 import { CollectObjectsAtom, loadCollectBoxTags } from '../atoms/CollectObjectsAtom';
+import { BoxTagsDrawer } from '../components/BoxTagsDrawer';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
+import { BoxTagsToggle } from '../components/BoxTagsToggle';
+import { useBoxTagsDrawer } from '../hooks/useBoxTagsDrawer';
 import { ObjectTile } from '../components/ObjectTile';
 import { BlurView } from 'expo-blur';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { ArrowLeftIcon, SaveIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
 import { useRouter } from 'expo-router';
@@ -26,9 +30,12 @@ function App(): React.ReactElement {
 
     const { image, boxId, objects, boxTags } = useAtom(CollectObjectsAtom);
     const boxInputRef = useRef<TextInput>(null);
-    // the blurred header holds the box tags below the title row and grows with
-    // their chips, so the scroll view starts at its measured height
-    const [headerHeight, setHeaderHeight] = useState(HEADER_HEIGHT + insets.top);
+    const currentBoxTags = boxId === undefined ? [] : (boxTags[boxId] ?? []);
+    const drawer = useBoxTagsDrawer(currentBoxTags.length > 0, boxId !== undefined);
+    // worklets copy whole captured objects, so only the shared values may be closed over
+    const drawerProgress = drawer.progress;
+    const drawerContentHeight = drawer.contentHeight;
+    const headerOffset = HEADER_HEIGHT + insets.top;
 
     // the box number must be assigned consciously on every collect run, so the
     // field starts empty instead of inheriting the previous run's number; the
@@ -53,9 +60,15 @@ function App(): React.ReactElement {
             <KeyboardAwareScrollView
                 bottomOffset={TILE_GAP}
                 style={{ flex: 1 }}
-                contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}
-                scrollIndicatorInsets={{ top: headerHeight }}
+                contentContainerStyle={{ paddingBottom: insets.bottom }}
+                scrollIndicatorInsets={{ top: headerOffset }}
             >
+                {/* keeps the content below the header, following the box tag drawer */}
+                <Animated.View
+                    style={useAnimatedStyle(() => ({
+                        height: headerOffset + drawerProgress.value * drawerContentHeight.value,
+                    }))}
+                />
                 <View
                     style={{
                         gap: TILE_GAP,
@@ -100,7 +113,6 @@ function App(): React.ReactElement {
                 intensity={80}
                 tint="dark"
                 blurMethod="dimezisBlurView"
-                onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
                 style={{
                     position: 'absolute',
                     width: '100%',
@@ -155,6 +167,7 @@ function App(): React.ReactElement {
                                 }}
                             />
                         </View>
+                        <BoxTagsToggle drawer={drawer} />
                         <TouchableOpacity
                             onPress={() => {
                                 if (!boxId) {
@@ -170,17 +183,19 @@ function App(): React.ReactElement {
                             <SaveIcon color1={`${WHITE}`} />
                         </TouchableOpacity>
                     </View>
-                    <View style={{ margin: TILE_GAP }}>
-                        <BoxTagsEditor
-                            key={boxId}
-                            tags={boxId === undefined ? [] : (boxTags[boxId] ?? [])}
-                            disabled={boxId === undefined}
-                            onChange={(tags) => {
-                                if (boxId === undefined) return;
-                                CollectObjectsAtom.set((a) => setPath(['boxTags', boxId], tags, a));
-                            }}
-                        />
-                    </View>
+                    <BoxTagsDrawer drawer={drawer}>
+                        <View style={{ margin: TILE_GAP }}>
+                            <BoxTagsEditor
+                                key={boxId}
+                                tags={currentBoxTags}
+                                disabled={boxId === undefined}
+                                onChange={(tags) => {
+                                    if (boxId === undefined) return;
+                                    CollectObjectsAtom.set((a) => setPath(['boxTags', boxId], tags, a));
+                                }}
+                            />
+                        </View>
+                    </BoxTagsDrawer>
                 </SafeAreaView>
             </BlurView>
         </View>

@@ -265,3 +265,70 @@ export const BackIcon = ({ color1 }: IconProps) => (
         <Path stroke={color1} strokeLinecap="round" fill="none" d="M5 10h11a4 4 0 1 1 0 8h-1" />
     </Svg>
 );
+
+// tabler "tags"
+export const TagsIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={1.08}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+        >
+            <Path
+                stroke={color1}
+                fill="none"
+                d="M3 8v4.172a2 2 0 0 0 .586 1.414l5.71 5.71a2.41 2.41 0 0 0 3.408 0l3.592 -3.592a2.41 2.41 0 0 0 0 -3.408l-5.71 -5.71a2 2 0 0 0 -1.414 -.586h-4.172a2 2 0 0 0 -2 2"
+            />
+            <Path stroke={color1} fill="none" d="M18 19l1.592 -1.592a4.82 4.82 0 0 0 0 -6.816l-4.592 -4.592" />
+            <Path stroke={color1} fill="none" d="M7 10h-.01" />
+        </Svg>
+    </View>
+);
+
+// tabler "tag-plus"
+export const TagPlusIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={1.08}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+        >
+            <Path stroke={color1} fill="none" d="M6.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+            <Path
+                stroke={color1}
+                fill="none"
+                d="M21.002 13c0 -.617 -.235 -1.233 -.706 -1.704l-7.71 -7.71c-.375 -.375 -.884 -.586 -1.414 -.586h-5.172c-1.657 0 -3 1.343 -3 3v5.172c0 .53 .211 1.039 .586 1.414l7.71 7.71c.471 .47 1.087 .706 1.704 .706"
+            />
+            <Path stroke={color1} fill="none" d="M16 19h6" />
+            <Path stroke={color1} fill="none" d="M19 16v6" />
+        </Svg>
+    </View>
+);
+
+// tabler "chevron-left"
+export const ChevronLeftIcon = ({ color1 }: IconProps) => (
+    <View>
+        <Svg
+            style={{
+                aspectRatio: 1,
+                opacity: 0.9,
+            }}
+            strokeWidth={1.08}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+        >
+            <Path stroke={color1} fill="none" d="M15 6l-6 6l6 6" />
+        </Svg>
+    </View>
+);
