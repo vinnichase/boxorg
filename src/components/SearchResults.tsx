@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Image, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardController } from 'react-native-keyboard-controller';
-import { BLACK, PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
+import { PURPLE_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, WHITE } from '../util/constants';
 import Animated, {
     useAnimatedReaction,
     useAnimatedScrollHandler,
@@ -25,12 +25,10 @@ import { HeaderLayouts, SearchResultBoxHeader } from './SearchResultBoxHeader';
 const MARGIN_TOP = 160;
 const BOTTOM_SPACER_HEIGHT = KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
 const SEARCH_RESULTS_LOAD_DELAY = 300;
-const GROUP_GAP = 30;
+const GROUP_GAP = 45;
 // shared by the top band behind the search field and the sticky box headers
 const BLUR_INTENSITY = 50;
-// soft shadow below the top band onto the header stuck underneath it, plus the
-// hairline the other screen headers end with
-const BAND_SHADOW = `0 0 24px ${BLACK}aa`;
+// the top band ends with the same hairline as the other screen headers
 const BAND_HAIRLINE = `${WHITE}22`;
 const ROW_GAP = 10;
 
@@ -236,7 +234,6 @@ export const SearchResults = () => {
                         left: 0,
                         right: 0,
                         height: MARGIN_TOP,
-                        boxShadow: BAND_SHADOW,
                         justifyContent: 'flex-end',
                     }}
                 >
