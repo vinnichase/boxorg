@@ -1,7 +1,10 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, TextInput, useWindowDimensions } from 'react-native';
+import { Keyboard, useWindowDimensions } from 'react-native';
 import { KeyboardController } from 'react-native-keyboard-controller';
-import { GestureDetector } from 'react-native-gesture-handler';
+// the gesture handler's TextInput delivers touches to the native field through the gesture
+// system; the plain one asks its parents on Android not to intercept the touch, which cancels
+// the pull-down pan before it can activate
+import { GestureDetector, TextInput } from 'react-native-gesture-handler';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useAtom } from '@gothub-team/got-atom';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
