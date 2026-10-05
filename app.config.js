@@ -16,7 +16,7 @@ module.exports = () => {
         expo: {
             name: isDev ? 'boxorg-dev' : 'boxorg',
             slug: isDev ? 'boxorg-dev' : 'boxorg',
-            version: '1.1.0',
+            version: '1.1.1',
             runtimeVersion: {
                 policy: 'fingerprint',
             },
@@ -40,7 +40,7 @@ module.exports = () => {
             ios: {
                 supportsTablet: false,
                 bundleIdentifier: appBundleId,
-                buildNumber: '13',
+                buildNumber: '14',
                 infoPlist: {
                     CFBundleDevelopmentRegion: 'de',
                     CFBundleLocalizations: ['de', 'en'],
@@ -61,7 +61,7 @@ module.exports = () => {
                 package: appBundleId,
                 // versionCode lives in git so source builds (F-Droid) get the
                 // real value; bump together with version on every release
-                versionCode: 8,
+                versionCode: 9,
                 // the app is fully offline; INTERNET comes from the Expo
                 // template (Metro needs it in dev) and ACCESS_NETWORK_STATE
                 // from expo-updates, whose OTA updates are disabled here
