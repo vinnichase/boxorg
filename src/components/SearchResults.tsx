@@ -18,9 +18,10 @@ import { router } from 'expo-router';
 import { HomeFocusAtom } from '../atoms/HomeFocusAtom';
 import { SearchPullDownGestureAtom } from '../atoms/PullDownGestureAtom';
 import { usePullDownBehavior } from '../hooks/usePullDownBehavior';
+import { useBlurTarget } from '../hooks/useBlurTarget';
 import { setPath } from '../util/setPath';
-import { BlurView } from 'expo-blur';
-import { HeaderLayouts, SearchResultBoxHeader } from './SearchResultBoxHeader';
+import { BlurTargetView, BlurView } from 'expo-blur';
+import { HeaderLayouts, SearchResultBoxGroup } from './SearchResultBoxGroup';
 
 const MARGIN_TOP = 160;
 const BOTTOM_SPACER_HEIGHT = KEYBOARD_TOOLBAR_HEIGHT * (2 / 3);
@@ -40,6 +41,7 @@ export const SearchResults = () => {
     // worklets copy whole captured objects, so only the shared value may be closed over
     const searchPullDownProgress = searchPullDownBehavior.progress;
     const [acceptsTouches, setAcceptsTouches] = useState(false);
+    const { blurTargetRef, blurTarget } = useBlurTarget();
 
     const sharedOpacity = useSharedValue(0);
     const scrollY = useSharedValue(0);
@@ -124,109 +126,113 @@ export const SearchResults = () => {
                 ]}
             >
                 {/* the list spans the whole screen and starts below the search field via
-                    padding, so scrolled-away rows pass underneath the blurred top band */}
-                <Animated.ScrollView
-                    automaticallyAdjustKeyboardInsets={false}
-                    automaticallyAdjustsScrollIndicatorInsets={false}
-                    contentInsetAdjustmentBehavior="never"
-                    keyboardShouldPersistTaps="handled"
-                    scrollIndicatorInsets={{ top: MARGIN_TOP, bottom: BOTTOM_SPACER_HEIGHT }}
-                    contentContainerStyle={{ paddingTop: MARGIN_TOP }}
-                    onScroll={useAnimatedScrollHandler((e) => {
-                        scrollY.set(e.contentOffset.y);
-                    })}
-                    scrollEventThrottle={16}
-                    style={{ flex: 1 }}
-                >
-                    {groups.flatMap((group, i) => [
-                        <SearchResultBoxHeader
-                            key={`header-${group.boxId}`}
-                            group={group}
-                            nextBoxId={groups[i + 1]?.boxId}
-                            stickyTop={MARGIN_TOP}
-                            blurIntensity={BLUR_INTENSITY}
-                            verticalPadding={ROW_GAP}
-                            scrollY={scrollY}
-                            headerLayouts={headerLayouts}
-                        />,
-                        <View
-                            key={`objects-${group.boxId}`}
-                            style={{
-                                gap: ROW_GAP,
-                                paddingHorizontal: 30,
-                                // same distance below the blurred header as inside it
-                                paddingTop: ROW_GAP,
-                                paddingBottom: GROUP_GAP,
-                                shadowColor: `${PURPLE_LIGHT}`,
-                                shadowOpacity: 1,
-                                shadowRadius: 20,
-                            }}
-                        >
-                            {group.objects.map((record) => (
-                                <TouchableOpacity
-                                    key={record.id}
-                                    delayPressIn={16}
-                                    style={{ height: 100, flexDirection: 'row', gap: 20 }}
-                                    onPress={() => {
-                                        void KeyboardController.dismiss({ keepFocus: false });
-                                        Keyboard.dismiss();
-                                        EditObjectAtom.set({
-                                            ...record,
-                                            boxTags: { [group.boxId]: group.boxTags },
-                                        });
-                                        router.push('/edit');
+                    padding, so scrolled-away rows pass underneath the blurred top band,
+                    whose blur target it is */}
+                <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
+                    <Animated.ScrollView
+                        automaticallyAdjustKeyboardInsets={false}
+                        automaticallyAdjustsScrollIndicatorInsets={false}
+                        contentInsetAdjustmentBehavior="never"
+                        keyboardShouldPersistTaps="handled"
+                        scrollIndicatorInsets={{ top: MARGIN_TOP, bottom: BOTTOM_SPACER_HEIGHT }}
+                        contentContainerStyle={{ paddingTop: MARGIN_TOP }}
+                        onScroll={useAnimatedScrollHandler((e) => {
+                            scrollY.set(e.contentOffset.y);
+                        })}
+                        scrollEventThrottle={16}
+                        style={{ flex: 1 }}
+                    >
+                        {groups.map((group, i) => (
+                            <SearchResultBoxGroup
+                                key={group.boxId}
+                                group={group}
+                                nextBoxId={groups[i + 1]?.boxId}
+                                stickyTop={MARGIN_TOP}
+                                blurIntensity={BLUR_INTENSITY}
+                                verticalPadding={ROW_GAP}
+                                scrollY={scrollY}
+                                headerLayouts={headerLayouts}
+                            >
+                                <View
+                                    style={{
+                                        gap: ROW_GAP,
+                                        paddingHorizontal: 30,
+                                        // same distance below the blurred header as inside it
+                                        paddingTop: ROW_GAP,
+                                        paddingBottom: GROUP_GAP,
+                                        shadowColor: `${PURPLE_LIGHT}`,
+                                        shadowOpacity: 1,
+                                        shadowRadius: 20,
                                     }}
                                 >
-                                    <View
-                                        style={{
-                                            overflow: 'hidden',
-                                            borderRadius: 10,
-                                            width: 100,
-                                            height: 100,
-                                            borderWidth: 2,
-                                            borderColor: WHITE,
-                                        }}
-                                    >
-                                        <Image
-                                            source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
-                                            style={{ width: '100%', height: '100%' }}
-                                        />
-                                    </View>
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            maxWidth: '100%',
-                                            flexWrap: 'wrap',
-                                            gap: 5,
-                                            paddingVertical: 5,
-                                            overflow: 'hidden',
-                                            alignItems: 'baseline',
-                                            flexDirection: 'row',
-                                        }}
-                                    >
-                                        {record.tags.map((tag) => (
+                                    {group.objects.map((record) => (
+                                        <TouchableOpacity
+                                            key={record.id}
+                                            delayPressIn={16}
+                                            style={{ height: 100, flexDirection: 'row', gap: 20 }}
+                                            onPress={() => {
+                                                void KeyboardController.dismiss({ keepFocus: false });
+                                                Keyboard.dismiss();
+                                                EditObjectAtom.set({
+                                                    ...record,
+                                                    boxTags: { [group.boxId]: group.boxTags },
+                                                });
+                                                router.push('/edit');
+                                            }}
+                                        >
                                             <View
-                                                key={tag}
                                                 style={{
-                                                    padding: 5,
-                                                    backgroundColor: `${WHITE}22`,
-                                                    borderRadius: 5,
+                                                    overflow: 'hidden',
+                                                    borderRadius: 10,
+                                                    width: 100,
+                                                    height: 100,
+                                                    borderWidth: 2,
+                                                    borderColor: WHITE,
                                                 }}
                                             >
-                                                <Text style={{ color: WHITE }}>{tag}</Text>
+                                                <Image
+                                                    source={{ uri: FileSystem.documentDirectory + record.thumb_path }}
+                                                    style={{ width: '100%', height: '100%' }}
+                                                />
                                             </View>
-                                        ))}
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
-                        </View>,
-                    ])}
-                    <View style={{ height: BOTTOM_SPACER_HEIGHT }} />
-                </Animated.ScrollView>
+                                            <View
+                                                style={{
+                                                    flex: 1,
+                                                    maxWidth: '100%',
+                                                    flexWrap: 'wrap',
+                                                    gap: 5,
+                                                    paddingVertical: 5,
+                                                    overflow: 'hidden',
+                                                    alignItems: 'baseline',
+                                                    flexDirection: 'row',
+                                                }}
+                                            >
+                                                {record.tags.map((tag) => (
+                                                    <View
+                                                        key={tag}
+                                                        style={{
+                                                            padding: 5,
+                                                            backgroundColor: `${WHITE}22`,
+                                                            borderRadius: 5,
+                                                        }}
+                                                    >
+                                                        <Text style={{ color: WHITE }}>{tag}</Text>
+                                                    </View>
+                                                ))}
+                                            </View>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </SearchResultBoxGroup>
+                        ))}
+                        <View style={{ height: BOTTOM_SPACER_HEIGHT }} />
+                    </Animated.ScrollView>
+                </BlurTargetView>
                 <BlurView
                     intensity={BLUR_INTENSITY}
                     tint="dark"
                     blurMethod="dimezisBlurView"
+                    blurTarget={blurTarget}
                     style={{
                         position: 'absolute',
                         top: 0,

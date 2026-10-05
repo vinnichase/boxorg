@@ -3,3 +3,6 @@ packages:
 
 allowBuilds:
   unrs-resolver: true
+
+patchedDependencies:
+  expo-blur@57.0.3: patches/expo-blur@57.0.3.patch

@@ -27,6 +27,9 @@ module.exports = () => {
             icon: './assets/images/icon.png',
             scheme: 'myapp',
             userInterfaceStyle: 'automatic',
+            // Android paints this wherever a blur target is transparent and behind
+            // screens while they transition, so it has to be the app background
+            backgroundColor: '#23153a',
             newArchEnabled: true,
             // system dialogs (camera permission, "Foto benutzen"/"Wiederholen")
             // follow the languages the app declares; German is the primary one

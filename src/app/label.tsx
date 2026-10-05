@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { BlurTargetView, BlurView } from 'expo-blur';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { BLACK, GREEN_LIGHT, KEYBOARD_TOOLBAR_HEIGHT, PURPLE_DARK, PURPLE_LIGHT, WHITE } from '../util/constants';
 import { useAtom } from '@gothub-team/got-atom';
@@ -13,6 +13,7 @@ import { BoxTagsDrawer } from '../components/BoxTagsDrawer';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { BoxTagsToggle } from '../components/BoxTagsToggle';
 import { useBoxTagsDrawer } from '../hooks/useBoxTagsDrawer';
+import { useBlurTarget } from '../hooks/useBlurTarget';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 
@@ -21,6 +22,9 @@ const HEADER_HEIGHT = 90;
 function App(): React.ReactElement {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    // the scrolled content is the blur target, so the header blurs whatever passes underneath it;
+    // a blur view must not sit inside its own target, so the header stays outside of it
+    const { blurTargetRef, blurTarget } = useBlurTarget();
     const { width, height: windowHeight } = useWindowDimensions();
     const { index, objects, boxId, boxTags } = useAtom(CollectObjectsAtom);
     const object = objects[index];
@@ -55,7 +59,8 @@ function App(): React.ReactElement {
                         height: headerOffset + drawerProgress.value * drawerContentHeight.value,
                     }))}
                 />
-                <View
+                <BlurTargetView
+                    ref={blurTargetRef}
                     style={{
                         gap: 18,
                         paddingBottom: 18,
@@ -141,12 +146,13 @@ function App(): React.ReactElement {
                             <CrossIcon color1={GREEN_LIGHT}></CrossIcon>
                         </View>
                     </TouchableOpacity>
-                </View>
+                </BlurTargetView>
             </KeyboardAwareScrollView>
             <BlurView
                 intensity={80}
                 tint="dark"
                 blurMethod="dimezisBlurView"
+                blurTarget={blurTarget}
                 style={{
                     position: 'absolute',
                     width: '100%',

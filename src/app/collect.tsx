@@ -9,9 +9,10 @@ import { BoxTagsDrawer } from '../components/BoxTagsDrawer';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { BoxTagsToggle } from '../components/BoxTagsToggle';
 import { useBoxTagsDrawer } from '../hooks/useBoxTagsDrawer';
+import { useBlurTarget } from '../hooks/useBlurTarget';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { ObjectTile } from '../components/ObjectTile';
-import { BlurView } from 'expo-blur';
+import { BlurTargetView, BlurView } from 'expo-blur';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { ArrowLeftIcon, SaveIcon } from '../components/Icons';
 import { setPath } from '../util/setPath';
@@ -25,6 +26,9 @@ const TILE_COLUMNS = 2;
 function App(): React.ReactElement {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    // the scrolled content is the blur target, so the header blurs whatever passes underneath it;
+    // a blur view must not sit inside its own target, so the header stays outside of it
+    const { blurTargetRef, blurTarget } = useBlurTarget();
 
     const { width } = useWindowDimensions();
     const TILE_WIDTH = (width - TILE_GAP * (TILE_COLUMNS + 1)) / TILE_COLUMNS;
@@ -71,7 +75,8 @@ function App(): React.ReactElement {
                         height: headerOffset + drawerProgress.value * drawerContentHeight.value,
                     }))}
                 />
-                <View
+                <BlurTargetView
+                    ref={blurTargetRef}
                     style={{
                         gap: TILE_GAP,
                         padding: TILE_GAP,
@@ -109,12 +114,13 @@ function App(): React.ReactElement {
                             />
                         ))
                     )}
-                </View>
+                </BlurTargetView>
             </KeyboardAwareScrollView>
             <BlurView
                 intensity={80}
                 tint="dark"
                 blurMethod="dimezisBlurView"
+                blurTarget={blurTarget}
                 style={{
                     position: 'absolute',
                     width: '100%',

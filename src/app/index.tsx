@@ -1,7 +1,7 @@
 import React from 'react';
-import { ImageBackground, useWindowDimensions, View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MAIN_INPUT_HEIGHT, PURPLE_DARK, SEARCH_RESTING_TOP_RATIO } from '../util/constants';
+import { MAIN_INPUT_HEIGHT, SEARCH_RESTING_TOP_RATIO } from '../util/constants';
 import { SearchResults } from '../components/SearchResults';
 import { CaptureButton } from '../components/CaptureButton';
 import { SearchCloseCaret } from '../components/SearchCloseCaret';
@@ -14,14 +14,7 @@ function App(): React.ReactElement {
     const searchRestingBottom = windowHeight * SEARCH_RESTING_TOP_RATIO + MAIN_INPUT_HEIGHT;
 
     return (
-        <ImageBackground
-            source={require('../../assets/images/background.png')}
-            style={{
-                flex: 1,
-                backgroundColor: PURPLE_DARK,
-            }}
-            resizeMode="cover"
-        >
+        <View style={{ flex: 1 }}>
             <HomeBlurBackground>
                 <SafeAreaView edges={['bottom']} style={{ flex: 1, width: '100%' }}>
                     {/* the capture button splits the space below the resting search input 2:1 */}
@@ -39,7 +32,7 @@ function App(): React.ReactElement {
                 chips in the search results included; the search field adds its
                 own box search button next to it */}
             <KeyboardToolbarDismiss />
-        </ImageBackground>
+        </View>
     );
 }
 

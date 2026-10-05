@@ -11,10 +11,11 @@ import { BoxTagsDrawer } from '../components/BoxTagsDrawer';
 import { BoxTagsEditor } from '../components/BoxTagsEditor';
 import { BoxTagsToggle } from '../components/BoxTagsToggle';
 import { useBoxTagsDrawer } from '../hooks/useBoxTagsDrawer';
+import { useBlurTarget } from '../hooks/useBlurTarget';
 import { KeyboardToolbarDismiss } from '../components/KeyboardToolbarDismiss';
 import { setPath } from '../util/setPath';
 import { EditObjectAtom, loadEditBoxTags } from '../atoms/EditObjectAtom';
-import { BlurView } from 'expo-blur';
+import { BlurTargetView, BlurView } from 'expo-blur';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { saveObject } from '../service/saveObject';
@@ -25,6 +26,9 @@ const HEADER_HEIGHT = 90;
 function App(): React.ReactElement {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    // the scrolled content is the blur target, so the header blurs whatever passes underneath it;
+    // a blur view must not sit inside its own target, so the header stays outside of it
+    const { blurTargetRef, blurTarget } = useBlurTarget();
 
     const { width, height: windowHeight } = useWindowDimensions();
     const object = useAtom(EditObjectAtom);
@@ -59,7 +63,8 @@ function App(): React.ReactElement {
                         height: headerOffset + drawerProgress.value * drawerContentHeight.value,
                     }))}
                 />
-                <View
+                <BlurTargetView
+                    ref={blurTargetRef}
                     style={{
                         gap: 18,
                         paddingBottom: 18,
@@ -139,12 +144,13 @@ function App(): React.ReactElement {
                             <CrossIcon color1={GREEN_LIGHT}></CrossIcon>
                         </View>
                     </TouchableOpacity>
-                </View>
+                </BlurTargetView>
             </KeyboardAwareScrollView>
             <BlurView
                 intensity={80}
                 tint="dark"
                 blurMethod="dimezisBlurView"
+                blurTarget={blurTarget}
                 style={{
                     position: 'absolute',
                     width: '100%',

@@ -116,7 +116,7 @@ Box tag drafts: each screen atom holds the box tags of every box number entered 
 - **`BoxTagsDrawer.tsx`** - Collapsible strip below the header title row that slides the `BoxTagsEditor` out; height = drawer progress × measured content height
 - **`AnimatedBlurView.tsx`** - Reanimated wrapper for expo-blur with smooth intensity transitions
 - **`SearchResults.tsx`** - Full-screen overlay showing search results grouped by box; the list spans the screen with top padding so rows scroll under a blurred band behind the search field; object rows are tap-to-edit
-- **`SearchResultBoxHeader.tsx`** - "box NN" heading with editable `BoxTagsEditor` per result group; sticks below the search field via its own scroll-offset translation (RN's `stickyHeaderIndices` would stick at the list top) and is pushed away by the next header
+- **`SearchResultBoxGroup.tsx`** - "box NN" heading with editable `BoxTagsEditor` per result group, followed by the group's rows (passed as children) in their own `BlurTargetView`; the header sticks below the search field via its own scroll-offset translation (RN's `stickyHeaderIndices` would stick at the list top) and is pushed away by the next header
 - **`Icons.tsx`** - SVG icon library (SearchIcon, BoxIcon, ApertureIcon, CrossIcon, SaveIcon, TagsIcon, TagPlusIcon, ChevronLeftIcon, etc.)
 
 ---
@@ -128,6 +128,7 @@ Box tag drafts: each screen atom holds the box tags of every box number entered 
 - **`useImage.ts`** - Camera/image picker hook with permission management
 - **`useSpringSpan.ts`** - Spring-based animation hook (shift/unshift pattern)
 - **`useTimingSpan.ts`** - Duration-based animation hook (configurable timing)
+- **`useBlurTarget.ts`** - Ref for the `BlurTargetView` that holds what a screen's `BlurView`s blur plus the `blurTarget` handed to them; Android blurs only what a `BlurTargetView` contains and a blur view must not sit inside its own target (collect, label and edit make their scrolled content the target, the search results their list for the top band and each box's rows for its header, the home screen its background image)
 - **`useBoxTagsDrawer.ts`** - Open/closed state of a screen's box tag drawer plus the shared values (`progress`, `contentHeight`) that `BoxTagsToggle`, `BoxTagsDrawer` and the screen's animated content spacer share; opens by itself for a box that already has tags
 
 ---

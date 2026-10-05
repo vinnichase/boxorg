@@ -1,0 +1,34 @@
+diff --git a/android/src/main/java/expo/modules/blur/ExpoBlurTargetView.kt b/android/src/main/java/expo/modules/blur/ExpoBlurTargetView.kt
+index 70896797fa3e26059be9ed77b39a12a0ae0076ec..711cdf6c5b18e4e369db49e67b2bcbf511929c11 100644
+--- a/android/src/main/java/expo/modules/blur/ExpoBlurTargetView.kt
++++ b/android/src/main/java/expo/modules/blur/ExpoBlurTargetView.kt
+@@ -91,6 +91,29 @@ class ExpoBlurTargetView(context: Context, appContext: AppContext) : ExpoView(co
+ 
+   override fun removeAllViewsInLayout() = blurTargetView.removeAllViewsInLayout()
+ 
++  /**
++   * react-native-screens keeps the views of a dismissed screen drawn during its exit
++   * transition by calling `startViewTransition` on every parent for each of its children.
++   * It calls it on this view for the proxied children, whose real parent is `blurTargetView`,
++   * where `ViewGroup` would silently ignore the call and the children would vanish as soon as
++   * they are unmounted. Forward both calls like add/remove above.
++   */
++  override fun startViewTransition(view: View?) {
++    if (view === blurTargetView) {
++      super.startViewTransition(view)
++      return
++    }
++    blurTargetView.startViewTransition(view)
++  }
++
++  override fun endViewTransition(view: View?) {
++    if (view === blurTargetView) {
++      super.endViewTransition(view)
++      return
++    }
++    blurTargetView.endViewTransition(view)
++  }
++
+   override fun getChildCount(): Int = blurTargetView.childCount
+ 
+   override fun getChildAt(index: Int): View? = blurTargetView.getChildAt(index)
