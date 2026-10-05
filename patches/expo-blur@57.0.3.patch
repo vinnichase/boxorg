@@ -32,3 +32,22 @@ index 70896797fa3e26059be9ed77b39a12a0ae0076ec..711cdf6c5b18e4e369db49e67b2bcbf5
    override fun getChildCount(): Int = blurTargetView.childCount
  
    override fun getChildAt(index: Int): View? = blurTargetView.getChildAt(index)
+diff --git a/android/src/main/java/expo/modules/blur/ExpoBlurView.kt b/android/src/main/java/expo/modules/blur/ExpoBlurView.kt
+index 71344c8df533c25facea5fe7f5ed91528d15c1ed..f1d6d5037771661747fe0095c26be5f26695988f 100644
+--- a/android/src/main/java/expo/modules/blur/ExpoBlurView.kt
++++ b/android/src/main/java/expo/modules/blur/ExpoBlurView.kt
+@@ -161,9 +161,13 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
+ 
+     blurView.setupWith(dimezisBlurTarget)
+       .setFrameClearDrawable(decorView.background)
+-      .setBlurRadius(blurRadius / blurReduction)
+ 
+     blurConfiguration = BlurViewConfiguration.DIMEZIS
++    // Setting the radius on the setupWith chain hands it straight to RenderEffect, which throws
++    // "nativePtr is null" for a radius of 0 on Android 12 (the intensity prop can arrive before the
++    // blur target). Apply it through the same guard as every later radius update instead, which
++    // keeps the blur disabled until a positive radius arrives.
++    applyBlurViewRadiusCompat(true, blurRadius)
+   }
+ 
+   /**
